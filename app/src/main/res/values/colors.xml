@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#3F51B5</color>
+    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorAccent">#FF4081</color>
+    <color name="colorError">#FF6061</color>
+    <color name="appBG">#d9d9d9</color>
+
+    <color name="default_text_color">#303030</color>
+
+    <color name="menuItemWhite">#ffffff</color>
+
+    <color name="textLevelOverlay">#ffffff</color>
+
+    <color name="title_bar">#eeeeee</color>
+
+    <color name="graph_line">#505050</color>
+
+    <color name="heart">#e65050</color>
+    <color name="dark1_heart">#dc1e1e</color>
+    <color name="light1_heart">#ed8585</color>
+
+    <color name="level1">#e6e650</color>
+    <color name="dark1_level1">#dcdc1e</color>
+    <color name="light1_level1">#eded85</color>
+
+    <color name="level2">#e6a350</color>
+    <color name="dark1_level2">#da8720</color>
+    <color name="light1_level2">#edbf85</color>
+
+    <color name="level3">#a8e650</color>
+    <color name="dark1_level3">#8dda20</color>
+    <color name="light1_level3">#c2ed85</color>
+
+    <color name="level4">#e650e6</color>
+    <color name="dark1_level4">#da20da</color>
+    <color name="light1_level4">#ed85ed</color>
+
+    <color name="level5">#50e6d7</color>
+    <color name="dark1_level5">#20dac8</color>
+    <color name="light1_level5">#85ede3</color>
+
+    <color name="level6">#5079e6</color>
+    <color name="dark1_level6">#2053da</color>
+    <color name="light1_level6">#85a1ed</color>
+
+    <color name="level7">#e67a50</color>
+    <color name="dark1_level7">#da5520</color>
+    <color name="light1_level7">#eda285</color>
+
+    <color name="level8">#4b4b4b</color>
+    <color name="dark1_level8">#2d2d2d</color>
+    <color name="light1_level8">#696969</color>
+
+</resources>

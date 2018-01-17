@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/small_dabble_layout"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/normal_height"
+    android:orientation="horizontal"
+    android:paddingTop="8dp"
+    android:paddingBottom="8dp"
+    android:layout_marginBottom="8dp"
+    android:layout_marginLeft="4dp"
+    android:layout_marginRight="4dp"
+    android:layout_marginTop="8dp"
+    android:background="@drawable/dabble_item_background"
+    >
+
+    <!-- Left Layout text and progress bar -->
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_weight="8">
+
+        <!-- for text: name and minutes-->
+        <RelativeLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingLeft="16dp"
+            android:paddingTop="4dp">
+
+            <TextView
+                android:id="@+id/name_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Name"
+                android:textSize="16sp"
+                android:textStyle="bold"/>
+
+            <TextView
+                android:id="@+id/time_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:text="- minutes"
+                android:paddingRight="18sp"
+                android:textSize="12sp" />
+
+        </RelativeLayout>
+
+        <!--  progress bar -->
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="20dp"
+            android:paddingLeft="18dp">
+
+
+            <LinearLayout
+                android:id="@+id/prog_bar_rects"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:paddingBottom="2dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/colour_rect"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/top_border_grey"
+                    android:layout_weight="0.6"/>
+                <TextView
+                    android:id="@+id/white_rect"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/white_rectangle"
+                    android:layout_weight="0.4"/>
+            </LinearLayout>
+
+            <ImageView
+                android:id="@+id/prog_bar"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="fitXY"
+                android:paddingBottom="2dp"
+                android:src="@drawable/progress_bar_t3"
+                />
+        </RelativeLayout>
+
+    </LinearLayout>
+
+    <!-- Level indicator icon -->
+    <RelativeLayout
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:layout_weight="2">
+        <ImageView
+            android:id="@+id/gem_bitmap"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:src="@drawable/gem_blank"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"/>
+
+        <!-- Level Text Box -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:layout_weight="2"/>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:orientation="horizontal"
+                android:layout_weight="4">
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="2"/>
+                <TextView
+                    android:id="@+id/text_level"
+                    android:layout_width="0dp"
+                    android:layout_height="20dp"
+                    android:gravity="center"
+                    android:textColor="@color/textLevelOverlay"
+                    android:textStyle="bold"
+                    android:layout_weight="4"/>
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="2"/>
+            </LinearLayout>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:layout_weight="2"/>
+
+        </LinearLayout>
+    </RelativeLayout>
+</LinearLayout>

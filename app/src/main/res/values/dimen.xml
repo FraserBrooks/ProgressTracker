@@ -1,0 +1,32 @@
+<resources>
+    <!-- Default screen margins, per the Android Design guidelines. -->
+    <dimen name="activity_horizontal_margin">16dp</dimen>
+    <dimen name="activity_vertical_margin">16dp</dimen>
+
+    <dimen name="normal_height">65dp</dimen>
+
+    <dimen name="expanded_height">65dp</dimen>
+
+    <integer name="target_bar_red_lower" >230</integer>
+    <integer name="target_bar_red_higher" >168</integer>
+
+    <integer name="target_bar_green_lower" >230</integer>
+    <integer name="target_bar_green_higher" >230</integer>
+
+    <integer name="target_bar_blue_lower" >80</integer>
+    <integer name="target_bar_blue_higher" >80</integer>
+
+
+    <integer name="target_percentage_red_lower" >230</integer>
+    <integer name="target_percentage_red_higher" >141</integer>
+
+    <integer name="target_percentage_green_lower" >30</integer>
+    <integer name="target_percentage_green_higher" >218</integer>
+
+    <integer name="target_percentage_blue_lower" >30</integer>
+    <integer name="target_percentage_blue_higher" >32</integer>
+
+
+    <item name="gradient_strength" format="float" type="dimen">2</item>
+
+</resources>

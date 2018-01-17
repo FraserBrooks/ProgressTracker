@@ -1,0 +1,95 @@
+<resources>
+    <string name="app_name">Progress Tracker</string>
+    <string name="title_home">Home</string>
+    <string name="title_dashboard">Dashboard</string>
+    <string name="title_notifications">Notifications</string>
+    <string name="_20_hours">20_hours</string>
+    <string name="does_not_matter">Doesn\'t Matter</string>
+    <string name="custom">Custom</string>
+    <string name="lifetime">Lifetime</string>
+    <string name="_1000_hours">1000 hours</string>
+    <string name="_500_hours">500 hours</string>
+    <string name="_100_hours">100 hours</string>
+    <string name="_50_hours">50 hours</string>
+    <string name="pursuit_time_ask">How long should it take to master?</string>
+    <string name="enter_a_name">Enter a name</string>
+    <string name="create_new_tracker">Create New Tracker</string>
+    <string name="edit_name">Edit Name:</string>
+    <string name="guitar_practice">Guitar Practice</string>
+    <string name="update">Update</string>
+    <string name="edit_time_to_max">Edit time to max level:</string>
+    <string name="remove_this_tracker">Remove this tracker</string>
+    <string name="_15_minutes">- 15 minutes</string>
+    <string name="_1_hour">- 1 hour</string>
+    <string name="other">- Other</string>
+    <string name="start_timer">Start Timer</string>
+    <string name="plus_15_minutes">+ 15 minutes</string>
+    <string name="plus_1_hour">+ 1 hour</string>
+    <string name="plus_other">+ Other</string>
+    <string name="hours">hours</string>
+    <string name="minutes">minutes</string>
+    <string name="add">add</string>
+    <string name="custom___">Custom:\ \ \ </string>
+    <string name="end_timer">End Timer</string>
+    <string name="title_activity_add_tracker">Add a New Tracker</string>
+    <string name="title_activity_add_target">Add a New Target</string>
+    <string name="repeating_target">Repeating Target?</string>
+    <string name="create_new_target">Create New Target</string>
+    <string name="time">Time:</string>
+    <string name="every">Every:</string>
+
+
+    <string-array name="tracker_times">
+        <item>"20 Hours"</item>
+        <item>"50 Hours"</item>
+        <item>"100 Hours"</item>
+        <item>"500 Hours"</item>
+        <item>"1,000 Hours"</item>
+        <item>"Lifetime (10,000 Hours)"</item>
+        <item>"Doesn\'t Matter"</item>
+        <item>"Custom"</item>
+    </string-array>
+
+    <string-array name="target_periods">
+        <item>"DAY"</item>
+        <item>"WEEK</item>
+        <item>"MONTH"</item>
+        <item>"YEAR"</item>
+    </string-array>
+
+    <string name="calendar_target_1">calendar_target_1</string>
+    <string name="calendar_target_2">calendar_target_2</string>
+    <string name="calendar_target_3">calendar_target_3</string>
+
+
+    <string name="material_calendar_monday">M</string>
+    <string name="material_calendar_tuesday">T</string>
+    <string name="material_calendar_wednesday">W</string>
+    <string name="material_calendar_thursday">T</string>
+    <string name="material_calendar_friday">F</string>
+    <string name="material_calendar_saturday">S</string>
+    <string name="material_calendar_sunday">S</string>
+
+    <array name="material_calendar_months_array">
+        <item>January</item>
+        <item>February</item>
+        <item>March</item>
+        <item>April</item>
+        <item>May</item>
+        <item>June</item>
+        <item>July</item>
+        <item>August</item>
+        <item>September</item>
+        <item>October</item>
+        <item>November</item>
+        <item>December</item>
+    </array>
+
+    <string name="material_calendar_today_button">Today</string>
+    <string name="material_calendar_positive_button">OK</string>
+    <string name="material_calendar_negative_button">Cancel</string>
+    <string name="target">target:</string>
+    <string name="set">Set</string>
+
+
+</resources>
