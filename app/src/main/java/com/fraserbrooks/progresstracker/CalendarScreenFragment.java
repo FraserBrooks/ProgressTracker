@@ -46,6 +46,7 @@ public class CalendarScreenFragment extends Fragment {
             new AdapterView.OnItemSelectedListener() {
                 @Override
                 public void onItemSelected(AdapterView<?> adapterView, View view, int position, long l) {
+                    editor = sharedPref.edit();
                     String selected = (String) adapterView.getSelectedItem();
                     switch (adapterView.getId()){
                         case R.id.calendar_spinner_1:
@@ -66,7 +67,7 @@ public class CalendarScreenFragment extends Fragment {
                         default:
                             Log.e(TAG, "onItemSelected: can't match spinner id");
                     }
-                    editor.commit();
+                    editor.apply();
                     updateCalendar();
                 }
 
@@ -90,7 +91,7 @@ public class CalendarScreenFragment extends Fragment {
                         container, false);
         sharedPref = getActivity().getPreferences(
                 Context.MODE_PRIVATE);
-        editor = sharedPref.edit();
+
 
 
         updateDayTargets();
@@ -108,19 +109,24 @@ public class CalendarScreenFragment extends Fragment {
         String[] stored_target_titles = getStoredTargetTitles(sharedPref);
         ArrayList<String> target_titles = getTargetTitles();
         // Target may have been deleted since storing it in the sharedPref
-        for(String name: stored_target_titles){
-            if(!target_titles.contains(name)){
-                name = "None";
+
+        for(int i = 0; i < 3; i++ ){
+            if(!target_titles.contains(stored_target_titles[i])){
+                stored_target_titles[i] = "None";
             }
         }
-        target_titles.add("None");
+
+        Log.d(TAG, "setSpinners: 1 to :" + stored_target_titles[0]);
+        Log.d(TAG, "setSpinners: 2 to :" + stored_target_titles[1]);
+        Log.d(TAG, "setSpinners: 3 to :" + stored_target_titles[2]);
+
 
         spinner1 = fragmentScreen.findViewById(R.id.calendar_spinner_1);
         spinner2 = fragmentScreen.findViewById(R.id.calendar_spinner_2);
         spinner3 = fragmentScreen.findViewById(R.id.calendar_spinner_3);
 
 
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(),
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity(),
                 android.R.layout.simple_spinner_item,
                 target_titles);
         adapter.setDropDownViewResource(
@@ -151,6 +157,7 @@ public class CalendarScreenFragment extends Fragment {
         for (Target t: dayTargets) {
             target_titles.add(t.getTargetTitle());
         }
+        target_titles.add("None");
         return target_titles;
     }
 
