@@ -33,7 +33,7 @@ public class RadioButtonTableLayout extends TableLayout implements View.OnClickL
         rb.setChecked(true);
         clickedButton = rb;
         if(clickedButton.getText().equals("Custom")){
-            View input_layout = getRootView().findViewById(R.id.custom_time_etv_layout);
+            View input_layout = getRootView().findViewById(R.id.custom_max_count_layout);
             if (input_layout.getVisibility() == View.GONE){
                 input_layout.setVisibility(View.VISIBLE);
             } else {

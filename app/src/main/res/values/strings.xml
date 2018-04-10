@@ -35,20 +35,39 @@
     <string name="title_activity_add_target">Add a New Target</string>
     <string name="repeating_target">Repeating Target?</string>
     <string name="create_new_target">Create New Target</string>
-    <string name="time">Time:</string>
+    <string name="timeColon">Time:</string>
+    <string name="time">time</string>
+
     <string name="every">Every:</string>
 
+    <string name="count_to_complete"> %1$d to complete.</string>
 
-    <string-array name="tracker_times">
-        <item>"20 Hours"</item>
-        <item>"50 Hours"</item>
-        <item>"100 Hours"</item>
-        <item>"500 Hours"</item>
-        <item>"1,000 Hours"</item>
-        <item>"Lifetime (10,000 Hours)"</item>
-        <item>"Doesn\'t Matter"</item>
+    <string name="edit_xxx_to_max_level">Edit %1$s to max level:</string>
+
+    <string name="add_1_count">+ 1 %1$s</string>
+    <string name="add_5_count">+ 5 %1$s</string>
+    <string name="more">More…</string>
+
+    <string-array name="tracker_count_strings">
         <item>"Custom"</item>
+        <item>"20 "</item>
+        <item>"50 "</item>
+        <item>"100 "</item>
+        <item>"500 "</item>
+        <item>"1,000 "</item>
+        <item>"Lifetime (10,000) "</item>
+        <item>"Doesn\'t Matter"</item>
     </string-array>
+
+    <integer-array name="tracker_count_ints">
+        <item>20</item>
+        <item>50</item>
+        <item>100</item>
+        <item>500</item>
+        <item>1000</item>
+        <item>10000</item>
+        <item>0</item>
+    </integer-array>
 
     <string-array name="target_periods">
         <item>"DAY"</item>
@@ -90,6 +109,10 @@
     <string name="material_calendar_negative_button">Cancel</string>
     <string name="target">target:</string>
     <string name="set">Set</string>
+    <string name="must_enter_a_time">You must enter a time!</string>
+    <string name="custom_time_greater_than_0">Custom time must be greater than 0!</string>
+    <string name="edit_label">Edit Label:</string>
+    <string name="paintings">paintings</string>
 
 
 </resources>

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/small_dabble_layout"
+    android:id="@+id/small_tracker_layout"
     android:layout_width="match_parent"
     android:layout_height="@dimen/normal_height"
     android:orientation="horizontal"
@@ -38,7 +38,7 @@
                 android:textStyle="bold"/>
 
             <TextView
-                android:id="@+id/time_tv"
+                android:id="@+id/quantifier_tv"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
@@ -63,13 +63,13 @@
                 android:orientation="horizontal">
 
                 <TextView
-                    android:id="@+id/colour_rect"
+                    android:id="@+id/filled_rect"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:background="@drawable/top_border_grey"
                     android:layout_weight="0.6"/>
                 <TextView
-                    android:id="@+id/white_rect"
+                    android:id="@+id/not_filled_rect"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:background="@drawable/white_rectangle"

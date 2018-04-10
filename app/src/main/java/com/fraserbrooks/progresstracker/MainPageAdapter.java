@@ -19,8 +19,8 @@ public class MainPageAdapter extends FragmentStatePagerAdapter{
     private final String TAG = "Main>.MainPageAdapter";
     private int numberOfTabs;
 
-    private Fragment homeFragment;
-    private Fragment targetFragment;
+    private HomeScreenFragment homeFragment;
+    private TargetScreenFragment targetFragment;
 
 
     public MainPageAdapter(FragmentManager fm, int numOfTabs) {
@@ -53,27 +53,25 @@ public class MainPageAdapter extends FragmentStatePagerAdapter{
         }
     }
 
-    private void setHomeFragment(Fragment f){
-        this.homeFragment = f;
-    }
-
-    public Fragment getHomeFragment(){
-        return homeFragment;
-    }
-
-
-
     @Override
     public int getCount() {
         return numberOfTabs;
     }
 
+    private void setHomeFragment(HomeScreenFragment f){
+        this.homeFragment = f;
+    }
 
-    private void setTargetFragment(Fragment f) {
+    public HomeScreenFragment getHomeFragment(){
+        return homeFragment;
+    }
+
+
+    private void setTargetFragment(TargetScreenFragment f) {
         this.targetFragment = f;
     }
 
-    public Fragment getTargetFragment() {
+    public TargetScreenFragment getTargetFragment() {
         return targetFragment;
     }
 }

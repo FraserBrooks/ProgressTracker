@@ -43,7 +43,7 @@
                 android:textSize="16sp"
                 android:text="@string/pursuit_time_ask"
                 app:layout_constraintTop_toBottomOf="@id/name_etv_layout"
-                app:layout_constraintStart_toStartOf="@id/time_buttons"/>
+                app:layout_constraintStart_toStartOf="@id/top_row_buttons"/>
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
@@ -148,7 +148,7 @@
         </com.fraserbrooks.progresstracker.RadioButtonTableLayout>
 
         <LinearLayout
-            android:id="@+id/custom_time_etv_layout"
+            android:id="@+id/custom_max_count_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
@@ -164,7 +164,7 @@
                 android:textAlignment="textEnd"
                 android:gravity="end" />
             <EditText
-                android:id="@+id/add_custom_hour_etv"
+                android:id="@+id/add_custom_count_etv"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="3"
@@ -181,7 +181,7 @@
         <Button
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@+id/custom_time_etv_layout"
+            app:layout_constraintTop_toBottomOf="@+id/custom_max_count_layout"
             android:text="@string/create_new_tracker"
             android:onClick="addButtonClicked"
             android:layout_margin="16dp"/>

@@ -42,7 +42,7 @@ public class AddTrackerActivity extends AppCompatActivity {
         });
 
         //To stop numberPassword mode from hiding text
-        EditText hours_input = findViewById(R.id.add_custom_hour_etv);
+        EditText hours_input = findViewById(R.id.add_custom_count_etv);
         hours_input.setTransformationMethod(null);
 
     }
@@ -85,7 +85,7 @@ public class AddTrackerActivity extends AppCompatActivity {
                 difficulty = 10000;
                 break;
             case R.id.rad7_custom:
-                EditText hours_input = findViewById(R.id.add_custom_hour_etv);
+                EditText hours_input = findViewById(R.id.add_custom_count_etv);
                 String input = hours_input.getText().toString();
                 if(input.equals("")){
                     Toast.makeText(this, "You must enter a time!", Toast.LENGTH_LONG).show();

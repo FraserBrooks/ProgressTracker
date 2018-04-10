@@ -21,8 +21,8 @@ public class HomeScreenFragment extends Fragment{
 
     private TrackerAdapter trackerAdapter;
     private TouchInterceptor.DropListener mDropListener;
-
     private TouchInterceptor trackerListView;
+    private DataWrapper dataWrapper;
 
     public HomeScreenFragment() {
         // Required empty public constructor
@@ -35,17 +35,17 @@ public class HomeScreenFragment extends Fragment{
 
         Log.d(TAG, "onCreateView: called");
 
-        //Get the dataWrapper and read list
-        final DataWrapper dataWrapper = new DataWrapper();
+        //Initialise the DataWrapper
+        dataWrapper = new DataWrapper();
 
         // Inflate the layout for this fragment
         final ViewGroup fragmentScreen = (ViewGroup) inflater.inflate(R.layout.fragment_home_screen,
                 container, false);
 
         // Attach the adapter to a ListView
-        trackerListView = fragmentScreen.findViewById(R.id.dabble_list);
+        trackerListView = fragmentScreen.findViewById(R.id.tracker_list);
 
-        View addItemButton = inflater.inflate(R.layout.add_item_button,
+        View addItemButton = inflater.inflate(R.layout.add_tracker_button,
                 trackerListView, false);
 
         // Create the adapter to convert the array to views
@@ -119,7 +119,6 @@ public class HomeScreenFragment extends Fragment{
                 ls.set(to, (Tracker) target);
 
                 trackerAdapter.setItems(ls);
-                trackerAdapter.updateGraph();
             }
 
         };
@@ -131,7 +130,7 @@ public class HomeScreenFragment extends Fragment{
     @Override
     public void onPause() {
         super.onPause();
-        trackerAdapter.writeItems();
+        dataWrapper.writeTrackers(getContext(), trackerAdapter.getItems());
         Log.d(TAG, "onPause: called");
     }
 
@@ -139,7 +138,7 @@ public class HomeScreenFragment extends Fragment{
     public void onResume() {
         super.onResume();
         Log.d(TAG, "onResume: called");
-        trackerAdapter.refreshItems();
+        new ReadAndUpdateDataTask(false, trackerAdapter, getContext()).execute();
     }
 
 }

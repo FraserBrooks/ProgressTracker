@@ -16,16 +16,16 @@ import java.util.Calendar;
  * Created by Fraser on 02/01/2018.
  */
 
-class DataWrapper{
+public class DataWrapper{
 
     private final String TAG = "Main>dataWrapper";
     private String trackerFileName = "tracker_list.srl";
     private String targetOrderFileName = "target_ordering.txt";
 
-    DataWrapper(){
+    public DataWrapper(){
     }
 
-    ArrayList<Tracker> readTrackers(Context context){
+    public ArrayList<Tracker> readTrackers(Context context){
         ArrayList<Tracker> val = new ArrayList<>();
         FileInputStream fis;
         try{
@@ -42,24 +42,32 @@ class DataWrapper{
         return val;
     }
 
-    void writeTrackers(Context context, ArrayList<Tracker> ls ){
-        ObjectOutput out;
-        if(!ls.isEmpty()){
-            if(ls.get(0) == null){
-                ls.remove(0);
-            }
-        }
+    public void writeTrackers(Context context, ArrayList<Tracker> trackers ){
+        final ArrayList<Tracker> ls = trackers;
+        final Context context_ = context;
 
-        collapseAll(ls);
-        try{
-            out = new ObjectOutputStream(context.openFileOutput(trackerFileName, Context.MODE_PRIVATE));
-            out.writeObject(ls);
-            out.close();
-        } catch (FileNotFoundException e){
-            e.printStackTrace();
-        } catch (IOException e){
-            e.printStackTrace();
-        }
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                ObjectOutput out;
+                if(!ls.isEmpty()){
+                    if(ls.get(0) == null){
+                        ls.remove(0);
+                    }
+                }
+
+                collapseAll(ls);
+                try{
+                    out = new ObjectOutputStream(context_.openFileOutput(trackerFileName, Context.MODE_PRIVATE));
+                    out.writeObject(ls);
+                    out.close();
+                } catch (FileNotFoundException e){
+                    e.printStackTrace();
+                } catch (IOException e){
+                    e.printStackTrace();
+                }
+            }
+        }).start();
     }
 
 
@@ -70,35 +78,44 @@ class DataWrapper{
     }
 
 
-    void writeTargets(Context context, ArrayList<Target> items) {
-        // todo: write target_order
-        ArrayList<Integer> intIDs = new ArrayList<>();
-        for (Target t: items) {
-            intIDs.add(getID(t.getStartDate()));
-        }
+    public void writeTargetOrdering(Context context, ArrayList<Target> targets) {
+        // write target_order
 
-        ObjectOutput out;
-        try{
-            out = new ObjectOutputStream(context.openFileOutput(targetOrderFileName,
-                    Context.MODE_PRIVATE));
-            out.writeObject(intIDs);
-            out.close();
-        } catch (FileNotFoundException e){
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        final ArrayList<Target> targets_ = targets;
+        final Context context_ = context;
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                ArrayList<Integer> intIDs = new ArrayList<>();
+                for (Target t: targets_) {
+                    intIDs.add(getID(t.getStartDate()));
+                }
+
+                ObjectOutput out;
+                try{
+                    out = new ObjectOutputStream(context_.openFileOutput(targetOrderFileName,
+                            Context.MODE_PRIVATE));
+                    out.writeObject(intIDs);
+                    out.close();
+                } catch (FileNotFoundException e){
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
     }
 
     private int getID(Calendar c){
 
-        return  (c.get(Calendar.DAY_OF_YEAR) + 1)
-                * (c.get(Calendar.SECOND) + 1)
-                * (c.get(Calendar.MILLISECOND) + 1)
+        return  (c.get(Calendar.DAY_OF_YEAR))
+                * (c.get(Calendar.SECOND))
+                * (c.get(Calendar.MILLISECOND))
                 / (c.get(Calendar.WEEK_OF_YEAR) + 1);
     }
 
-    ArrayList<Target> readTargets(Context context) {
+    public ArrayList<Target> readTargets(Context context) {
 
         ArrayList<Tracker> trackers = readTrackers(context);
         ArrayList<Target>  targets = new ArrayList<>();

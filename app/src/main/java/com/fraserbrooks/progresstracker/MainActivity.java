@@ -15,8 +15,8 @@ import java.util.ArrayList;
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "main>MainActivity";
-    private ArrayList<Tracker> trackerList;
-    private DataWrapper dataWrapper;
+
+
 
     @SuppressWarnings("ConstantConditions")
     @Override
@@ -55,26 +55,35 @@ public class MainActivity extends AppCompatActivity {
                 if(newPosition == 1 && oldPosition == 0){
                     Log.d(TAG, "onPageSelected: home to target screen");
                     //todo: re-implement this in fragment class
-                    new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            try {
-                                Thread.sleep(1000);
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                            }
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    if(adapter.getHomeFragment() != null
-                                            && adapter.getTargetFragment() != null){
-                                        adapter.getHomeFragment().onPause();
-                                        adapter.getTargetFragment().onResume();
-                                    }
-                                }
-                            });
-                        }
-                    }).start();
+
+                    if(adapter.getHomeFragment() != null){
+                        adapter.getHomeFragment().onPause();
+                    }
+
+                    if(adapter.getTargetFragment() != null){
+                        adapter.getTargetFragment().onResume();
+                    }
+
+//                    new Thread(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            try {
+//                                Thread.sleep(1000);
+//                            } catch (InterruptedException e) {
+//                                e.printStackTrace();
+//                            }
+//                            runOnUiThread(new Runnable() {
+//                                @Override
+//                                public void run() {
+//                                    if(adapter.getHomeFragment() != null
+//                                            && adapter.getTargetFragment() != null){
+//                                        adapter.getHomeFragment().onPause();
+//                                        adapter.getTargetFragment().onResume();
+//                                    }
+//                                }
+//                            });
+//                        }
+//                    }).start();
                 }
 
                 oldPosition = newPosition;

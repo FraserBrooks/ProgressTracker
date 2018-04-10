@@ -14,7 +14,7 @@
     android:layout_marginTop="8dp">
 
     <android.support.constraint.ConstraintLayout
-        android:id="@+id/expanded_dabble_layout_top"
+        android:id="@+id/expanded_tracker_layout_top"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingBottom="12dp"
@@ -42,7 +42,7 @@
                     android:layout_marginLeft="16dp"
                     android:layout_marginTop="4dp"/>
                 <TextView
-                    android:id="@+id/expanded_minutes_tv"
+                    android:id="@+id/expanded_quantifier_two_tv"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="- 1800 minutes"
@@ -50,22 +50,22 @@
                     app:layout_constraintTop_toBottomOf="@id/expanded_name_tv"
                     app:layout_constraintStart_toStartOf="@id/expanded_name_tv"/>
                 <TextView
-                    android:id="@+id/expanded_hours_tv"
+                    android:id="@+id/expanded_quantifier_one_tv"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="- 30 hours"
                     android:textSize="12sp"
-                    app:layout_constraintTop_toBottomOf="@id/expanded_minutes_tv"
+                    app:layout_constraintTop_toBottomOf="@id/expanded_quantifier_two_tv"
                     app:layout_constraintStart_toStartOf="@id/expanded_name_tv"/>
                 <TextView
-                    android:id="@+id/expanded_time_to_black_tv"
+                    android:id="@+id/expanded_count_to_max_tv"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text=" /XXX to master"
                     android:textSize="12sp"
                     android:paddingLeft="4dp"
-                    app:layout_constraintTop_toBottomOf="@id/expanded_minutes_tv"
-                    app:layout_constraintStart_toEndOf="@id/expanded_hours_tv" />
+                    app:layout_constraintTop_toBottomOf="@id/expanded_quantifier_two_tv"
+                    app:layout_constraintStart_toEndOf="@id/expanded_quantifier_one_tv" />
             </android.support.constraint.ConstraintLayout>
             <!-- Level indicator icon -->
             <android.support.constraint.ConstraintLayout
@@ -145,13 +145,13 @@
                 android:orientation="horizontal">
 
                 <TextView
-                    android:id="@+id/expanded_colour_rect"
+                    android:id="@+id/expanded_filled_rect"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:background="@drawable/top_border_grey"
                     android:layout_weight="0.6"/>
                 <TextView
-                    android:id="@+id/expanded_white_rect"
+                    android:id="@+id/expanded_not_filled_rect"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:background="@drawable/white_rectangle"
@@ -176,16 +176,16 @@
         android:id="@+id/expanded_lower_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/expanded_dabble_layout_top">
+        app:layout_constraintTop_toBottomOf="@id/expanded_tracker_layout_top">
         <LinearLayout
-            android:id="@+id/time_buttons"
+            android:id="@+id/top_row_buttons"
             android:layout_width="match_parent"
             android:layout_height="80dp"
             android:orientation="horizontal"
             app:layout_constraintTop_toTopOf="parent"
             android:layout_margin="14dp">
             <Button
-                android:id="@+id/timer_button"
+                android:id="@+id/top_button_1"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
@@ -193,7 +193,7 @@
                 android:textSize="12sp"
                 android:background="@drawable/button_background"/>
             <Button
-                android:id="@+id/add_15_minutes_button"
+                android:id="@+id/top_button_2"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
@@ -201,7 +201,7 @@
                 android:textSize="12sp"
                 android:background="@drawable/button_background"/>
             <Button
-                android:id="@+id/add_1_hour_button"
+                android:id="@+id/top_button_3"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
@@ -209,7 +209,7 @@
                 android:textSize="12sp"
                 android:background="@drawable/button_background"/>
             <Button
-                android:id="@+id/add_other_time_button"
+                android:id="@+id/top_button_4"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
@@ -219,14 +219,14 @@
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/add_time_etv_layout"
+            android:id="@+id/inputs_for_custom_add_layout"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:paddingTop="12dp"
-            app:layout_constraintTop_toBottomOf="@id/time_buttons"
-            app:layout_constraintStart_toStartOf="@id/time_buttons"
-            app:layout_constraintEnd_toEndOf="@id/time_buttons"
+            app:layout_constraintTop_toBottomOf="@id/top_row_buttons"
+            app:layout_constraintStart_toStartOf="@id/top_row_buttons"
+            app:layout_constraintEnd_toEndOf="@id/top_row_buttons"
             android:visibility="gone">
             <EditText
                 android:id="@+id/add_hour_etv"
@@ -263,8 +263,8 @@
             android:textSize="16sp"
             android:text="@string/edit_name"
             android:textColor="#000000"
-            app:layout_constraintTop_toBottomOf="@id/add_time_etv_layout"
-            app:layout_constraintStart_toStartOf="@id/time_buttons"/>
+            app:layout_constraintTop_toBottomOf="@id/inputs_for_custom_add_layout"
+            app:layout_constraintStart_toStartOf="@id/top_row_buttons"/>
 
         <LinearLayout
             android:id="@+id/name_etv_layout"
@@ -275,8 +275,8 @@
             android:paddingTop="4dp"
             android:orientation="horizontal"
             app:layout_constraintTop_toBottomOf="@id/edit_name_tv"
-            app:layout_constraintStart_toStartOf="@id/time_buttons"
-            app:layout_constraintEnd_toEndOf="@id/time_buttons">
+            app:layout_constraintStart_toStartOf="@id/top_row_buttons"
+            app:layout_constraintEnd_toEndOf="@id/top_row_buttons">
             <EditText
                 android:id="@+id/name_etv"
                 android:layout_width="0dp"
@@ -304,10 +304,9 @@
             android:layout_height="wrap_content"
             android:paddingTop="12dp"
             android:textSize="16sp"
-            android:text="@string/edit_time_to_max"
             android:textColor="#000000"
             app:layout_constraintTop_toBottomOf="@id/name_etv_layout"
-            app:layout_constraintStart_toStartOf="@id/time_buttons"/>
+            app:layout_constraintStart_toStartOf="@id/top_row_buttons"/>
         <ImageView
             android:layout_width="16dp"
             android:layout_height="0dp"
@@ -317,7 +316,8 @@
             app:layout_constraintStart_toEndOf="@id/edit_difficulty_tv"
             app:layout_constraintTop_toTopOf="@id/edit_difficulty_tv"
             app:layout_constraintBottom_toBottomOf="@id/edit_difficulty_tv"
-            android:scaleType="fitCenter"/>
+            android:scaleType="fitCenter"
+            android:layout_marginStart="8dp" />
 
         <LinearLayout
             android:id="@+id/difficulty_spinner_layout"
@@ -330,26 +330,26 @@
             android:orientation="horizontal"
             app:layout_constraintTop_toBottomOf="@id/edit_difficulty_tv"
             app:layout_constraintStart_toStartOf="@id/edit_name_tv"
-            app:layout_constraintEnd_toEndOf="@id/time_buttons">
+            app:layout_constraintEnd_toEndOf="@id/top_row_buttons">
             <Spinner
-                android:id="@+id/difficulty_spinner"
+                android:id="@+id/max_count_spinner"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="10"
-                android:background="@drawable/grey_border_rounded"
-                android:entries="@array/tracker_times">
+                android:background="@drawable/grey_border_rounded">
+                <!--android:entries="@array/tracker_count_strings"-->
             </Spinner>
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/custom_time_etv_layout"
+            android:id="@+id/custom_max_count_layout"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:paddingTop="12dp"
             app:layout_constraintTop_toBottomOf="@id/difficulty_spinner_layout"
-            app:layout_constraintStart_toStartOf="@id/time_buttons"
-            app:layout_constraintEnd_toEndOf="@id/time_buttons"
+            app:layout_constraintStart_toStartOf="@id/top_row_buttons"
+            app:layout_constraintEnd_toEndOf="@id/top_row_buttons"
             android:visibility="gone">
             <TextView
                 android:layout_width="0dp"
@@ -360,7 +360,7 @@
                 android:textAlignment="textEnd"
                 android:gravity="end" />
             <EditText
-                android:id="@+id/add_custom_hour_etv"
+                android:id="@+id/add_custom_count_etv"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="4"
@@ -369,7 +369,7 @@
                 android:nextFocusDown="@id/sub_minutes_etv"
                 android:imeOptions="actionDone"/>
             <Button
-                android:id="@+id/commit_custom_difficulty_button"
+                android:id="@+id/commit_custom_max_count_button"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="3"
@@ -378,15 +378,59 @@
                 android:background="@drawable/button_background"/>
         </LinearLayout>
 
+        <TextView
+            android:id="@+id/edit_label_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingTop="12dp"
+            android:textSize="16sp"
+            android:text="@string/edit_label"
+            android:textColor="#000000"
+            app:layout_constraintTop_toBottomOf="@id/custom_max_count_layout"
+            app:layout_constraintStart_toStartOf="@id/top_row_buttons"/>
+
         <LinearLayout
-            android:id="@+id/negative_buttons"
+            android:id="@+id/label_etv_layout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp"
+            android:paddingTop="4dp"
+            android:orientation="horizontal"
+            app:layout_constraintTop_toBottomOf="@id/edit_label_tv"
+            app:layout_constraintStart_toStartOf="@id/top_row_buttons"
+            app:layout_constraintEnd_toEndOf="@id/top_row_buttons">
+            <EditText
+                android:id="@+id/label_etv"
+                android:layout_width="0dp"
+                android:layout_height= "wrap_content"
+                android:layout_weight="8"
+                android:maxLines="1"
+                android:maxLength="20"
+                android:hint="@string/paintings"
+                android:textSize="16sp"
+                android:imeOptions="actionDone"
+                android:inputType="textVisiblePassword"/>
+            <Button
+                android:id="@+id/edit_label_button"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="3"
+                android:textSize="12sp"
+                android:text="@string/update"
+                android:background="@drawable/button_background"/>
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:id="@+id/bottom_row_buttons"
             android:layout_width="match_parent"
             android:layout_height="80dp"
             android:orientation="horizontal"
-            app:layout_constraintTop_toBottomOf="@id/custom_time_etv_layout"
+            app:layout_constraintTop_toBottomOf="@id/edit_label_tv"
             android:layout_margin="14dp">
             <Button
-                android:id="@+id/delete_button"
+                android:id="@+id/bottom_button_1"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
@@ -394,7 +438,7 @@
                 android:textSize="12sp"
                 android:background="@drawable/button_background"/>
             <Button
-                android:id="@+id/sub_15_minutes_button"
+                android:id="@+id/bottom_button_2"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
@@ -402,7 +446,7 @@
                 android:textSize="12sp"
                 android:background="@drawable/button_background"/>
             <Button
-                android:id="@+id/sub_1_hour_button"
+                android:id="@+id/bottom_button_3"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
@@ -410,7 +454,7 @@
                 android:textSize="12sp"
                 android:background="@drawable/button_background"/>
             <Button
-                android:id="@+id/sub_other_time_button"
+                android:id="@+id/bottom_button_4"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
@@ -420,14 +464,14 @@
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/sub_time_etv_layout"
+            android:id="@+id/inputs_for_custom_subtract_layout"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:paddingTop="12dp"
-            app:layout_constraintTop_toBottomOf="@id/negative_buttons"
-            app:layout_constraintStart_toStartOf="@id/time_buttons"
-            app:layout_constraintEnd_toEndOf="@id/time_buttons"
+            app:layout_constraintTop_toBottomOf="@id/bottom_row_buttons"
+            app:layout_constraintStart_toStartOf="@id/top_row_buttons"
+            app:layout_constraintEnd_toEndOf="@id/top_row_buttons"
             android:visibility="gone">
             <EditText
                 android:id="@+id/sub_hour_etv"

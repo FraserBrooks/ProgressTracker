@@ -2,7 +2,6 @@ package com.fraserbrooks.progresstracker;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -64,7 +63,7 @@ public class TrackerAdapter extends ArrayAdapter<Tracker> {
         final Tracker tracker = getItem(position);
 
         //Top constraint layout = collapse button
-        ViewGroup topLayout = convertView.findViewById(R.id.expanded_dabble_layout_top);
+        ViewGroup topLayout = convertView.findViewById(R.id.expanded_tracker_layout_top);
         topLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -80,8 +79,7 @@ public class TrackerAdapter extends ArrayAdapter<Tracker> {
     public void refreshItems(){
         clear();
         add(null);// for graph View
-        addAll(dataWrapper.readTrackers(getContext()));
-        notifyDataSetChanged();
+        setItems(dataWrapper.readTrackers(getContext()));
     }
 
     public void setItems(ArrayList<Tracker> items) {
@@ -91,11 +89,9 @@ public class TrackerAdapter extends ArrayAdapter<Tracker> {
         }
         addAll(items);
         notifyDataSetChanged();
+        updateGraph();
     }
 
-    public void writeItems(){
-        dataWrapper.writeTrackers(getContext(), getItems());
-    }
 
     public ArrayList<Tracker> getItems(){
         ArrayList<Tracker> ls = new ArrayList<Tracker>();
@@ -111,7 +107,7 @@ public class TrackerAdapter extends ArrayAdapter<Tracker> {
         float progress = tracker.getProgressPercentage();
         int level = tracker.getLevel();
         String name = tracker.getName();
-        String timeString = "";
+        String timeString;
         String hours = " - " + (tracker.getMinutes()/60) + " hours";
         String minutes = " - " + tracker.getMinutes() + " minutes";
         if(tracker.getMinutes() > 59){
@@ -121,7 +117,7 @@ public class TrackerAdapter extends ArrayAdapter<Tracker> {
         }
 
         //Make sure correct view is showing
-        View smallLayout = view.findViewById(R.id.small_dabble_layout);
+        View smallLayout = view.findViewById(R.id.small_tracker_layout);
         View expandedLayout = view.findViewById(R.id.expanded_dabble_layout);
 
         //Progress bar layouts
@@ -156,9 +152,9 @@ public class TrackerAdapter extends ArrayAdapter<Tracker> {
 
             //Get Widgets
             TextView tvName = view.findViewById(R.id.name_tv);
-            TextView tvTime = view.findViewById(R.id.time_tv);
-            TextView tvColourRect = view.findViewById(R.id.colour_rect);
-            TextView tvWhiteRect = view.findViewById(R.id.white_rect);
+            TextView tvTime = view.findViewById(R.id.quantifier_tv);
+            TextView tvColourRect = view.findViewById(R.id.filled_rect);
+            TextView tvWhiteRect = view.findViewById(R.id.not_filled_rect);
             ImageView gemImage = view.findViewById(R.id.gem_bitmap);
 
             tracker.setColourAndIcon(gemImage, tvColourRect);
@@ -173,11 +169,11 @@ public class TrackerAdapter extends ArrayAdapter<Tracker> {
 
             //Get Widgets
             TextView expanded_tvName = view.findViewById(R.id.expanded_name_tv);
-            TextView minutesTV = view.findViewById(R.id.expanded_minutes_tv);
-            TextView hoursTV = view.findViewById(R.id.expanded_hours_tv);
-            TextView timeToBlackTV = view.findViewById(R.id.expanded_time_to_black_tv);
-            TextView expanded_tvColourRect = view.findViewById(R.id.expanded_colour_rect);
-            TextView expanded_tvWhiteRect = view.findViewById(R.id.expanded_white_rect);
+            TextView minutesTV = view.findViewById(R.id.expanded_quantifier_two_tv);
+            TextView hoursTV = view.findViewById(R.id.expanded_quantifier_one_tv);
+            TextView timeToBlackTV = view.findViewById(R.id.expanded_count_to_max_tv);
+            TextView expanded_tvColourRect = view.findViewById(R.id.expanded_filled_rect);
+            TextView expanded_tvWhiteRect = view.findViewById(R.id.expanded_not_filled_rect);
             ImageView expanded_gemImage = view.findViewById(R.id.expanded_gem_bitmap);
 
             hoursTV.setText(hours);
@@ -227,7 +223,7 @@ public class TrackerAdapter extends ArrayAdapter<Tracker> {
         });
 
         //delete tracker
-        Button deleteButton = view.findViewById(R.id.delete_button);
+        Button deleteButton = view.findViewById(R.id.bottom_button_1);
         deleteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -236,13 +232,13 @@ public class TrackerAdapter extends ArrayAdapter<Tracker> {
             }
         });
 
-        final View input_layout = view.findViewById(R.id.custom_time_etv_layout);
-        final EditText hours_input = view.findViewById(R.id.add_custom_hour_etv);
+        final View input_layout = view.findViewById(R.id.custom_max_count_layout);
+        final EditText hours_input = view.findViewById(R.id.add_custom_count_etv);
         hours_input.setText(Integer.toString(tracker.getMinutesToMaxLevel()/60));
         hours_input.setTransformationMethod(null);
 
         // Difficulty setting
-        Spinner difficulty_spinner = view.findViewById(R.id.difficulty_spinner);
+        Spinner difficulty_spinner = view.findViewById(R.id.max_count_spinner);
         switch (tracker.getMinutesToMaxLevel()/60){
             case 20:
                 difficulty_spinner.setSelection(0);
@@ -324,7 +320,7 @@ public class TrackerAdapter extends ArrayAdapter<Tracker> {
             }
         });
 
-        final Button commitCustomTime = view.findViewById(R.id.commit_custom_difficulty_button);
+        final Button commitCustomTime = view.findViewById(R.id.commit_custom_max_count_button);
         commitCustomTime.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -360,23 +356,23 @@ public class TrackerAdapter extends ArrayAdapter<Tracker> {
         });
 
         //findViews of time buttons
-        Button addOneHourButton = view.findViewById(R.id.add_1_hour_button);
-        Button add15Minutes = view.findViewById(R.id.add_15_minutes_button);
-        final View addTimeInputLayout = view.findViewById(R.id.add_time_etv_layout);
-        Button showAddCustomLayoutButton = view.findViewById(R.id.add_other_time_button);
+        Button addOneHourButton = view.findViewById(R.id.top_button_3);
+        Button add15Minutes = view.findViewById(R.id.top_button_2);
+        final View addTimeInputLayout = view.findViewById(R.id.inputs_for_custom_add_layout);
+        Button showAddCustomLayoutButton = view.findViewById(R.id.top_button_4);
         final EditText inputHours = view.findViewById(R.id.add_hour_etv);
         final EditText inputMinutes = view.findViewById(R.id.add_minutes_etv);
         final Button addCustomButton = view.findViewById(R.id.add_time_from_text_button);
 
-        Button subOneHourButton = view.findViewById(R.id.sub_1_hour_button);
-        Button sub15Minutes = view.findViewById(R.id.sub_15_minutes_button);
-        final View subTimeInputLayout = view.findViewById(R.id.sub_time_etv_layout);
-        Button showSubCustomLayoutButton = view.findViewById(R.id.sub_other_time_button);
+        Button subOneHourButton = view.findViewById(R.id.bottom_button_3);
+        Button sub15Minutes = view.findViewById(R.id.bottom_button_2);
+        final View subTimeInputLayout = view.findViewById(R.id.inputs_for_custom_subtract_layout);
+        Button showSubCustomLayoutButton = view.findViewById(R.id.bottom_button_4);
         final EditText inputSubHours = view.findViewById(R.id.sub_hour_etv);
         final EditText inputSubMinutes = view.findViewById(R.id.sub_minutes_etv);
         final Button subCustomButton = view.findViewById(R.id.sub_time_from_text_button);
 
-        //todo: find a less ridiculous way to do this or give up android for life
+        //todo: find a better way to do this if possible
         // to stop focus going to empty EditTexts
         configEditText(inputHours);
         configEditText(inputMinutes);
@@ -395,7 +391,7 @@ public class TrackerAdapter extends ArrayAdapter<Tracker> {
                 inputSubHours, inputSubMinutes, subCustomButton, (-1));
 
         // start timer button
-        Button timerButton = view.findViewById(R.id.timer_button);
+        Button timerButton = view.findViewById(R.id.top_button_1);
         if(tracker.isBeingTimed()){
             //todo replace with animation or graphic
             timerButton.setText(R.string.end_timer);
@@ -404,7 +400,7 @@ public class TrackerAdapter extends ArrayAdapter<Tracker> {
                 @Override
                 public void onClick(View v) {
                     tracker.endTimerCount();
-                    barGraph.refresh(getItems());
+                    //barGraph.refresh(getItems());
                     notifyDataSetChanged();
                 }
             });
@@ -517,8 +513,8 @@ public class TrackerAdapter extends ArrayAdapter<Tracker> {
         });
     }
 
-    public void updateGraph(){
-        barGraph.refresh(getItems());
+    private void updateGraph(){
+        //barGraph.refresh(getItems());
         notifyDataSetChanged();
     }
 

@@ -20,11 +20,7 @@ public class TargetScreenFragment extends Fragment {
 
     private final String TAG = "Main>TargetScreenFrag";
     private TargetAdapter targetAdapter;
-    private TouchInterceptor.DropListener mDropListener;
-
-    private TouchInterceptor targetListView;
-
-
+    private DataWrapper dataWrapper;
 
     public TargetScreenFragment() {
         // Required empty public constructor
@@ -34,14 +30,18 @@ public class TargetScreenFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
+        //Initialise the DataWrapper
+        dataWrapper = new DataWrapper();
+
         // Inflate the layout for this fragment
         ViewGroup fragmentScreen = (ViewGroup) inflater.inflate(R.layout.fragment_target_screen,
                         container, false);
 
         // Attach the adapter to a ListView
-        targetListView = fragmentScreen.findViewById(R.id.target_list);
+        TouchInterceptor targetListView = fragmentScreen.findViewById(R.id.target_list);
 
-        View addItemButton = inflater.inflate(R.layout.add_item_button,
+        View addItemButton = inflater.inflate(R.layout.add_tracker_button,
                 targetListView, false);
 
         targetAdapter = new TargetAdapter(getContext());
@@ -63,7 +63,7 @@ public class TargetScreenFragment extends Fragment {
             }
         });
 
-        mDropListener = new TouchInterceptor.DropListener() {
+        TouchInterceptor.DropListener mDropListener = new TouchInterceptor.DropListener() {
 
             public void drop(int from, int to) {
 
@@ -75,31 +75,30 @@ public class TargetScreenFragment extends Fragment {
                 int direction = -1;
 
                 //For instance where the item is dragged down the list
-                if(from < to) {
+                if (from < to) {
                     direction = 1;
                 }
 
-                if(from == (ls.size()) || to ==(ls.size())){
+                if (from == (ls.size()) || to == (ls.size())) {
                     Log.d(TAG, "drop: can't move footer");
                     return;
                 }
 
-                Log.d(TAG, "drop: " + " from " + from +" to " + to);
+                Log.d(TAG, "drop: " + " from " + from + " to " + to);
 
-                if (from == to){
+                if (from == to) {
                     return;
                 }
 
 
                 Object target = ls.get(from);
-                for(int i = from; i != to  ; i += direction){
+                for (int i = from; i != to; i += direction) {
                     Log.d(TAG, "drop: loop");
-                    ls.set(i, ls.get(i+direction));
+                    ls.set(i, ls.get(i + direction));
                 }
                 ls.set(to, (Target) target);
 
                 targetAdapter.setItems(ls);
-                targetAdapter.writeItems();
             }
 
         };
@@ -111,7 +110,7 @@ public class TargetScreenFragment extends Fragment {
     @Override
     public void onPause() {
         super.onPause();
-        targetAdapter.writeItems();
+        dataWrapper.writeTargetOrdering(getContext(), targetAdapter.getItems());
         Log.d(TAG, "onPause: called");
     }
 
@@ -119,8 +118,7 @@ public class TargetScreenFragment extends Fragment {
     public void onResume() {
         super.onResume();
         Log.d(TAG, "onResume: called");
-
-        targetAdapter.refreshItems();
+        new ReadAndUpdateDataTask(true, targetAdapter, getContext()).execute();
     }
 
 

@@ -75,13 +75,13 @@
                     android:orientation="horizontal">
 
                     <TextView
-                        android:id="@+id/colour_rect"
+                        android:id="@+id/filled_rect"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:background="@drawable/top_border_grey"
                         android:layout_weight="0.6"/>
                     <TextView
-                        android:id="@+id/white_rect"
+                        android:id="@+id/not_filled_rect"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:background="@drawable/white_rectangle"

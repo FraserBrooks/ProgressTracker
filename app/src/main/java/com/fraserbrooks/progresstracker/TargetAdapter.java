@@ -31,8 +31,7 @@ public class TargetAdapter extends ArrayAdapter<Target> {
 
     public void refreshItems(){
         clear();
-        addAll(dataWrapper.readTargets(getContext()));
-        notifyDataSetChanged();
+        setItems(dataWrapper.readTargets(getContext()));
     }
 
     public void setItems(ArrayList<Target> items) {
@@ -41,9 +40,6 @@ public class TargetAdapter extends ArrayAdapter<Target> {
         notifyDataSetChanged();
     }
 
-    public void writeItems(){
-        dataWrapper.writeTargets(getContext(), getItems());
-    }
 
 
     public ArrayList<Target> getItems(){
@@ -86,8 +82,8 @@ public class TargetAdapter extends ArrayAdapter<Target> {
         TextView secondaryTv = convertView.findViewById(R.id.secondary_tv);
         TextView lowerTv = convertView.findViewById(R.id.this_period_tv);
         TextView percentageTv = convertView.findViewById(R.id.percentage_tv);
-        TextView tvColourRect = convertView.findViewById(R.id.colour_rect);
-        TextView tvWhiteRect = convertView.findViewById(R.id.white_rect);
+        TextView tvColourRect = convertView.findViewById(R.id.filled_rect);
+        TextView tvWhiteRect = convertView.findViewById(R.id.not_filled_rect);
 
 
         //Progress bar layouts

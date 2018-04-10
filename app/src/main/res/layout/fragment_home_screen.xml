@@ -14,7 +14,7 @@
 
 
     <com.fraserbrooks.progresstracker.TouchInterceptor
-        android:id="@+id/dabble_list"
+        android:id="@+id/tracker_list"
         tools:listitem="@layout/tracker_item_small"
         tools:listheader="@layout/bar_graph_item"
         android:layout_width="match_parent"
