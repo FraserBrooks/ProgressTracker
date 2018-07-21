@@ -66,7 +66,7 @@ public class RemoteDataSource implements DataSource{
      * returns an error.
      */
     @Override
-    public void getTrackers(boolean runOnUiThread, @NonNull final GetTrackersCallback callback) {
+    public void getTrackers(@NonNull final GetTrackersCallback callback, boolean staggered) {
         // Simulate network by delaying the execution.
         Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
@@ -79,12 +79,12 @@ public class RemoteDataSource implements DataSource{
 
 
     /**
-     * Note: {@link GetTrackerCallback#onDataNotAvailable()} is never fired. In a real remote data
+     * Note: {@link GetTrackersCallback#onDataNotAvailable()} is never fired. In a real remote data
      * source implementation, this would be fired if the server can't be contacted or the server
      * returns an error.
      */
     @Override
-    public void getTracker(boolean runOnUiThread, @NonNull String trackerId, @NonNull final GetTrackerCallback callback) {
+    public void getTracker(@NonNull String trackerId, @NonNull final GetTrackersCallback callback) {
         final Tracker tracker = TRACKERS_SERVICE_DATA.get(trackerId);
 
         // Simulate network by delaying the execution.
@@ -126,12 +126,12 @@ public class RemoteDataSource implements DataSource{
     }
 
     @Override
-    public void getTargets(boolean runOnUiThread, @NonNull GetTargetsCallback callback) {
+    public void getTargets(@NonNull GetTargetsCallback callback, boolean staggered) {
 
     }
 
     @Override
-    public void getTarget(boolean runOnUiThread, @NonNull String targetId, @NonNull GetTargetCallback callback) {
+    public void getTarget(@NonNull String targetId, @NonNull GetTargetsCallback callback) {
 
     }
 

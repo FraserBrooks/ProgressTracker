@@ -3,7 +3,6 @@ package com.fraserbrooks.progresstracker.mainactivity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -16,7 +15,6 @@ import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -30,8 +28,8 @@ import com.fraserbrooks.progresstracker.R;
 import com.fraserbrooks.progresstracker.TouchInterceptor;
 import com.fraserbrooks.progresstracker.addTrackerActivity.AddTrackerActivity_;
 import com.fraserbrooks.progresstracker.data.Tracker;
+import com.fraserbrooks.progresstracker.util.AppExecutors;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -61,7 +59,9 @@ public class TrackersFragment extends Fragment implements TrackersContract.View 
     public void onCreate(@Nullable Bundle savedInstanceState){
         Log.d(TAG, "onCreate: called");
         super.onCreate(savedInstanceState);
-        new TrackersPresenter(Injection.provideRepository(getContext()), this);
+
+        assert (getContext() != null);
+        new TrackersPresenter(Injection.provideRepository(getContext()), this, AppExecutors.getInstance());
         mListAdapter = new TrackersAdapter(getContext(), R.layout.tracker_item, mPresenter);
 
         mBarGraph = new BarGraph(getContext());
@@ -70,7 +70,7 @@ public class TrackersFragment extends Fragment implements TrackersContract.View 
     }
 
     @Override
-    public void onActivityCreated(@NonNull Bundle savedInstanceState) {
+    public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         mPresenter.start();
     }
@@ -83,6 +83,7 @@ public class TrackersFragment extends Fragment implements TrackersContract.View 
     @Override
     public void onResume(){
         super.onResume();
+        mPresenter.start();
     }
 
     @Nullable
@@ -141,12 +142,6 @@ public class TrackersFragment extends Fragment implements TrackersContract.View 
 
     }
 
-    @Override
-    public void refreshListAdapter() {
-//        mListAdapter.notifyDataSetChanged();
-    }
-
-
 
     @Override
     public void showTrackers(List<Tracker> trackers) {
@@ -160,10 +155,16 @@ public class TrackersFragment extends Fragment implements TrackersContract.View 
         int i = mListAdapter.getPosition(tracker);
         mListAdapter.remove(tracker);
 
-        if (i == -1) Log.d(TAG, "refreshTracker: does not exist in adapter. Placing at bottom");
+        if (i == -1) Log.d(TAG, "updateOrAddTracker: does not exist in adapter. Placing at bottom");
         i = (i == -1) ? mListAdapter.getCount() : i;
 
         mListAdapter.insert(tracker, i);
+    }
+
+    @Override
+    public void removeTracker(Tracker tracker) {
+        mListAdapter.remove(tracker);
+        mBarGraph.remove(tracker);
     }
 
     @Override

@@ -16,17 +16,11 @@ import java.util.List;
 
 public interface DataSource {
 
-    // todo: parameterize these with <T>
 
     interface GetTrackersCallback {
 
+        // Use one or the other but not both
         void onTrackersLoaded(List<Tracker> trackers);
-
-        void onDataNotAvailable();
-    }
-
-    interface GetTrackerCallback {
-
         void onTrackerLoaded(Tracker tracker);
 
         void onDataNotAvailable();
@@ -35,13 +29,8 @@ public interface DataSource {
 
     interface GetTargetsCallback {
 
+        // Use one or the other but not both
         void onTargetsLoaded(List<Target> targets);
-
-        void onDataNotAvailable();
-    }
-
-    interface GetTargetCallback {
-
         void onTargetLoaded(Target target);
 
         void onDataNotAvailable();
@@ -68,16 +57,9 @@ public interface DataSource {
         void onDataNotAvailable();
     }
 
-    interface GetDayTargetNamesCallback{
+    void getTrackers(@NonNull GetTrackersCallback callback, boolean staggeredLoad);
 
-        void onNamesLoaded(List<String> names);
-
-        void onDataNotAvailable();
-    }
-
-    void getTrackers(boolean runOnUiThread, @NonNull GetTrackersCallback callback);
-
-    void getTracker(boolean runOnUiThread, @NonNull String trackerId, @NonNull GetTrackerCallback callback);
+    void getTracker(@NonNull String trackerId, @NonNull GetTrackersCallback callback);
 
     boolean saveTracker(@NonNull Tracker tracker);
 
@@ -89,9 +71,9 @@ public interface DataSource {
 
     boolean deleteTracker(@NonNull String trackerId);
 
-    void getTargets(boolean runOnUiThread, @NonNull GetTargetsCallback callback);
+    void getTargets(@NonNull GetTargetsCallback callback, boolean staggeredLoad);
 
-    void getTarget(boolean runOnUiThread, @NonNull String targetId, @NonNull GetTargetCallback callback);
+    void getTarget(@NonNull String targetId, @NonNull GetTargetsCallback callback);
 
 
 //    void getDayTargetNames(@NonNull GetDayTargetNamesCallback callback);

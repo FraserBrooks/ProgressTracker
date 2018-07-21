@@ -285,4 +285,11 @@ public class Target {
     public void setTrackerName(String trackerName) {
         this.mTrackerName = trackerName;
     }
+
+
+    @Override
+    public String toString(){
+        return getTargetTitle();
+    }
+
 }

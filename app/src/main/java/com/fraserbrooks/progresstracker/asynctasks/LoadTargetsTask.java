@@ -3,32 +3,32 @@ package com.fraserbrooks.progresstracker.asynctasks;
 import android.os.AsyncTask;
 import android.util.Log;
 
-import com.fraserbrooks.progresstracker.data.Tracker;
+import com.fraserbrooks.progresstracker.data.Target;
 import com.fraserbrooks.progresstracker.data.source.DataSource;
 import com.fraserbrooks.progresstracker.util.EspressoIdlingResource;
 
-public class LoadTrackersTask extends AsyncTask<Tracker, Tracker, Void>{
+public class LoadTargetsTask extends AsyncTask<Target, Target, Void>{
 
-    private final String TAG = "LoadTrackersTask";
+    private final String TAG = "LoadTargetsTask";
 
-    private DataSource.GetTrackersCallback mCallback;
+    private DataSource.GetTargetsCallback mCallback;
 
 
-    public LoadTrackersTask(DataSource.GetTrackersCallback callback){
+    public LoadTargetsTask(DataSource.GetTargetsCallback callback){
         Log.d(TAG, "LoadTrackersTask: created");
         mCallback = callback;
     }
 
     @Override
-    protected Void doInBackground(Tracker... trackers) {
+    protected Void doInBackground(Target... targets) {
 
         try {
-            Thread.sleep(10);
+            Thread.sleep(150);
         } catch (InterruptedException e) {
             Log.e(TAG, "doInBackground: interrupted");
         }
 
-        for(Tracker t : trackers){
+        for(Target t : targets){
             
             publishProgress(t);
             
@@ -44,9 +44,9 @@ public class LoadTrackersTask extends AsyncTask<Tracker, Tracker, Void>{
     }
 
     @Override
-    protected void onProgressUpdate(Tracker... trackers){
-        Log.d(TAG, "onProgressUpdate: publishing tracker");
-        for(Tracker t : trackers) mCallback.onTrackerLoaded(t);
+    protected void onProgressUpdate(Target... targets){
+        Log.d(TAG, "onProgressUpdate: publishing target");
+        for(Target t : targets) mCallback.onTargetLoaded(t);
     }
 
     @Override

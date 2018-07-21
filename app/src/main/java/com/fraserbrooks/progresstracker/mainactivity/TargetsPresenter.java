@@ -3,9 +3,11 @@ package com.fraserbrooks.progresstracker.mainactivity;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
+import com.fraserbrooks.progresstracker.asynctasks.LoadTargetsTask;
 import com.fraserbrooks.progresstracker.data.Target;
 import com.fraserbrooks.progresstracker.data.source.DataSource;
 import com.fraserbrooks.progresstracker.data.source.Repository;
+import com.fraserbrooks.progresstracker.util.AppExecutors;
 import com.fraserbrooks.progresstracker.util.EspressoIdlingResource;
 
 import java.util.List;
@@ -15,12 +17,15 @@ public class TargetsPresenter implements TargetsContract.Presenter{
     private final String TAG = "TargetsPresenter";
 
     private final Repository mRepository;
+    private final AppExecutors mAppExecutors;
 
     private final TargetsContract.View mTargetsView;
 
     public TargetsPresenter(@NonNull Repository trackersRepository,
-                            @NonNull TargetsContract.View targetsView){
+                            @NonNull TargetsContract.View targetsView,
+                            @NonNull AppExecutors appExecutors){
         mRepository = trackersRepository;
+        mAppExecutors = appExecutors;
         mTargetsView = targetsView;
 
         mTargetsView.setPresenter(this);
@@ -40,35 +45,82 @@ public class TargetsPresenter implements TargetsContract.Presenter{
         // that the app is busy until the response is handled.
         EspressoIdlingResource.increment(); // App is busy until further notice
 
-        mRepository.getTargets(true, new DataSource.GetTargetsCallback() {
+        mAppExecutors.diskIO().execute(new Runnable() {
             @Override
-            public void onTargetsLoaded(List<Target> targets) {
-                // This callback may be called twice, once for the cache and once for loading
-                // the data from the server API, so we check before decrementing, otherwise
-                // it throws "Counter has been corrupted!" exception.
-                if (!EspressoIdlingResource.getIdlingResource().isIdleNow()) {
-                    EspressoIdlingResource.decrement(); // Set app as idle.
-                }
-                // The view may not be able to handle UI updates anymore
-                if (!mTargetsView.isActive()) {
-                    return;
-                }
+            public void run() {
+                mRepository.getTargets(new DataSource.GetTargetsCallback() {
+                    @Override
+                    public void onTargetsLoaded(final List<Target> targets) {
+                        mAppExecutors.mainThread().execute(new Runnable() {
+                            @Override
+                            public void run() {
+                                // The view may not be able to handle UI updates anymore
+                                if (!mTargetsView.isActive()) {
+                                    return;
+                                }
 
-                mTargetsView.hideLoading();
+                                mTargetsView.hideLoading();
 
-                if(targets.isEmpty()){
-                    Log.d(TAG, "onTargetsLoaded: no targets to show");
-                    mTargetsView.showNoTargets();
-                }
-                else{
-                    mTargetsView.showTargets(targets);
-                }
+                                if(targets.isEmpty()){
+                                    Log.d(TAG, "onTargetsLoaded: no targets to show");
+                                    mTargetsView.showNoTargets();
+                                }
+                                else{
+                                    // Create AsyncTask to spread out the redrawing of trackers
+                                    // otherwise the whole listView will be redrawn at once
+                                    Log.d(TAG, "onTargetsLoaded: creating new LoadTargetsTask");
+                                    new LoadTargetsTask(new DataSource.GetTargetsCallback() {
+                                        @Override
+                                        public void onTargetsLoaded(List<Target> targets) {
+                                            // Should not be called
+                                            Log.e(TAG, "onTargetsLoaded: called" );
+                                        }
 
-            }
+                                        @Override
+                                        public void onTargetLoaded(Target target) {
+                                            // The view may not be able to handle UI updates anymore
+                                            if (!mTargetsView.isActive()) {
+                                                Log.d(TAG, "onTargetsLoaded: mTargetsView not active. exiting from callback");
+                                                return;
+                                            }
+                                            mTargetsView.updateOrAddTarget(target);
+                                        }
 
-            @Override
-            public void onDataNotAvailable() {
-                mTargetsView.showNoDataAvailable();
+                                        @Override
+                                        public void onDataNotAvailable() {
+                                            Log.e(TAG, "onDataNotAvailable from async task");
+                                        }
+                                    }).execute(targets.toArray(new Target[targets.size()]));
+                                }
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onTargetLoaded(final Target target) {
+                        Log.e(TAG, "onTargetLoaded: called");
+//                        mAppExecutors.mainThread().execute(new Runnable() {
+//                            @Override
+//                            public void run() {
+//                                // The view may not be able to handle UI updates anymore
+//                                if (!mTargetsView.isActive()) {
+//                                    return;
+//                                }
+//                                mTargetsView.updateOrAddTarget(target);
+//                            }
+//                        });
+                    }
+
+                    @Override
+                    public void onDataNotAvailable() {
+                        mAppExecutors.mainThread().execute(new Runnable() {
+                            @Override
+                            public void run() {
+                                mTargetsView.showNoDataAvailable();
+                            }
+                        });
+                    }
+                }, false);
             }
         });
 

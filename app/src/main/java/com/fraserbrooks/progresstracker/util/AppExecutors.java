@@ -42,6 +42,8 @@ public class AppExecutors {
 
     private final Executor mainThread;
 
+    private static AppExecutors mInstance;
+
     @VisibleForTesting
     AppExecutors(Executor diskIO, Executor networkIO, Executor mainThread) {
         this.diskIO = diskIO;
@@ -49,9 +51,17 @@ public class AppExecutors {
         this.mainThread = mainThread;
     }
 
-    public AppExecutors() {
+    private AppExecutors() {
         this(new DiskIOThreadExecutor(), Executors.newFixedThreadPool(THREAD_COUNT),
                 new MainThreadExecutor());
+    }
+
+    public static AppExecutors getInstance(){
+        if (mInstance != null) return mInstance;
+        else{
+            mInstance = new AppExecutors();
+            return mInstance;
+        }
     }
 
     public Executor diskIO() {

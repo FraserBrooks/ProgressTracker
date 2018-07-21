@@ -7,6 +7,7 @@ import com.fraserbrooks.progresstracker.asynctasks.LoadTrackersTask;
 import com.fraserbrooks.progresstracker.data.Tracker;
 import com.fraserbrooks.progresstracker.data.source.DataSource;
 import com.fraserbrooks.progresstracker.data.source.Repository;
+import com.fraserbrooks.progresstracker.util.AppExecutors;
 import com.fraserbrooks.progresstracker.util.EspressoIdlingResource;
 
 import java.util.List;
@@ -24,14 +25,16 @@ public class TrackersPresenter implements TrackersContract.Presenter {
     private final String TAG = "TrackersPresenter";
 
     private final Repository mTrackersRepository;
-
+    private final AppExecutors mAppExecutors;
     private final TrackersContract.View mTrackersView;
 
     private boolean mFirstLoad = true;
 
     public TrackersPresenter(@NonNull Repository trackersRepository,
-                             @NonNull TrackersContract.View trackersView){
+                             @NonNull TrackersContract.View trackersView,
+                             @NonNull AppExecutors appExecutors){
         mTrackersRepository = checkNotNull(trackersRepository);
+        mAppExecutors = appExecutors;
         mTrackersView = checkNotNull(trackersView);
 
         mTrackersView.setPresenter(this);
@@ -61,53 +64,89 @@ public class TrackersPresenter implements TrackersContract.Presenter {
         // that the app is busy until the response is handled.
         EspressoIdlingResource.increment(); // App is busy until further notice
 
-
-
-        mTrackersRepository.getTrackers(true, new DataSource.GetTrackersCallback() {
+        mAppExecutors.diskIO().execute(new Runnable() {
             @Override
-            public void onTrackersLoaded(List<Tracker> trackers) {
+            public void run() {
+                mTrackersRepository.getTrackers(new DataSource.GetTrackersCallback() {
+                    @Override
+                    public void onTrackersLoaded(final List<Tracker> trackers) {
+                        mAppExecutors.mainThread().execute(new Runnable() {
+                            @Override
+                            public void run() {
 
-                // The view may not be able to handle UI updates anymore
-                if (!mTrackersView.isActive()) {
-                    Log.d(TAG, "onTrackersLoaded: mTackersView not active. exiting from callback");
-                    return;
-                }
+                                // The view may not be able to handle UI updates anymore
+                                if (!mTrackersView.isActive()) {
+                                    Log.d(TAG, "onTrackersLoaded: mTackersView not active. exiting from callback");
+                                    return;
+                                }
 
+                                mTrackersView.hideLoading();
+                                if(trackers.isEmpty()){
+                                    Log.d(TAG, "onTrackersLoaded: trackers.isEmpty");
+                                    mTrackersView.showNoTrackers();
+                                }else{
+                                    // Create AsyncTask to spread out the redrawing of trackers
+                                    // otherwise the whole listView will be redrawn at once
+                                    Log.d(TAG, "onTrackersLoaded: creating new LoadTrackersTask");
+                                    new LoadTrackersTask(new DataSource.GetTrackersCallback() {
+                                        @Override
+                                        public void onTrackersLoaded(List<Tracker> trackers) {
+                                            // Should not be called
+                                            Log.e(TAG, "onTrackersLoaded: called" );
+                                        }
 
+                                        @Override
+                                        public void onTrackerLoaded(Tracker tracker) {
+                                            // The view may not be able to handle UI updates anymore
+                                            if (!mTrackersView.isActive()) {
+                                                Log.d(TAG, "onTrackersLoaded: mTrackersView not active. exiting from callback");
+                                                return;
+                                            }
+                                            mTrackersView.updateOrAddTracker(tracker);
+                                            mTrackersView.updateInGraph(tracker);
+                                        }
 
-                mTrackersView.hideLoading();
-
-                if(trackers.isEmpty()){
-                    Log.d(TAG, "onTrackersLoaded: trackers.isEmpty");
-                    mTrackersView.showNoTrackers();
-                }else{
-                    Log.d(TAG, "onTrackersLoaded: trackersView.showTrackers()");
-                    new LoadTrackersTask(new DataSource.GetTrackerCallback() {
-                        @Override
-                        public void onTrackerLoaded(Tracker tracker) {
-                            // The view may not be able to handle UI updates anymore
-                            if (!mTrackersView.isActive()) {
-                                Log.d(TAG, "onTrackersLoaded: mTackersView not active. exiting from callback");
-                                return;
+                                        @Override
+                                        public void onDataNotAvailable() {
+                                            Log.e(TAG, "onDataNotAvailable from async task");
+                                        }
+                                    }).execute(trackers.toArray(new Tracker[trackers.size()]));
+                                }
                             }
-                            mTrackersView.updateOrAddTracker(tracker);
-                            mTrackersView.updateInGraph(tracker);
-                        }
+                        });
 
-                        @Override
-                        public void onDataNotAvailable() {
-                            Log.e(TAG, "onDataNotAvailable from async task");
-                        }
-                    }).execute(trackers.toArray(new Tracker[trackers.size()]));
-                }
-            }
 
-            @Override
-            public void onDataNotAvailable() {
-                mTrackersView.showNoDataAvailable();
+                    }
+
+                    @Override
+                    public void onTrackerLoaded(final Tracker tracker) {
+                        Log.e(TAG, "onTrackerLoaded: called");
+//                        mAppExecutors.mainThread().execute(new Runnable() {
+//                            @Override
+//                            public void run() {
+//                                // The view may not be able to handle UI updates anymore
+//                                if (!mTrackersView.isActive()) {
+//                                    Log.d(TAG, "onTrackersLoaded: mTackersView not active. exiting from callback");
+//                                    return;
+//                                }
+//                                mTrackersView.updateOrAddTracker(tracker);
+//                                mTrackersView.updateInGraph(tracker);
+//                            }
+//                        });
+                    }
+
+                    @Override
+                    public void onDataNotAvailable() {
+                        mAppExecutors.mainThread().execute(new Runnable() {
+                            @Override
+                            public void run() {
+                                mTrackersView.showNoDataAvailable();
+                            }
+                        });
+                    }
+                }, false);
             }
         });
-
     }
 
 
@@ -171,11 +210,8 @@ public class TrackersPresenter implements TrackersContract.Presenter {
     }
 
     @Override
-    public void addToTrackerScore(Tracker tracker, int increment) {
-
+    public void addToTrackerScore(Tracker tracker, final int increment) {
         mTrackersRepository.incrementScore(tracker.getId(), increment);
-        tracker.setCountSoFar(tracker.getCountSoFar() + increment);
-        tracker.setUiValues();
         mTrackersView.updateOrAddTracker(tracker);
         mTrackersView.updateInGraph(tracker);
     }
@@ -190,19 +226,7 @@ public class TrackersPresenter implements TrackersContract.Presenter {
         // todo (currently temp delete)
 
         mTrackersRepository.deleteTracker(tracker.getId());
-
-        mTrackersRepository.getTrackers(true, new DataSource.GetTrackersCallback() {
-            @Override
-            public void onTrackersLoaded(List<Tracker> trackers) {
-                mTrackersView.showTrackers(trackers);
-                mTrackersView.refreshListAdapter();
-            }
-
-            @Override
-            public void onDataNotAvailable() {
-
-            }
-        });
+        mTrackersView.removeTracker(tracker);
 
         //mTrackersView.showTrackerDetailsScreen(tracker.getId());
     }

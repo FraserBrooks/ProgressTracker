@@ -1,10 +1,13 @@
 package com.fraserbrooks.progresstracker.mainactivity;
 
 import android.support.annotation.NonNull;
+import android.util.Log;
 
+import com.fraserbrooks.progresstracker.asynctasks.LoadDayTargetsForCalendarTask;
 import com.fraserbrooks.progresstracker.data.Target;
 import com.fraserbrooks.progresstracker.data.source.DataSource;
 import com.fraserbrooks.progresstracker.data.source.Repository;
+import com.fraserbrooks.progresstracker.util.AppExecutors;
 import com.fraserbrooks.progresstracker.util.EspressoIdlingResource;
 
 import java.util.ArrayList;
@@ -17,14 +20,18 @@ public class CalendarPresenter implements CalendarContract.Presenter{
     private final String TAG = "CalendarPresenter";
 
     private final Repository mRepository;
+    private final AppExecutors mAppExecutors;
 
     private final CalendarContract.View mCalendarView;
 
 
-    public CalendarPresenter(@NonNull Repository r,
-                             @NonNull CalendarContract.View v){
-        mRepository = r;
-        mCalendarView = v;
+    public CalendarPresenter(@NonNull Repository repository,
+                             @NonNull CalendarContract.View view,
+                             @NonNull AppExecutors appExecutors){
+        mRepository = repository;
+        mAppExecutors = appExecutors;
+
+        mCalendarView = view;
 
         mCalendarView.setPresenter(this);
     }
@@ -41,17 +48,44 @@ public class CalendarPresenter implements CalendarContract.Presenter{
         EspressoIdlingResource.increment(); // App is busy until further notice
         mCalendarView.showLoading();
 
-        mRepository.getDayTargets(new DataSource.GetTargetsCallback() {
+        mAppExecutors.diskIO().execute(new Runnable() {
             @Override
-            public void onTargetsLoaded(List<Target> targets) {
+            public void run() {
+                mRepository.getTargets(new DataSource.GetTargetsCallback() {
+                    @Override
+                    public void onTargetsLoaded(final List<Target> targets) {
 
-                mCalendarView.setTargetSpinners(targets);
-                initCalendar();
-            }
+                        new LoadDayTargetsForCalendarTask(new DataSource.GetTargetsCallback() {
+                            @Override
+                            public void onTargetsLoaded(List<Target> targets) {
+                                mCalendarView.setTargetSpinners();
+                                initCalendar();
+                            }
 
-            @Override
-            public void onDataNotAvailable() {
-                mCalendarView.showNoDataAvailable();
+                            @Override
+                            public void onTargetLoaded(Target target) {
+                                mCalendarView.addToTargetSpinners(target);
+                            }
+
+                            @Override
+                            public void onDataNotAvailable() {
+                                Log.e(TAG, "onDataNotAvailable: data not available");
+                            }
+                        }).execute(targets.toArray(new Target[targets.size()]));
+                    }
+
+                    @Override
+                    public void onTargetLoaded(Target target) {
+                        if(target.isRollingTarget() && target.getInterval().equals("DAY")){
+                            mCalendarView.addToTargetSpinners(target);
+                        }
+                    }
+
+                    @Override
+                    public void onDataNotAvailable() {
+                        mCalendarView.showNoDataAvailable();
+                    }
+                }, false);
             }
         });
     }
@@ -59,43 +93,53 @@ public class CalendarPresenter implements CalendarContract.Presenter{
     @Override
     public void initCalendar() {
 
-        Target target1 = mCalendarView.getFirstSelectedTarget();
-        Target target2 = mCalendarView.getSecondSelectedTarget();
-        Target target3 = mCalendarView.getThirdSelectedTarget();
+        final Target target1 = mCalendarView.getFirstSelectedTarget();
+        final Target target2 = mCalendarView.getSecondSelectedTarget();
+        final Target target3 = mCalendarView.getThirdSelectedTarget();
 
-
-        String id1 = null;
-        String id2 = null;
-        String id3 = null;
-
-        if(target1 != null) id1 = target1.getId();
-        if(target2 != null) id2 = target2.getId();
-        if(target3 != null) id3 = target3.getId();
-
-        mRepository.getDaysTargetWasMet(id1, id2, id3, new DataSource.GetDaysTargetsMetCallback() {
+        mAppExecutors.diskIO().execute(new Runnable() {
             @Override
-            public void onDaysLoaded(DataSource.CalendarTriple calendars) {
-                // This callback may be called twice, once for the cache and once for loading
-                // the data from the server API, so we check before decrementing, otherwise
-                // it throws "Counter has been corrupted!" exception.
-                if (!EspressoIdlingResource.getIdlingResource().isIdleNow()) {
-                    EspressoIdlingResource.decrement(); // Set app as idle.
-                }
+            public void run() {
+                String id1 = null;
+                String id2 = null;
+                String id3 = null;
 
-                mCalendarView.updateCalendar(
-                        calendars.list1,
-                        calendars.list2,
-                        calendars.list3);
+                if(target1 != null) id1 = target1.getId();
+                if(target2 != null) id2 = target2.getId();
+                if(target3 != null) id3 = target3.getId();
 
-                mCalendarView.hideLoading();
+                mRepository.getDaysTargetWasMet(id1, id2, id3, new DataSource.GetDaysTargetsMetCallback() {
+                    @Override
+                    public void onDaysLoaded(final DataSource.CalendarTriple calendars) {
+                        // This callback may be called twice, once for the cache and once for loading
+                        // the data from the server API, so we check before decrementing, otherwise
+                        // it throws "Counter has been corrupted!" exception.
+                        if (!EspressoIdlingResource.getIdlingResource().isIdleNow()) {
+                            EspressoIdlingResource.decrement(); // Set app as idle.
+                        }
 
-            }
+                        mCalendarView.updateCalendar(
+                                calendars.list1,
+                                calendars.list2,
+                                calendars.list3);
 
-            @Override
-            public void onDataNotAvailable() {
-                mCalendarView.showNoDataAvailable();
+                        mAppExecutors.mainThread().execute(new Runnable() {
+                            @Override
+                            public void run() {
+                                mCalendarView.hideLoading();
+                            }
+                        });
+
+                    }
+
+                    @Override
+                    public void onDataNotAvailable() {
+                        mCalendarView.showNoDataAvailable();
+                    }
+                });
             }
         });
+
 
 
     }

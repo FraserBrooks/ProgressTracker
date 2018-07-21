@@ -11,6 +11,7 @@ import android.widget.Toast;
 
 import com.fraserbrooks.progresstracker.Injection;
 import com.fraserbrooks.progresstracker.R;
+import com.fraserbrooks.progresstracker.util.AppExecutors;
 
 import java.util.List;
 
@@ -28,7 +29,8 @@ public class AddTargetActivity extends AppCompatActivity implements AddTargetCon
 
         setContentView(R.layout.activity_add_target);
 
-        new AddTargetPresenter(Injection.provideRepository(getApplicationContext()), this);
+        new AddTargetPresenter(Injection.provideRepository(getApplicationContext()),
+                this, AppExecutors.getInstance());
 
         mPresenter.start();
     }

@@ -17,11 +17,11 @@ public interface TrackersContract {
 
     interface View extends BaseView<Presenter>{
 
-        void refreshListAdapter();
-
         void showTrackers(List<Tracker> trackers);
 
         void updateOrAddTracker(Tracker tracker);
+
+        void removeTracker(Tracker tracker);
 
         void populateGraph(List<Tracker> trackers);
 

@@ -46,6 +46,8 @@ public abstract class TrackersDao {
     @Query("SELECT * FROM targets")
     public abstract List<Target> getTargets();
 
+    @Query("SELECT * FROM targets WHERE rollingTarget = 1 AND interval = 'DAY'")
+    public abstract List<Target> getDayTargets();
 
     @Query("SELECT day FROM entries WHERE " +
             "trackId = (SELECT trackId FROM targets WHERE targetId = :targetId)" +

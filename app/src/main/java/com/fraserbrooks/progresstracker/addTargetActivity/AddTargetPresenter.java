@@ -1,11 +1,13 @@
 package com.fraserbrooks.progresstracker.addTargetActivity;
 
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import com.fraserbrooks.progresstracker.data.Target;
 import com.fraserbrooks.progresstracker.data.Tracker;
 import com.fraserbrooks.progresstracker.data.source.DataSource;
 import com.fraserbrooks.progresstracker.data.source.Repository;
+import com.fraserbrooks.progresstracker.util.AppExecutors;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -17,16 +19,19 @@ public class AddTargetPresenter implements AddTargetContract.Presenter{
     private final String TAG = "AddTargetPresenter";
 
     private final Repository mRepository;
+    private final AppExecutors mAppExecutors;
 
     private Map<String, String> mTrackerIds;
 
     private final AddTargetContract.View mAddTargetView;
 
-    AddTargetPresenter(@NonNull Repository repo,
-                       @NonNull AddTargetContract.View addTargetView){
-        mRepository = repo;
-        mAddTargetView = addTargetView;
+    AddTargetPresenter(@NonNull Repository repository,
+                       @NonNull AddTargetContract.View addTargetView,
+                       @NonNull AppExecutors appExecutors){
+        mRepository = repository;
+        mAppExecutors = appExecutors;
 
+        mAddTargetView = addTargetView;
         mAddTargetView.setPresenter(this);
     }
 
@@ -85,25 +90,42 @@ public class AddTargetPresenter implements AddTargetContract.Presenter{
 
         mTrackerIds = new LinkedHashMap<>();
 
-        mRepository.getTrackers(true, new DataSource.GetTrackersCallback() {
+        mAppExecutors.diskIO().execute(new Runnable() {
             @Override
-            public void onTrackersLoaded(List<Tracker> trackers) {
-                ArrayList<String> names = new ArrayList<>();
-                for(Tracker t : trackers){
-                    if(!t.isArchived()){
-                        names.add(t.getTitle());
+            public void run() {
+                mRepository.getTrackers(new DataSource.GetTrackersCallback() {
+                    @Override
+                    public void onTrackersLoaded(List<Tracker> trackers) {
+                        final ArrayList<String> names = new ArrayList<>();
+                        for(Tracker t : trackers){
+                            if(!t.isArchived()){
+                                names.add(t.getTitle());
+                            }
+                            mTrackerIds.put(t.getTitle(), t.getId());
+                        }
+                        mAppExecutors.mainThread().execute(new Runnable() {
+                            @Override
+                            public void run() {
+                                mAddTargetView.setSpinner(names);
+                                mAddTargetView.hideLoading();
+                            }
+                        });
                     }
-                    mTrackerIds.put(t.getTitle(), t.getId());
-                }
-                mAddTargetView.setSpinner(names);
-                mAddTargetView.hideLoading();
-            }
 
-            @Override
-            public void onDataNotAvailable() {
-                mAddTargetView.hideLoading();
-                mAddTargetView.showNoTrackers();
+                    @Override
+                    public void onTrackerLoaded(Tracker tracker) {
+                        // Shouldn't be called
+                        Log.e(TAG, "onTrackerLoaded: called");
+                    }
+
+                    @Override
+                    public void onDataNotAvailable() {
+                        mAddTargetView.hideLoading();
+                        mAddTargetView.showNoTrackers();
+                    }
+                }, false);
             }
         });
+
     }
 }

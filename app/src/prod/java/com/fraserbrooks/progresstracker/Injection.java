@@ -37,7 +37,7 @@ public class Injection {
     public static Repository provideRepository(@NonNull Context context) {
         checkNotNull(context);
         ProgressTrackerDatabase database = ProgressTrackerDatabase.getInstance(context);
-        AppExecutors executors = new AppExecutors();
+        AppExecutors executors = AppExecutors.getInstance();
         return Repository.getInstance(RemoteDataSource.getInstance(),
                 LocalDataSource.getInstance(executors, database.trackersDao()),
                 executors);

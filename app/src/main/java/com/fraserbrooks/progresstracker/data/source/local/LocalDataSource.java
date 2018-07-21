@@ -21,20 +21,19 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 public class LocalDataSource implements DataSource{
 
-    private final String TAG = "LocalDataScource";
+    private static final String TAG = "LocalDataSource";
 
     private static volatile LocalDataSource INSTANCE;
 
     private TrackersDao mTrackersDao;
-
     private AppExecutors mAppExecutors;
 
 
     // Prevent direct instantiation.
     private LocalDataSource(@NonNull AppExecutors appExecutors,
                                  @NonNull TrackersDao trackersDao) {
-        mAppExecutors = appExecutors;
         mTrackersDao = trackersDao;
+        mAppExecutors = appExecutors;
     }
 
     public static LocalDataSource getInstance(@NonNull AppExecutors appExecutors,
@@ -42,6 +41,7 @@ public class LocalDataSource implements DataSource{
         if (INSTANCE == null) {
             synchronized (LocalDataSource.class) {
                 if (INSTANCE == null) {
+                    Log.d(TAG, "getInstance: new instance created");
                     INSTANCE = new LocalDataSource(appExecutors, trackersDao);
                 }
             }
@@ -55,55 +55,32 @@ public class LocalDataSource implements DataSource{
      * or the table is empty.
      */
     @Override
-    public void getTrackers(final boolean runOnUiThread, @NonNull final GetTrackersCallback callback) {
-        Runnable runnable = new Runnable() {
-            @Override
-            public void run() {
-                final List<Tracker> trackers = mTrackersDao.getTrackers();
-                Runnable getTrackersRunnable = new Runnable() {
-                    @Override
-                    public void run() {
-                        callback.onTrackersLoaded(trackers);
-                    }
-                };
-                if (runOnUiThread) mAppExecutors.mainThread().execute(getTrackersRunnable);
-                else getTrackersRunnable.run();
-            }
-        };
-        mAppExecutors.diskIO().execute(runnable);
+    public void getTrackers(@NonNull final GetTrackersCallback callback, boolean staggered) {
+        List<Tracker> trackers = mTrackersDao.getTrackers();
+        callback.onTrackersLoaded(trackers);
     }
 
     /**
-     * Note: {@link GetTrackerCallback#onDataNotAvailable()} is fired if the {@link Tracker} isn't
+     * Note: {@link GetTrackersCallback#onDataNotAvailable()} is fired if the {@link Tracker} isn't
      * found.
      */
     @Override
-    public void getTracker(final boolean runOnUiThread, @NonNull final String trackerId, @NonNull final GetTrackerCallback callback) {
-        Runnable runnable = new Runnable() {
-            @Override
-            public void run() {
-                final Tracker tracker = mTrackersDao.getTrackerById(trackerId);
+    public void getTracker(@NonNull final String trackerId, @NonNull final GetTrackersCallback callback) {
 
-                Runnable runnable = new Runnable() {
-                    @Override
-                    public void run() {
-                        if (tracker != null) {
-                            callback.onTrackerLoaded(tracker);
-                        } else {
-                            callback.onDataNotAvailable();
-                        }
-                    }
-                };
-                if (runOnUiThread) mAppExecutors.mainThread().execute(runnable);
-                else runnable.run();
-            }
-        };
-        mAppExecutors.diskIO().execute(runnable);
+        Tracker tracker = mTrackersDao.getTrackerById(trackerId);
+
+        if (tracker != null) {
+            callback.onTrackerLoaded(tracker);
+        } else {
+            callback.onDataNotAvailable();
+        }
     }
+
 
     @Override
     public boolean saveTracker(@NonNull final Tracker tracker) {
         checkNotNull(tracker);
+
         Runnable saveRunnable = new Runnable() {
             @Override
             public void run() {
@@ -116,44 +93,30 @@ public class LocalDataSource implements DataSource{
 
     @Override
     public void updateTracker(@NonNull final Tracker tracker) {
-        Runnable updateRunnable = new Runnable() {
-            @Override
-            public void run() {
-                mTrackersDao.updateTracker(tracker);
-            }
-        };
-        mAppExecutors.diskIO().execute(updateRunnable);
+        mTrackersDao.updateTracker(tracker);
     }
 
     @Override
     public void refreshAllCache() {
         /** Not required because the {@link Repository} handles the logic of refreshing the
-        / from all the available data sources.
+        / cache from all the available data sources.
         **/
     }
 
     @Override
     public void deleteAllTrackers() {
-        Runnable deleteRunnable = new Runnable() {
-            @Override
-            public void run() {
-                mTrackersDao.deleteTrackers();
-            }
-        };
-
-        mAppExecutors.diskIO().execute(deleteRunnable);
+        mTrackersDao.deleteTrackers();
     }
 
     @Override
     public boolean deleteTracker(@NonNull final String trackerId) {
-        Runnable deleteRunnable = new Runnable() {
+        Runnable runnable = new Runnable() {
             @Override
             public void run() {
                 mTrackersDao.deleteTrackerById(trackerId);
             }
         };
-
-        mAppExecutors.diskIO().execute(deleteRunnable);
+        mAppExecutors.diskIO().execute(runnable);
         return true;
     }
 
@@ -162,51 +125,25 @@ public class LocalDataSource implements DataSource{
      * or the table is empty.
      */
     @Override
-    public void getTargets(final boolean runOnUiThread, @NonNull final GetTargetsCallback callback) {
-        Runnable runnable = new Runnable() {
-            @Override
-            public void run() {
-                final List<Target> targets = mTrackersDao.getTargets();
-                Runnable callbackRunnable = new Runnable() {
-                    @Override
-                    public void run() {
-                        callback.onTargetsLoaded(targets);
-                    }
-                };
-                if(runOnUiThread) mAppExecutors.mainThread().execute(callbackRunnable);
-                else callbackRunnable.run();
-            }
-        };
-        mAppExecutors.diskIO().execute(runnable);
+    public void getTargets(@NonNull final GetTargetsCallback callback, boolean staggered) {
+        List<Target> targets = mTrackersDao.getTargets();
+        callback.onTargetsLoaded(targets);
     }
 
 
     /**
-     * Note: {@link GetTargetCallback#onDataNotAvailable()} is fired if the {@link Tracker} isn't
+     * Note: {@link GetTargetsCallback#onDataNotAvailable()} is fired if the {@link Tracker} isn't
      * found.
      */
     @Override
-    public void getTarget(final boolean runOnUiThread, @NonNull final String targetId, @NonNull final GetTargetCallback callback) {
-        Runnable runnable = new Runnable() {
-            @Override
-            public void run() {
-                final Target target = mTrackersDao.getTargetById(targetId);
+    public void getTarget(@NonNull final String targetId, @NonNull final GetTargetsCallback callback) {
+        Target target = mTrackersDao.getTargetById(targetId);
 
-                Runnable callbackRunnable = new Runnable() {
-                    @Override
-                    public void run() {
-                        if (target != null) {
-                            callback.onTargetLoaded(target);
-                        } else {
-                            callback.onDataNotAvailable();
-                        }
-                    }
-                };
-                if (runOnUiThread) mAppExecutors.mainThread().execute(callbackRunnable);
-                else callbackRunnable.run();
-            }
-        };
-        mAppExecutors.diskIO().execute(runnable);
+        if (target != null) {
+            callback.onTargetLoaded(target);
+        } else {
+            callback.onDataNotAvailable();
+        }
     }
 
     @Override
@@ -224,38 +161,24 @@ public class LocalDataSource implements DataSource{
 
     @Override
     public void updateTarget(@NonNull final Target target) {
-        Runnable updateRunnable = new Runnable() {
-            @Override
-            public void run() {
-                mTrackersDao.updateTarget(target);
-            }
-        };
-        mAppExecutors.diskIO().execute(updateRunnable);
+        mTrackersDao.updateTarget(target);
     }
 
 
     @Override
     public void deleteAllTargets() {
-        Runnable deleteRunnable = new Runnable() {
-            @Override
-            public void run() {
-                mTrackersDao.deleteTargets();
-            }
-        };
-
-        mAppExecutors.diskIO().execute(deleteRunnable);
+        mTrackersDao.deleteTargets();
     }
 
     @Override
     public boolean deleteTarget(@NonNull final String targetId) {
-        Runnable deleteRunnable = new Runnable() {
+        Runnable runnable = new Runnable() {
             @Override
             public void run() {
                 mTrackersDao.deleteTargetById(targetId);
             }
         };
-
-        mAppExecutors.diskIO().execute(deleteRunnable);
+        mAppExecutors.diskIO().execute(runnable);
         return true;
     }
 
@@ -267,87 +190,58 @@ public class LocalDataSource implements DataSource{
 
     @Override
     public void getDaysTargetWasMet(final String targetId1, final String targetId2, final String targetId3, final GetDaysTargetsMetCallback callback) {
-        Runnable getDaysRunnable = new Runnable() {
-            @Override
-            public void run() {
-                final CalendarTriple cals = new CalendarTriple();
+        CalendarTriple calendars = new CalendarTriple();
 
-                if(targetId1 != null) cals.list1 = mTrackersDao.getDaysTargetCompleted(targetId1);
-                if(targetId2 != null) cals.list2 = mTrackersDao.getDaysTargetCompleted(targetId2);
-                if(targetId3 != null) cals.list3 = mTrackersDao.getDaysTargetCompleted(targetId3);
+        if (targetId1 != null) calendars.list1 = mTrackersDao.getDaysTargetCompleted(targetId1);
+        if (targetId2 != null) calendars.list2 = mTrackersDao.getDaysTargetCompleted(targetId2);
+        if (targetId3 != null) calendars.list3 = mTrackersDao.getDaysTargetCompleted(targetId3);
 
-                mAppExecutors.mainThread().execute(new Runnable() {
-                    @Override
-                    public void run() {
-                        callback.onDaysLoaded(cals);
-                    }
-                });
-            }
-        };
-        mAppExecutors.diskIO().execute(getDaysRunnable);
+        callback.onDaysLoaded(calendars);
     }
 
     @Override
     public void deleteAllEntries() {
-        Runnable deleteRunnable = new Runnable() {
-            @Override
-            public void run() {
-                mTrackersDao.deleteEntries();
-            }
-        };
-        mAppExecutors.diskIO().execute(deleteRunnable);
+        mTrackersDao.deleteEntries();
     }
 
     @Override
     public void incrementScore(@NonNull final String trackerId, final int score) {
-        Runnable incrementScoreRunnable = new Runnable() {
+        Runnable runnable = new Runnable() {
             @Override
             public void run() {
                 mTrackersDao.upsertScore(trackerId, score);
             }
         };
-        mAppExecutors.diskIO().execute(incrementScoreRunnable);
+        mAppExecutors.diskIO().execute(runnable);
     }
 
     @Override
     public void getTrackerTotalScore(@NonNull final String trackerId, @NonNull final GetNumberCallback callback) {
-        Runnable getTotalRunnable = new Runnable() {
-            @Override
-            public void run() {
-                final int num = mTrackersDao.getTotalScore(trackerId);
-                Runnable callbackRunnable = new Runnable() {
-                    @Override
-                    public void run() {
-                        callback.onNumberLoaded(num);
-                    }
-                };
-                mAppExecutors.mainThread().execute(callbackRunnable);
-            }
-        };
-        mAppExecutors.diskIO().execute(getTotalRunnable);
+        int num = mTrackersDao.getTotalScore(trackerId);
+        callback.onNumberLoaded(num);
     }
 
     @Override
     public void getScoreOnDay(@NonNull final String trackerId, final Calendar day, @NonNull final GetNumberCallback callback) {
-        final int num = mTrackersDao.getScoreOnSpecificDay(trackerId, day);
+        int num = mTrackersDao.getScoreOnSpecificDay(trackerId, day);
         callback.onNumberLoaded(num);
     }
 
     @Override
     public void getScoreOnWeek(@NonNull final String trackerId, final Calendar week, @NonNull final GetNumberCallback callback) {
-        final int num = mTrackersDao.getScoreOnSpecificWeek(trackerId, week);
+        int num = mTrackersDao.getScoreOnSpecificWeek(trackerId, week);
         callback.onNumberLoaded(num);
     }
 
     @Override
     public void getScoreOnMonth(@NonNull final String trackerId, final Calendar month, @NonNull final GetNumberCallback callback) {
-        final int num = mTrackersDao.getScoreOnSpecificMonth(trackerId, month);
+        int num = mTrackersDao.getScoreOnSpecificMonth(trackerId, month);
         callback.onNumberLoaded(num);
     }
 
     @Override
     public void getScoreOnYear(@NonNull final String trackerId, final Calendar year, @NonNull final GetNumberCallback callback) {
-        final int num = mTrackersDao.getScoreOnSpecificYear(trackerId, year);
+        int num = mTrackersDao.getScoreOnSpecificYear(trackerId, year);
         callback.onNumberLoaded(num);
     }
 

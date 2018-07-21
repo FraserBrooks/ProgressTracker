@@ -21,6 +21,7 @@ import com.fraserbrooks.progresstracker.R;
 import com.fraserbrooks.progresstracker.TouchInterceptor;
 import com.fraserbrooks.progresstracker.addTargetActivity.AddTargetActivity;
 import com.fraserbrooks.progresstracker.data.Target;
+import com.fraserbrooks.progresstracker.util.AppExecutors;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,14 +49,16 @@ public class TargetsFragment extends Fragment implements TargetsContract.View{
         Log.d(TAG, "onCreate: called");
         super.onCreate(savedInstanceState);
 
-        new TargetsPresenter(Injection.provideRepository(getContext()), this);
+        assert (getContext() != null);
+        new TargetsPresenter(Injection.provideRepository(getContext()),
+                this, AppExecutors.getInstance());
 
         mListAdapter = new TargetAdapter(getContext(),R.layout.target_item, mPresenter);
 
     }
 
     @Override
-    public void onActivityCreated(@NonNull Bundle savedInstanceState) {
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         mPresenter.start();
     }
@@ -63,6 +66,7 @@ public class TargetsFragment extends Fragment implements TargetsContract.View{
     @Override
     public void onResume(){
         super.onResume();
+        mPresenter.start();
     }
 
     @Override
@@ -137,29 +141,20 @@ public class TargetsFragment extends Fragment implements TargetsContract.View{
     }
 
     @Override
-    public void refreshListAdapter() {
-//        mListAdapter.notifyDataSetChanged();
-    }
-
-    @Override
     public void showTargets(List<Target> targets) {
         mListAdapter.clear();
         mListAdapter.addAll(targets);
-
-        for(Target t : targets) Log.d(TAG, "showTargets: target" + t.getTargetTitle());
     }
 
     @Override
-    public void refreshTarget(Target target){
-
+    public void updateOrAddTarget(Target target) {
         int i = mListAdapter.getPosition(target);
         mListAdapter.remove(target);
 
-        if (i == -1) Log.e(TAG, "refreshTarget: target does not exist in adapter");
-        i = (i == -1) ? 0 : i;
+        if (i == -1) Log.d(TAG, "updateOrAddTarget: does not exist in adapter. Placing at bottom");
+        i = (i == -1) ? mListAdapter.getCount() : i;
 
         mListAdapter.insert(target, i);
-
     }
 
 
@@ -176,9 +171,6 @@ public class TargetsFragment extends Fragment implements TargetsContract.View{
     @Override
     public void showNoTargets() {
         // todo
-        Target t = new Target("--", 60, "DAY");
-        t.setTrackerName("NO TARGETS");
-        mListAdapter.add(t);
     }
 
     @Override

@@ -12,9 +12,7 @@ public interface TargetsContract {
 
         void showTargets(List<Target> targets);
 
-        void refreshTarget(Target target);
-
-        void refreshListAdapter();
+        void updateOrAddTarget(Target target);
 
         void showLoading();
 

@@ -22,7 +22,9 @@ public interface CalendarContract {
                             List<Calendar> secondTargetDays,
                             List<Calendar> thirdTargetDays);
 
-        void setTargetSpinners(List<Target> targets);
+        void setTargetSpinners();
+
+        void addToTargetSpinners(Target target);
 
         void showLoading();
 

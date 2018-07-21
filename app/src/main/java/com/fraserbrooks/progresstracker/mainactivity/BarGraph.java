@@ -37,13 +37,14 @@ public class BarGraph extends LinearLayout {
 
     private class Pair{
         public View view;
-        public int index;
+        int index;
     }
 
     private HashMap<String, Pair> mCachedViews;
 
     public BarGraph(Context context) {
         super(context);
+        Log.d(TAG, "BarGraph: created");
         this.setOrientation(LinearLayout.VERTICAL);
         mCachedViews = new LinkedHashMap<>();
     }
@@ -69,6 +70,20 @@ public class BarGraph extends LinearLayout {
         newView.index = i;
         mCachedViews.put(tracker.getId(), newView);
         this.addView(graph_entry, i);
+    }
+
+    public void remove(Tracker tracker){
+        Pair pair = mCachedViews.get(tracker.getId());
+        mCachedViews.remove(tracker.getId());
+        if(pair != null){
+            int i = pair.index;
+            removeView(pair.view);
+            for(Pair p : mCachedViews.values()){
+                if(p.index > i){
+                    p.index --;
+                }
+            }
+        }
     }
 
     private void populate(List<Tracker> trackers) {
