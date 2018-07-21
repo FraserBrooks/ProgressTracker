@@ -1,8 +1,6 @@
 package com.fraserbrooks.progresstracker.mainactivity;
 
-import android.content.Context;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -10,16 +8,10 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.widget.ArrayAdapter;
 
-import com.fraserbrooks.progresstracker.CalendarScreenFragment;
-import com.fraserbrooks.progresstracker.HomeScreenFragment;
 import com.fraserbrooks.progresstracker.Injection;
-import com.fraserbrooks.progresstracker.MainPageAdapter;
 import com.fraserbrooks.progresstracker.R;
 import com.fraserbrooks.progresstracker.SettingsScreenFragment;
-import com.fraserbrooks.progresstracker.TargetScreenFragment;
-import com.fraserbrooks.progresstracker.Tracker;
 import com.fraserbrooks.progresstracker.data.source.Repository;
 
 /**
@@ -40,14 +32,18 @@ public class MainActivity_ extends AppCompatActivity {
 
         initViewPager();
 
-        Repository r = Injection.provideRepository(getApplicationContext());
+
 
     }
 
     private void initViewPager() {
         final ViewPager viewPager = findViewById(R.id.pager);
-        final MainPageAdapter adapter = new MainPageAdapter(getSupportFragmentManager(), NUMBER_OF_TABS);
+        final MainPageAdapter adapter = new MainPageAdapter(
+                getSupportFragmentManager(),
+                NUMBER_OF_TABS,
+                Injection.provideRepository(getApplicationContext()));
         viewPager.setAdapter(adapter);
+        viewPager.setOffscreenPageLimit(3);
 
         TabLayout tabLayout = findViewById(R.id.tab_layout);
         tabLayout.setupWithViewPager(viewPager);
@@ -61,10 +57,8 @@ public class MainActivity_ extends AppCompatActivity {
         };
 
         for(int i = 0; i < NUMBER_OF_TABS ; i++){
-            if(i<tabIcons.length){
-                TabLayout.Tab tab = tabLayout.getTabAt(i);
-                if(tab != null) tab.setIcon(tabIcons[i]);
-            }
+            TabLayout.Tab tab = tabLayout.getTabAt(i);
+            if(tab != null) tab.setIcon(tabIcons[i]);
         }
 
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
@@ -81,8 +75,8 @@ public class MainActivity_ extends AppCompatActivity {
                 if(newPosition == 1 && oldPosition == 0){
                     Log.d(TAG, "onPageSelected: home to target screen");
 
-                    if(adapter.getHomeFragment() != null){
-                        adapter.getHomeFragment().onPause();
+                    if(adapter.getTrackersFragment() != null){
+                        adapter.getTrackersFragment().onPause();
                     }
 
                     if(adapter.getTargetFragment() != null){
@@ -100,35 +94,37 @@ public class MainActivity_ extends AppCompatActivity {
 
     private static class MainPageAdapter extends FragmentStatePagerAdapter{
 
-        private final String TAG = "Main>.MainPageAdapter";
+        private final String TAG = "MainPageAdapter";
         private int numberOfTabs;
 
-        private HomeScreenFragment homeFragment;
-        private TargetScreenFragment targetFragment;
+        private TrackersFragment trackersFragment;
+        private TargetsFragment targetFragment;
 
 
-        public MainPageAdapter(FragmentManager fm, int numOfTabs) {
+        private Repository r;
+
+        public MainPageAdapter(FragmentManager fm, int numOfTabs, Repository repo) {
             super(fm);
             this.numberOfTabs = numOfTabs;
-            homeFragment = null;
+            trackersFragment = null;
             targetFragment = null;
-
+            r = repo;
         }
 
         @Override
         public Fragment getItem(int position) {
             switch (position){
                 case 0:
-                    HomeScreenFragment homeScreen = new HomeScreenFragment();
-                    setHomeFragment(homeScreen);
-                    return homeScreen;
+                    TrackersFragment trackerFragment = TrackersFragment.newInstance();
+                    setTrackersFragment(trackerFragment);
+                    return trackerFragment;
                 case 1:
-                    TargetScreenFragment targetScreen = new TargetScreenFragment();
-                    setTargetFragment(targetScreen);
-                    return targetScreen;
+                    TargetsFragment targetFragment = TargetsFragment.newInstance();
+                    setTargetFragment(targetFragment);
+                    return targetFragment;
                 case 2:
-                    CalendarScreenFragment calendarScreen = new CalendarScreenFragment();
-                    return calendarScreen;
+                    CalendarFragment calendarFragment = new CalendarFragment();
+                    return calendarFragment;
                 case 3:
                     SettingsScreenFragment settingsScreen = new SettingsScreenFragment();
                     return settingsScreen;
@@ -142,38 +138,23 @@ public class MainActivity_ extends AppCompatActivity {
             return numberOfTabs;
         }
 
-        private void setHomeFragment(HomeScreenFragment f){
-            this.homeFragment = f;
+        private void setTrackersFragment(TrackersFragment f){
+            this.trackersFragment = f;
         }
 
-        public HomeScreenFragment getHomeFragment(){
-            return homeFragment;
+        public TrackersFragment getTrackersFragment(){
+            return trackersFragment;
         }
 
 
-        private void setTargetFragment(TargetScreenFragment f) {
+        private void setTargetFragment(TargetsFragment f) {
             this.targetFragment = f;
         }
 
-        public TargetScreenFragment getTargetFragment() {
+        public TargetsFragment getTargetFragment() {
             return targetFragment;
         }
     }
 
-
-    private static class TargetAdapter extends ArrayAdapter<String /*Target*/  >{
-
-
-        public TargetAdapter(@NonNull Context context, int resource) {
-            super(context, resource);
-        }
-    }
-
-    private static class TrackerAdapter extends ArrayAdapter<String /*Tracker*/  >{
-
-        public TrackerAdapter(@NonNull Context context, int resource) {
-            super(context, resource);
-        }
-    }
 
 }

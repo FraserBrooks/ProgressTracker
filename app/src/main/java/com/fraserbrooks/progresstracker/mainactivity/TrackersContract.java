@@ -17,9 +17,19 @@ public interface TrackersContract {
 
     interface View extends BaseView<Presenter>{
 
+        void refreshListAdapter();
+
         void showTrackers(List<Tracker> trackers);
 
-        void showGraph(List<Tracker> trackers);
+        void updateOrAddTracker(Tracker tracker);
+
+        void populateGraph(List<Tracker> trackers);
+
+        void updateInGraph(Tracker t);
+
+        void showLoading();
+
+        void hideLoading();
 
         void showNoTrackers();
 
@@ -53,9 +63,9 @@ public interface TrackersContract {
 
         void changeTrackerTitle(Tracker tracker, String newTitle);
 
-        void changeTrackerMaxCount(Tracker tracker, int newMax);
+        void changeTrackerMaxScore(Tracker tracker, int newMax);
 
-        void addToTrackerCount(Tracker tracker, int c);
+        void addToTrackerScore(Tracker tracker, int c);
 
         void timerButtonClicked(Tracker tracker);
 

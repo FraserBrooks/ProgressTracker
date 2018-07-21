@@ -3,6 +3,7 @@ package com.fraserbrooks.progresstracker.mainactivity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -24,11 +25,10 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.fraserbrooks.progresstracker.AddTrackerActivity;
-import com.fraserbrooks.progresstracker.BarGraph;
-import com.fraserbrooks.progresstracker.HomeScreenFragment;
+import com.fraserbrooks.progresstracker.Injection;
 import com.fraserbrooks.progresstracker.R;
 import com.fraserbrooks.progresstracker.TouchInterceptor;
+import com.fraserbrooks.progresstracker.addTrackerActivity.AddTrackerActivity_;
 import com.fraserbrooks.progresstracker.data.Tracker;
 
 import java.util.ArrayList;
@@ -59,21 +59,35 @@ public class TrackersFragment extends Fragment implements TrackersContract.View 
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState){
+        Log.d(TAG, "onCreate: called");
         super.onCreate(savedInstanceState);
-        mListAdapter = new TrackersAdapter(new ArrayList<Tracker>(), getContext());
+        new TrackersPresenter(Injection.provideRepository(getContext()), this);
+        mListAdapter = new TrackersAdapter(getContext(), R.layout.tracker_item, mPresenter);
+
         mBarGraph = new BarGraph(getContext());
+
+
+    }
+
+    @Override
+    public void onActivityCreated(@NonNull Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        mPresenter.start();
     }
 
     @Override
     public void setPresenter(@NonNull TrackersContract.Presenter presenter) {
         mPresenter = checkNotNull(presenter);
-        mListAdapter.setPresenter(presenter);
     }
 
+    @Override
+    public void onResume(){
+        super.onResume();
+    }
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState){
         Log.d(TAG, "onCreateView: called");
         View root = inflater.inflate(R.layout.fragment_home_screen,
@@ -82,7 +96,7 @@ public class TrackersFragment extends Fragment implements TrackersContract.View 
         // Attach the adapter to a ListView
         mTrackerListView = root.findViewById(R.id.tracker_list);
 
-        View addTrackerButton = inflater.inflate(R.layout.add_tracker_button,
+        View addTrackerButton = inflater.inflate(R.layout.add_item_button,
                 mTrackerListView, false);
 
         mTrackerListView.setAdapter(mListAdapter);
@@ -121,19 +135,40 @@ public class TrackersFragment extends Fragment implements TrackersContract.View 
         };
         mTrackerListView.setDropListener(mDropListener);
         registerForContextMenu(mTrackerListView);
+
+
         return root;
 
     }
 
     @Override
+    public void refreshListAdapter() {
+//        mListAdapter.notifyDataSetChanged();
+    }
+
+
+
+    @Override
     public void showTrackers(List<Tracker> trackers) {
-        mBarGraph.refresh(trackers);
-        mListAdapter.replaceData(trackers);
+        mListAdapter.clear();
+        mListAdapter.addAll(trackers);
+    }
+
+    @Override
+    public void updateOrAddTracker(Tracker tracker) {
+
+        int i = mListAdapter.getPosition(tracker);
+        mListAdapter.remove(tracker);
+
+        if (i == -1) Log.d(TAG, "refreshTracker: does not exist in adapter. Placing at bottom");
+        i = (i == -1) ? mListAdapter.getCount() : i;
+
+        mListAdapter.insert(tracker, i);
     }
 
     @Override
     public void showNoTrackers() {
-        // Todo
+        mListAdapter.add(new Tracker("NO_TRACKERS", 0));
     }
 
     @Override
@@ -148,7 +183,11 @@ public class TrackersFragment extends Fragment implements TrackersContract.View 
 
     @Override
     public void showAddTrackerScreen() {
-        // Todo
+        Log.d(TAG, "moving to new AddTrackerActivity");
+
+        Intent intent = new Intent(this.getActivity(),
+                AddTrackerActivity_.class);
+        startActivity(intent);
     }
 
     @Override
@@ -157,17 +196,31 @@ public class TrackersFragment extends Fragment implements TrackersContract.View 
     }
 
     @Override
-    public void showGraph(List<Tracker> trackers) {
+    public void populateGraph(List<Tracker> trackers) {
         mBarGraph.refresh(trackers);
-        mListAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void updateInGraph(Tracker tracker){
+        mBarGraph.updateInGraph(tracker);
+    }
+
+    @Override
+    public void showLoading() {
+        // todo
+    }
+
+    @Override
+    public void hideLoading() {
+        // todo
     }
 
 
-    private static class TrackersAdapter extends BaseAdapter {
+    private static class TrackersAdapter extends ArrayAdapter<Tracker> {
 
-        private List<Tracker> mTrackers;
         private TrackersContract.Presenter mPresenter;
-        private Context mContext;
+        private ViewGroup.LayoutParams mDefaultParams;
+        private int mResource;
         private int[] levelIcons = {
                 R.drawable.heart_red,
                 R.drawable.gem_blank,
@@ -192,50 +245,29 @@ public class TrackersFragment extends Fragment implements TrackersContract.View 
         };
 
 
-        public TrackersAdapter(List<Tracker> trackers, Context context){
-            mContext = context;
-            setList(trackers);
-        }
-
-        public void setPresenter(TrackersContract.Presenter presenter){
+        public TrackersAdapter(Context context, int resourceId, TrackersContract.Presenter presenter){
+            super(context, resourceId);
+            mResource = resourceId;
             mPresenter = presenter;
+            mDefaultParams = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT);
         }
 
-        public void replaceData(List<Tracker> trackers){
-            setList(trackers);
-            notifyDataSetChanged();
-        }
-
-        private void setList(List<Tracker> trackers) { mTrackers = checkNotNull(trackers);}
-
+        @NonNull
         @Override
-        public int getCount() {return mTrackers.size();}
+        public View getView(int i, View convertView, @NonNull ViewGroup parent) {
 
-        @Override
-        public Tracker getItem(int i) {return mTrackers.get(i);}
-
-        @Override
-        public long getItemId(int i) {return i;}
-
-        @Override
-        public View getView(int i, View convertView, ViewGroup viewGroup) {
-
-            View trackerView = convertView;
-            if(trackerView == null){
-                LayoutInflater inflater = LayoutInflater.from(viewGroup.getContext());
-                trackerView = inflater.inflate(R.layout.tracker_item, viewGroup, false);
+            // Check if an existing view is being reused, otherwise inflate the view
+            if (convertView == null || //don't reuse barGraph view
+                    convertView.findViewById(R.id.expanded_dabble_layout) == null) {
+                convertView = LayoutInflater.from(getContext()).inflate(mResource,
+                        parent, false);
+            }else{
+                convertView.setLayoutParams(mDefaultParams);
             }
 
-            final Tracker tracker = getItem(i);
-
-//            //click tracker to expand
-//            ViewGroup smallLayout = convertView.findViewById(R.id.small_tracker_layout);
-//            smallLayout.setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View view) {
-//                    mPresenter.setTrackerExpandCollapse(tracker);
-//                }
-//            });
+            final Tracker tracker = (Tracker) getItem(i);
+            assert tracker != null;
 
             //Top ConstraintLayout of expanded view used as button to de-expand the view
             ViewGroup expandedLayout = convertView.findViewById(R.id.expanded_tracker_layout_top);
@@ -246,11 +278,9 @@ public class TrackersFragment extends Fragment implements TrackersContract.View 
                 }
             });
 
+            inflateTracker(convertView, tracker);
 
-
-            inflateTracker(trackerView, tracker);
-
-            return trackerView;
+            return convertView;
         }
 
 
@@ -310,7 +340,7 @@ public class TrackersFragment extends Fragment implements TrackersContract.View 
                 expanded_tvName.setText(name);
 
                 TextView editDifficultyTV = view.findViewById(R.id.edit_difficulty_tv);
-                editDifficultyTV.setText(mContext.getResources().getString(
+                editDifficultyTV.setText(getContext().getResources().getString(
                         R.string.edit_xxx_to_max_level,
                         tracker.getCounterLabel().toLowerCase()));
 
@@ -325,7 +355,7 @@ public class TrackersFragment extends Fragment implements TrackersContract.View 
                     quantifierTwoTV.setVisibility(View.GONE);
                 }
 
-                countToMaxTV.setText(mContext.getResources().getString(
+                countToMaxTV.setText(getContext().getResources().getString(
                         R.string.count_to_complete,
                         tracker.getCountToMaxLevel()));
 
@@ -384,10 +414,10 @@ public class TrackersFragment extends Fragment implements TrackersContract.View 
             // Timer button
             if(tracker.isCurrentlyTiming()){
                 topButton1.setText(R.string.end_timer);
-                topButton1.setTextColor(mContext.getResources().getColor(R.color.colorAccent));
+                topButton1.setTextColor(getContext().getResources().getColor(R.color.colorAccent));
             }else{
                 topButton1.setText(R.string.start_timer);
-                topButton1.setTextColor(mContext.getResources().getColor(R.color.default_text_color));
+                topButton1.setTextColor(getContext().getResources().getColor(R.color.default_text_color));
             }
             topButton1.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -404,6 +434,10 @@ public class TrackersFragment extends Fragment implements TrackersContract.View 
             topButton4.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+
+
+
+                    // todo
                     mPresenter.moreDetailsButtonClicked(tracker);
                 }
             });
@@ -425,9 +459,9 @@ public class TrackersFragment extends Fragment implements TrackersContract.View 
                 //hide timer button
                 topButton1.setVisibility(View.GONE);
 
-                topButton2.setText(mContext.getResources().
+                topButton3.setText(getContext().getResources().
                         getString(R.string.add_5_count,tracker.getCounterLabel()));
-                topButton3.setText(mContext.getResources().
+                topButton2.setText(getContext().getResources().
                         getString(R.string.add_1_count,tracker.getCounterLabel()));
 
                 button2AddAmount = 5;
@@ -438,14 +472,14 @@ public class TrackersFragment extends Fragment implements TrackersContract.View 
             topButton2.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    mPresenter.addToTrackerCount(tracker, button2AddAmount);
+                    mPresenter.addToTrackerScore(tracker, button2AddAmount);
                 }
             });
 
             topButton3.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    mPresenter.addToTrackerCount(tracker, button3AddAmount);
+                    mPresenter.addToTrackerScore(tracker, button3AddAmount);
                 }
             });
         }
@@ -453,7 +487,7 @@ public class TrackersFragment extends Fragment implements TrackersContract.View 
         private void initCustomMaxCountLayout(View view, final Tracker tracker) {
 
             final View custom_max_count_layout = view.findViewById(R.id.custom_max_count_layout);
-            final EditText max_count_etv = view.findViewById(R.id.add_custom_count_etv);
+            final EditText max_count_etv = view.findViewById(R.id.add_custom_max_count_etv);
 
             int countToMax = (tracker.isTimeTracker())
                     ? tracker.getCountToMaxLevel()/60 //convert minutes to hours
@@ -467,18 +501,18 @@ public class TrackersFragment extends Fragment implements TrackersContract.View 
 
             // Difficulty setting spinner
             Spinner difficulty_spinner = view.findViewById(R.id.max_count_spinner);
-            String[] max_count_strings = mContext.getResources().
+            String[] max_count_strings = getContext().getResources().
                     getStringArray(R.array.tracker_count_strings);
             for (String s: max_count_strings) {
                 s += " " + tracker.getCounterLabel();
             }
             ArrayAdapter<String> adapter = new ArrayAdapter<String>(
-                    mContext,
+                    getContext(),
                     android.R.layout.simple_spinner_item,
                     max_count_strings);
             adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             difficulty_spinner.setAdapter(adapter);
-            final int[] max_count_options = mContext.getResources().
+            final int[] max_count_options = getContext().getResources().
                     getIntArray(R.array.tracker_count_ints);
 
 
@@ -502,7 +536,7 @@ public class TrackersFragment extends Fragment implements TrackersContract.View 
                     if(position == 0){
                         custom_max_count_layout.setVisibility(View.VISIBLE);
                     }else{
-                        mPresenter.changeTrackerMaxCount(tracker, max_count_options[position-1]);
+                        mPresenter.changeTrackerMaxScore(tracker, max_count_options[position-1]);
                         custom_max_count_layout.setVisibility(View.GONE);
                     }
                 }
@@ -519,7 +553,7 @@ public class TrackersFragment extends Fragment implements TrackersContract.View 
                 public void onClick(View view) {
                     String input = max_count_etv.getText().toString();
                     if(input.equals("")){
-                        Toast.makeText(mContext, R.string.must_enter_a_time, Toast.LENGTH_LONG).show();
+                        Toast.makeText(getContext(), R.string.must_enter_a_time, Toast.LENGTH_LONG).show();
                         return;
                     }
                     int difficulty = Integer.parseInt(input);
@@ -527,7 +561,7 @@ public class TrackersFragment extends Fragment implements TrackersContract.View 
                         Toast.makeText(view.getContext(), R.string.custom_time_greater_than_0, Toast.LENGTH_LONG).show();
                         return;
                     }
-                    mPresenter.changeTrackerMaxCount(tracker, difficulty);
+                    mPresenter.changeTrackerMaxScore(tracker, difficulty);
                     hideSoftInput(max_count_etv);
                 }
             });
@@ -574,7 +608,7 @@ public class TrackersFragment extends Fragment implements TrackersContract.View 
 
         private void hideSoftInput(View v) {
             InputMethodManager imm = (InputMethodManager)
-                    mContext.getSystemService(Context.INPUT_METHOD_SERVICE);
+                    getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
             if(imm != null){
                 imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
             }

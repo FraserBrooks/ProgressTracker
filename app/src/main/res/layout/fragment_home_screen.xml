@@ -8,7 +8,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/appBG"
-    tools:context="com.fraserbrooks.progresstracker.MainActivity">
+    tools:context="com.fraserbrooks.progresstracker.mainactivity.MainActivity_">
 
 
 

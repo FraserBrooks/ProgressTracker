@@ -9,11 +9,15 @@ import android.os.Handler;
 import android.support.annotation.NonNull;
 
 
+import com.fraserbrooks.progresstracker.data.ScoreEntry;
+import com.fraserbrooks.progresstracker.data.Target;
 import com.fraserbrooks.progresstracker.data.Tracker;
 import com.fraserbrooks.progresstracker.data.source.DataSource;
 import com.google.common.collect.Lists;
 
+import java.util.Calendar;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 
@@ -57,12 +61,12 @@ public class RemoteDataSource implements DataSource{
     }
 
     /**
-     * Note: {@link LoadTrackersCallback#onDataNotAvailable()} is never fired. In a real remote data
+     * Note: {@link GetTrackersCallback#onDataNotAvailable()} is never fired. In a real remote data
      * source implementation, this would be fired if the server can't be contacted or the server
      * returns an error.
      */
     @Override
-    public void getTrackers(@NonNull final LoadTrackersCallback callback) {
+    public void getTrackers(boolean runOnUiThread, @NonNull final GetTrackersCallback callback) {
         // Simulate network by delaying the execution.
         Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
@@ -80,7 +84,7 @@ public class RemoteDataSource implements DataSource{
      * returns an error.
      */
     @Override
-    public void getTracker(@NonNull String trackerId, @NonNull final GetTrackerCallback callback) {
+    public void getTracker(boolean runOnUiThread, @NonNull String trackerId, @NonNull final GetTrackerCallback callback) {
         final Tracker tracker = TRACKERS_SERVICE_DATA.get(trackerId);
 
         // Simulate network by delaying the execution.
@@ -94,12 +98,18 @@ public class RemoteDataSource implements DataSource{
     }
 
     @Override
-    public void saveTracker(@NonNull Tracker tracker) {
+    public boolean saveTracker(@NonNull Tracker tracker) {
         TRACKERS_SERVICE_DATA.put(tracker.getId(), tracker);
+        return false;
     }
 
     @Override
-    public void refreshTrackers() {
+    public void updateTracker(@NonNull Tracker tracker) {
+
+    }
+
+    @Override
+    public void refreshAllCache() {
         // Not required because the {@link Repository} handles the logic of refreshing the
         // tasks from all the available data sources.
     }
@@ -110,7 +120,88 @@ public class RemoteDataSource implements DataSource{
     }
 
     @Override
-    public void deleteTracker(@NonNull String trackerId) {
+    public boolean deleteTracker(@NonNull String trackerId) {
         TRACKERS_SERVICE_DATA.remove(trackerId);
+        return false;
+    }
+
+    @Override
+    public void getTargets(boolean runOnUiThread, @NonNull GetTargetsCallback callback) {
+
+    }
+
+    @Override
+    public void getTarget(boolean runOnUiThread, @NonNull String targetId, @NonNull GetTargetCallback callback) {
+
+    }
+
+    @Override
+    public boolean saveTarget(@NonNull Target target) {
+        return false;
+    }
+
+    @Override
+    public void updateTarget(@NonNull Target target) {
+
+    }
+
+    @Override
+    public void deleteAllTargets() {
+
+    }
+
+    @Override
+    public boolean deleteTarget(@NonNull String targetId) {
+        return false;
+    }
+
+    @Override
+    public List<ScoreEntry> getEntries() {
+        return null;
+    }
+
+    @Override
+    public void getDaysTargetWasMet(String targetId1, String targetId2, String targetId3, GetDaysTargetsMetCallback callback) {
+
+    }
+
+    @Override
+    public void deleteAllEntries() {
+
+    }
+
+    @Override
+    public void incrementScore(@NonNull String trackerId, int score) {
+
+    }
+
+    @Override
+    public void getTrackerTotalScore(@NonNull String trackerId, @NonNull GetNumberCallback callback) {
+
+    }
+
+    @Override
+    public void getScoreOnDay(@NonNull String trackerId, Calendar day, @NonNull GetNumberCallback callback) {
+
+    }
+
+    @Override
+    public void getScoreOnWeek(@NonNull String trackerId, Calendar week, @NonNull GetNumberCallback callback) {
+
+    }
+
+    @Override
+    public void getScoreOnMonth(@NonNull String trackerId, Calendar month, @NonNull GetNumberCallback callback) {
+
+    }
+
+    @Override
+    public void getScoreOnYear(@NonNull String trackerId, Calendar year, @NonNull GetNumberCallback callback) {
+
+    }
+
+    @Override
+    public void getTargetAverageCompletion(@NonNull String targetId, @NonNull GetNumberCallback callback) {
+
     }
 }

@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/target_screen_container"
-    tools:context="com.fraserbrooks.progresstracker.TargetScreenFragment">
+    tools:context="com.fraserbrooks.progresstracker.mainactivity.MainActivity_">
 
 
 
@@ -13,7 +13,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:listitem="@layout/target_item"
-        tools:listfooter="@layout/add_tracker_button"
+        tools:listfooter="@layout/add_item_button"
         android:layout_marginTop="8dp"
         android:divider="@null"
         android:dividerHeight="0dp">

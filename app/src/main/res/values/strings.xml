@@ -76,9 +76,9 @@
         <item>"YEAR"</item>
     </string-array>
 
-    <string name="calendar_target_1">calendar_target_1</string>
-    <string name="calendar_target_2">calendar_target_2</string>
-    <string name="calendar_target_3">calendar_target_3</string>
+    <string name="calendar_saved_target_1">calendar_saved_target_1</string>
+    <string name="calendar_saved_target_2">calendar_saved_target_2</string>
+    <string name="calendar_saved_target_3">calendar_saved_target_3</string>
 
 
     <string name="material_calendar_monday">M</string>

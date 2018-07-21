@@ -12,7 +12,11 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 
+import java.util.Calendar;
+import java.util.Date;
+import java.text.SimpleDateFormat;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.UUID;
 
 @Entity(tableName = "trackers")
@@ -20,7 +24,7 @@ public class Tracker {
 
     @PrimaryKey
     @NonNull
-    @ColumnInfo(name = "entryid")
+    @ColumnInfo(name = "trackerId")
     private final String mId;
 
     @NonNull
@@ -32,14 +36,6 @@ public class Tracker {
 
     @ColumnInfo(name = "sofar")
     private int mCountSoFar;
-
-    @NonNull
-    @ColumnInfo(name = "addedeachday")
-    private HashMap<String, Integer> mAddedEachDay;
-
-    @NonNull
-    @ColumnInfo(name = "addedeachweek")
-    private HashMap<String, Integer> mAddedEachWeek;
 
     @ColumnInfo(name = "timerstart")
     private long mTimerStartTime;
@@ -54,12 +50,23 @@ public class Tracker {
     @ColumnInfo(name = "counterLabel")
     private String mCounterLabel;
 
+    @ColumnInfo(name = "archived")
+    private boolean mArchived;
+
     @Ignore
     private boolean mExpanded;
 
     @Ignore
-    private static final int COUNT_TO_MAX_NO_DIFFICULTY_SET = 4800;
+    private static final int COUNT_TO_MAX_WHEN_NO_DIFFICULTY_SET = 4800;
 
+    @Ignore
+    private int mLevel;
+
+    @Ignore
+    private float mProgress;
+
+    @Ignore
+    private String mLevelToDisplay = "";
 
     /**
      * Use this constructor to create a new Tracker that tracks time (eg. minutes/hours).
@@ -70,9 +77,7 @@ public class Tracker {
     @Ignore
     public Tracker(@NonNull String title, int toMaxLevel) {
         this(title, UUID.randomUUID().toString(), toMaxLevel, 0,
-                new HashMap<String, Integer>(),
-                new HashMap<String, Integer>(),
-                0, false, true, "hours");
+                0, false, true, "hours", false);
     }
 
     /**
@@ -86,9 +91,7 @@ public class Tracker {
     @Ignore
     public Tracker(@NonNull String title, int toMaxLevel, String counterLabel){
         this(title, UUID.randomUUID().toString(), toMaxLevel, 0,
-                new HashMap<String, Integer>(),
-                new HashMap<String, Integer>(),
-                0, false, false, counterLabel);
+                0, false, false, counterLabel, false);
     }
 
 
@@ -99,31 +102,27 @@ public class Tracker {
      * @param id              id of the tracker
      * @param countToMaxLevel      number of minutes/'counterName' to max level
      * @param countSoFar      the count of minutes/'counterName' so far
-     * @param addedEachDay    a map of days to the change to count for that day
-     * @param addedEachWeek   a map of weeks to the change to count for that week
      * @param timerStartTime  time that the user started timing. Used only if 'isTimeTracker' = true
      * @param currentlyTiming currently timing. When set to false, minutes will be added to
      *                        countSoFar based on minutes since 'timerStartTime'
      * @param timeTracker   count refers to minutes/hours else count refers to 'counterName'
      * @param counterLabel     thing counted if not time (eg. 'projects done', 'miles ran', etc.)
+     * @param archived         boolean: whether or not the tracker has been archived
      */
     public Tracker(@NonNull String title, @NonNull String id,
                    int countToMaxLevel,  int countSoFar,
-                   @NonNull HashMap<String, Integer> addedEachDay,
-                   @NonNull HashMap<String, Integer> addedEachWeek,
                    long timerStartTime,
                    boolean currentlyTiming, boolean timeTracker,
-                   @Nullable String counterLabel) {
+                   String counterLabel, boolean archived) {
         this.mId = id;
         this.mTitle = title;
         this.mCountToMaxLevel = countToMaxLevel;
         this.mCountSoFar = countSoFar;
-        this.mAddedEachDay = addedEachDay;
-        this.mAddedEachWeek = addedEachWeek;
         this.mTimerStartTime = timerStartTime;
         this.mCurrentlyTiming = currentlyTiming;
         this.mTimeTracker = timeTracker;
         this.mCounterLabel = counterLabel;
+        this.mArchived = archived;
         mExpanded = false;
     }
 
@@ -141,7 +140,6 @@ public class Tracker {
         mTitle = title;
     }
 
-    @NonNull
     public int getCountToMaxLevel() {
         return mCountToMaxLevel;
     }
@@ -150,7 +148,6 @@ public class Tracker {
         mCountToMaxLevel = countToMaxLevel;
     }
 
-    @NonNull
     public int getCountSoFar() {
         return mCountSoFar;
     }
@@ -159,17 +156,6 @@ public class Tracker {
         mCountSoFar = countSoFar;
     }
 
-    @NonNull
-    public HashMap<String, Integer> getAddedEachDay() {
-        return mAddedEachDay;
-    }
-
-    @NonNull
-    public HashMap<String, Integer> getAddedEachWeek() {
-        return mAddedEachWeek;
-    }
-
-    @NonNull
     public long getTimerStartTime() {
         return mTimerStartTime;
     }
@@ -181,12 +167,10 @@ public class Tracker {
         }
     }
 
-    @NonNull
     public boolean isCurrentlyTiming() {
         return mCurrentlyTiming;
     }
 
-    @NonNull
     public boolean isTimeTracker() {
         return mTimeTracker;
     }
@@ -198,6 +182,15 @@ public class Tracker {
 
     public void setCounterLabel(String counterLabel){
         mCounterLabel = counterLabel;
+    }
+
+
+    public boolean isArchived() {
+        return mArchived;
+    }
+
+    public void setArchived(boolean b){
+        mArchived = b;
     }
 
     public boolean isExpanded() {
@@ -220,36 +213,58 @@ public class Tracker {
 
     }
 
-    public int getMinutesSinceTimerStart(){
+    private int getMinutesSinceTimerStart(){
         long timePassedMilli = System.currentTimeMillis() - getTimerStartTime();
         long timePassedMinutes = (timePassedMilli / 1000) / 60;
         return (int) timePassedMinutes;
     }
 
-    public int getLevel(){
+
+    public void setUiValues(){
         int level = 0;
         float score = getCountSoFar();
         int countToMax = (getCountToMaxLevel() != 0)
-                ? getCountToMaxLevel() : COUNT_TO_MAX_NO_DIFFICULTY_SET;
+                ? getCountToMaxLevel() : COUNT_TO_MAX_WHEN_NO_DIFFICULTY_SET;
         while((score / (float) countToMax) > (1/8f)){
             level += 1;
             score -= (float) countToMax / 8;
         }
-        return level;
-    }
+        mLevel = level;
 
-    public float getPercentageToNextLevel(){
         float soFar = getCountSoFar();
-        int countToMax = (getCountToMaxLevel() != 0)
-                ? getCountToMaxLevel() : COUNT_TO_MAX_NO_DIFFICULTY_SET;
         while((soFar / ((float) countToMax)) > (1/8f)){
             soFar -= (float) countToMax / 8;
         }
         float decimal = soFar / ((float) countToMax / 8);
         if (decimal >= 1f){
-            decimal = 0.999f;
+            decimal = 1f;
         }
-        return decimal;
+        mProgress = decimal;
+
+        String levelToDisplay;
+
+        // Only display level if past max level or if no difficulty is set
+        if (getLevel() > 8 ||
+                (getCountToMaxLevel() == 0 && getLevel() > 0)){
+            int l = getLevel();
+            l = (getCountToMaxLevel() == 0) ? l : l-8; //subtract 8 if no difficulty
+            levelToDisplay = "" + l;
+        } else{
+            levelToDisplay = ""; // Don't display level
+        }
+        mLevelToDisplay = levelToDisplay;
+    }
+
+    public int getLevel(){
+        return mLevel;
+    }
+
+    public float getPercentageToNextLevel(){
+        return mProgress;
+    }
+
+    public String getLevelToDisplay(){
+        return mLevelToDisplay;
     }
 
     @Override

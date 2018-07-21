@@ -9,27 +9,49 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true">
         <activity
-            android:name="com.fraserbrooks.progresstracker.MainActivity"
+
+            android:name="com.fraserbrooks.progresstracker.mainactivity.MainActivity_"
+
             android:label="@string/app_name"
+
             android:theme="@style/AppTheme"
+
             android:windowSoftInputMode="adjustPan">
+
             <intent-filter>
+
                 <action android:name="android.intent.action.MAIN" />
 
+
+
                 <category android:name="android.intent.category.LAUNCHER" />
+
             </intent-filter>
+
         </activity>
+
         <activity
-            android:name="com.fraserbrooks.progresstracker.AddTrackerActivity"
+
+            android:name="com.fraserbrooks.progresstracker.addTrackerActivity.AddTrackerActivity_"
+
             android:label="@string/title_activity_add_tracker"
+
             android:theme="@style/AppSecondaryTheme"
-            android:parentActivityName=".MainActivity">
+
+            android:parentActivityName=".mainactivity.MainActivity_">
+
         </activity>
+
         <activity
-            android:name="com.fraserbrooks.progresstracker.AddTargetActivity"
+
+            android:name="com.fraserbrooks.progresstracker.addTargetActivity.AddTargetActivity"
+
             android:label="@string/title_activity_add_target"
+
             android:theme="@style/AppSecondaryTheme"
-            android:parentActivityName=".MainActivity">
+
+            android:parentActivityName=".mainactivity.MainActivity_">
+
         </activity>
     </application>
 

@@ -12,6 +12,7 @@
     android:layout_marginRight="4dp"
     android:layout_marginTop="8dp"
     android:background="@drawable/dabble_item_background"
+    android:baselineAligned="false"
     >
 
     <!-- Left Layout text and progress bar -->
@@ -102,41 +103,13 @@
             android:paddingRight="16dp"/>
 
         <!-- Level Text Box -->
-        <LinearLayout
+        <TextView
+            android:id="@+id/text_level"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical">
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="0dp"
-                android:layout_weight="2"/>
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:orientation="horizontal"
-                android:layout_weight="4">
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="2"/>
-                <TextView
-                    android:id="@+id/text_level"
-                    android:layout_width="0dp"
-                    android:layout_height="20dp"
-                    android:gravity="center"
-                    android:textColor="@color/textLevelOverlay"
-                    android:textStyle="bold"
-                    android:layout_weight="4"/>
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="2"/>
-            </LinearLayout>
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="0dp"
-                android:layout_weight="2"/>
+            android:gravity="center"
+            android:textColor="@color/textLevelOverlay"
+            android:textStyle="bold"/>
 
-        </LinearLayout>
     </RelativeLayout>
 </LinearLayout>

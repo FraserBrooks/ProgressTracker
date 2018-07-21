@@ -1,4 +1,4 @@
-package com.fraserbrooks.progresstracker;
+package com.fraserbrooks.progresstracker.addTrackerActivity;
 
 import android.content.Context;
 import android.util.AttributeSet;
@@ -7,13 +7,15 @@ import android.widget.RadioButton;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 
+import com.fraserbrooks.progresstracker.R;
+
 /**
  * Created by Fraser on 02/01/2018.
  */
 
 public class RadioButtonTableLayout extends TableLayout implements View.OnClickListener {
 
-    private static final String TAG = "com.fraserbrooks.progresstracker.RadioButtonTableLayout";
+    private static final String TAG = "com.fraserbrooks.progresstracker.addTrackerActivity.RadioButtonTableLayout";
     private RadioButton clickedButton;
 
     public RadioButtonTableLayout(Context context) {

@@ -1,7 +1,9 @@
 package com.fraserbrooks.progresstracker.mainactivity;
 
 import android.support.annotation.NonNull;
+import android.util.Log;
 
+import com.fraserbrooks.progresstracker.asynctasks.LoadTrackersTask;
 import com.fraserbrooks.progresstracker.data.Tracker;
 import com.fraserbrooks.progresstracker.data.source.DataSource;
 import com.fraserbrooks.progresstracker.data.source.Repository;
@@ -19,6 +21,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public class TrackersPresenter implements TrackersContract.Presenter {
 
+    private final String TAG = "TrackersPresenter";
+
     private final Repository mTrackersRepository;
 
     private final TrackersContract.View mTrackersView;
@@ -35,6 +39,7 @@ public class TrackersPresenter implements TrackersContract.Presenter {
 
     @Override
     public void start() {
+        Log.d(TAG, "start: called");
         loadTrackers(false);
     }
 
@@ -43,34 +48,57 @@ public class TrackersPresenter implements TrackersContract.Presenter {
      */
     @Override
     public void loadTrackers(boolean forceUpdate) {
+
         // A network reload will be forced on first load.
         if(forceUpdate || mFirstLoad){
-            mTrackersRepository.refreshTrackers();
+            mTrackersRepository.refreshAllCache();
         }
         mFirstLoad = false;
+
+        mTrackersView.showLoading();
 
         // The network request might be handled in a different thread so make sure Espresso knows
         // that the app is busy until the response is handled.
         EspressoIdlingResource.increment(); // App is busy until further notice
 
-        mTrackersRepository.getTrackers(new DataSource.LoadTrackersCallback() {
+
+
+        mTrackersRepository.getTrackers(true, new DataSource.GetTrackersCallback() {
             @Override
             public void onTrackersLoaded(List<Tracker> trackers) {
-                // This callback may be called twice, once for the cache and once for loading
-                // the data from the server API, so we check before decrementing, otherwise
-                // it throws "Counter has been corrupted!" exception.
-                if (!EspressoIdlingResource.getIdlingResource().isIdleNow()) {
-                    EspressoIdlingResource.decrement(); // Set app as idle.
-                }
+
                 // The view may not be able to handle UI updates anymore
                 if (!mTrackersView.isActive()) {
+                    Log.d(TAG, "onTrackersLoaded: mTackersView not active. exiting from callback");
                     return;
                 }
 
+
+
+                mTrackersView.hideLoading();
+
                 if(trackers.isEmpty()){
+                    Log.d(TAG, "onTrackersLoaded: trackers.isEmpty");
                     mTrackersView.showNoTrackers();
                 }else{
-                    mTrackersView.showTrackers(trackers);
+                    Log.d(TAG, "onTrackersLoaded: trackersView.showTrackers()");
+                    new LoadTrackersTask(new DataSource.GetTrackerCallback() {
+                        @Override
+                        public void onTrackerLoaded(Tracker tracker) {
+                            // The view may not be able to handle UI updates anymore
+                            if (!mTrackersView.isActive()) {
+                                Log.d(TAG, "onTrackersLoaded: mTackersView not active. exiting from callback");
+                                return;
+                            }
+                            mTrackersView.updateOrAddTracker(tracker);
+                            mTrackersView.updateInGraph(tracker);
+                        }
+
+                        @Override
+                        public void onDataNotAvailable() {
+                            Log.e(TAG, "onDataNotAvailable from async task");
+                        }
+                    }).execute(trackers.toArray(new Tracker[trackers.size()]));
                 }
             }
 
@@ -96,6 +124,7 @@ public class TrackersPresenter implements TrackersContract.Presenter {
     @Override
     public void setTrackerExpandCollapse(Tracker tracker) {
         tracker.setExpanded(!tracker.isExpanded());
+        mTrackersView.updateOrAddTracker(tracker);
     }
 
     @Override
@@ -128,18 +157,7 @@ public class TrackersPresenter implements TrackersContract.Presenter {
 
     @Override
     public String getLevelIndicator(Tracker tracker) {
-        String levelToDisplay;
-
-        // Only display level if past max level or if no difficulty is set
-        if (tracker.getLevel() > 8 ||
-                (tracker.getCountToMaxLevel() == 0 && tracker.getLevel() > 0)){
-            int l = tracker.getLevel();
-            l = (tracker.getCountToMaxLevel() == 0) ? l : l-8; //subtract 8 if no difficulty
-            levelToDisplay = "" + l;
-        } else{
-            levelToDisplay = ""; // Don't display level
-        }
-        return levelToDisplay;
+        return tracker.getLevelToDisplay();
     }
 
     @Override
@@ -148,13 +166,18 @@ public class TrackersPresenter implements TrackersContract.Presenter {
     }
 
     @Override
-    public void changeTrackerMaxCount(Tracker tracker, int newMax) {
+    public void changeTrackerMaxScore(Tracker tracker, int newMax) {
         // todo
     }
 
     @Override
-    public void addToTrackerCount(Tracker tracker, int c) {
-        // todo
+    public void addToTrackerScore(Tracker tracker, int increment) {
+
+        mTrackersRepository.incrementScore(tracker.getId(), increment);
+        tracker.setCountSoFar(tracker.getCountSoFar() + increment);
+        tracker.setUiValues();
+        mTrackersView.updateOrAddTracker(tracker);
+        mTrackersView.updateInGraph(tracker);
     }
 
     @Override
@@ -164,12 +187,30 @@ public class TrackersPresenter implements TrackersContract.Presenter {
 
     @Override
     public void moreDetailsButtonClicked(Tracker tracker) {
-        // todo
+        // todo (currently temp delete)
+
+        mTrackersRepository.deleteTracker(tracker.getId());
+
+        mTrackersRepository.getTrackers(true, new DataSource.GetTrackersCallback() {
+            @Override
+            public void onTrackersLoaded(List<Tracker> trackers) {
+                mTrackersView.showTrackers(trackers);
+                mTrackersView.refreshListAdapter();
+            }
+
+            @Override
+            public void onDataNotAvailable() {
+
+            }
+        });
+
+        //mTrackersView.showTrackerDetailsScreen(tracker.getId());
     }
 
     @Override
     public void changeTrackerOrder(int from, int to) {
 
+        //todo
 //                ArrayList<Tracker> ls = mListAdapter.getItems();
 //
 //                //Assuming that item is moved up the list

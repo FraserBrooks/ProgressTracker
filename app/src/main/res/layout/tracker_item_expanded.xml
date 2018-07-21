@@ -360,7 +360,7 @@
                 android:textAlignment="textEnd"
                 android:gravity="end" />
             <EditText
-                android:id="@+id/add_custom_count_etv"
+                android:id="@+id/add_custom_max_count_etv"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="4"

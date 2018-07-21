@@ -2,15 +2,15 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "7274433abe46bc6286e1363b1ffba033",
+    "identityHash": "aef3dcffc9b843756534e3b5f714d5f9",
     "entities": [
       {
         "tableName": "trackers",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`entryid` TEXT NOT NULL, `title` TEXT NOT NULL, `tomaxlevel` INTEGER NOT NULL, `sofar` INTEGER NOT NULL, `addedeachday` TEXT NOT NULL, `addedeachweek` TEXT NOT NULL, `timerstart` INTEGER NOT NULL, `currentlytiming` INTEGER NOT NULL, `istimetracker` INTEGER NOT NULL, `counterLabel` TEXT NOT NULL, PRIMARY KEY(`entryid`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`trackerId` TEXT NOT NULL, `title` TEXT NOT NULL, `tomaxlevel` INTEGER NOT NULL, `sofar` INTEGER NOT NULL, `timerstart` INTEGER NOT NULL, `currentlytiming` INTEGER NOT NULL, `istimetracker` INTEGER NOT NULL, `counterLabel` TEXT NOT NULL, `archived` INTEGER NOT NULL, PRIMARY KEY(`trackerId`))",
         "fields": [
           {
             "fieldPath": "mId",
-            "columnName": "entryid",
+            "columnName": "trackerId",
             "affinity": "TEXT",
             "notNull": true
           },
@@ -30,18 +30,6 @@
             "fieldPath": "mCountSoFar",
             "columnName": "sofar",
             "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "mAddedEachDay",
-            "columnName": "addedeachday",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "mAddedEachWeek",
-            "columnName": "addedeachweek",
-            "affinity": "TEXT",
             "notNull": true
           },
           {
@@ -67,21 +55,179 @@
             "columnName": "counterLabel",
             "affinity": "TEXT",
             "notNull": true
+          },
+          {
+            "fieldPath": "mArchived",
+            "columnName": "archived",
+            "affinity": "INTEGER",
+            "notNull": true
           }
         ],
         "primaryKey": {
           "columnNames": [
-            "entryid"
+            "trackerId"
           ],
           "autoGenerate": false
         },
         "indices": [],
         "foreignKeys": []
+      },
+      {
+        "tableName": "targets",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`targetId` TEXT NOT NULL, `trackId` TEXT NOT NULL, `numberToAchieve` INTEGER NOT NULL, `rollingTarget` INTEGER NOT NULL, `interval` TEXT, `deadline` TEXT, `startDate` TEXT, `achieved` INTEGER NOT NULL, `archived` INTEGER NOT NULL, PRIMARY KEY(`targetId`), FOREIGN KEY(`trackId`) REFERENCES `trackers`(`trackerId`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "mId",
+            "columnName": "targetId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "mTrackId",
+            "columnName": "trackId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "mNumberToAchieve",
+            "columnName": "numberToAchieve",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "mIsRollingTarget",
+            "columnName": "rollingTarget",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "mInterval",
+            "columnName": "interval",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "mDeadline",
+            "columnName": "deadline",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "mStartDate",
+            "columnName": "startDate",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "mAchieved",
+            "columnName": "achieved",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "mArchived",
+            "columnName": "archived",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "targetId"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [
+          {
+            "name": "index_targets_trackId",
+            "unique": false,
+            "columnNames": [
+              "trackId"
+            ],
+            "createSql": "CREATE  INDEX `index_targets_trackId` ON `${TABLE_NAME}` (`trackId`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "trackers",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "trackId"
+            ],
+            "referencedColumns": [
+              "trackerId"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "entries",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`trackId` TEXT NOT NULL, `day` TEXT NOT NULL, `week` TEXT NOT NULL, `month` TEXT NOT NULL, `year` TEXT NOT NULL, `scoreThisDay` INTEGER NOT NULL, PRIMARY KEY(`trackId`, `day`), FOREIGN KEY(`trackId`) REFERENCES `trackers`(`trackerId`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "mTrackId",
+            "columnName": "trackId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "mDay",
+            "columnName": "day",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "mWeek",
+            "columnName": "week",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "mMonth",
+            "columnName": "month",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "mYear",
+            "columnName": "year",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "mScoreThisDay",
+            "columnName": "scoreThisDay",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "trackId",
+            "day"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": [
+          {
+            "table": "trackers",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "trackId"
+            ],
+            "referencedColumns": [
+              "trackerId"
+            ]
+          }
+        ]
       }
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \"7274433abe46bc6286e1363b1ffba033\")"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \"aef3dcffc9b843756534e3b5f714d5f9\")"
     ]
   }
 }

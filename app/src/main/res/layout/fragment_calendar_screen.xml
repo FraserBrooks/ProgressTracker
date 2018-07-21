@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/calendar_screen_container"
-    tools:context="com.fraserbrooks.progresstracker.CalendarScreenFragment"
+    tools:context="com.fraserbrooks.progresstracker.mainactivity.MainActivity_"
     android:background="@drawable/tab_item_background">
 
 
@@ -57,7 +57,7 @@
         <Spinner
             android:id="@+id/calendar_spinner_1"
             android:layout_width="match_parent"
-            android:layout_height="45dp"
+            android:layout_height="wrap_content"
             android:layout_marginLeft="20dp"
             android:layout_marginRight="20dp"
             android:background="@drawable/button_background">
@@ -90,7 +90,7 @@
         <Spinner
             android:id="@+id/calendar_spinner_2"
             android:layout_width="match_parent"
-            android:layout_height="45dp"
+            android:layout_height="wrap_content"
             android:layout_marginLeft="20dp"
             android:layout_marginRight="20dp"
             android:background="@drawable/button_background">
@@ -123,7 +123,7 @@
         <Spinner
             android:id="@+id/calendar_spinner_3"
             android:layout_width="match_parent"
-            android:layout_height="45dp"
+            android:layout_height="wrap_content"
             android:layout_marginLeft="20dp"
             android:layout_marginRight="20dp"
             android:layout_marginBottom="20dp"
