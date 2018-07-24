@@ -42,7 +42,7 @@ public class ScoreEntry {
 
     @NonNull
     @ColumnInfo(name = "year")
-    @TypeConverters({Converters.MonthConverters.class})
+    @TypeConverters({Converters.YearConverters.class})
     private Calendar mYear;
 
     @ColumnInfo(name = "scoreThisDay")

@@ -1,6 +1,7 @@
 package com.fraserbrooks.progresstracker.mainactivity;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.fraserbrooks.progresstracker.asynctasks.LoadDayTargetsForCalendarTask;
@@ -10,10 +11,7 @@ import com.fraserbrooks.progresstracker.data.source.Repository;
 import com.fraserbrooks.progresstracker.util.AppExecutors;
 import com.fraserbrooks.progresstracker.util.EspressoIdlingResource;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 public class CalendarPresenter implements CalendarContract.Presenter{
 
@@ -34,6 +32,18 @@ public class CalendarPresenter implements CalendarContract.Presenter{
         mCalendarView = view;
 
         mCalendarView.setPresenter(this);
+
+        mRepository.addDeleteTargetListener(new Repository.DeleteTargetListener() {
+            @Override
+            public boolean isActive() {
+                return mCalendarView.isActive();
+            }
+
+            @Override
+            public void trackerDeleted(Target targetToDelete) {
+                mCalendarView.targetDeleted(targetToDelete);
+            }
+        });
     }
 
 
@@ -43,10 +53,14 @@ public class CalendarPresenter implements CalendarContract.Presenter{
     }
 
     public void loadTargetNamesAndSetSpinners() {
+        Log.d(TAG, "loadTargetNamesAndSetSpinners: called");
+
         // The network request might be handled in a different thread so make sure Espresso knows
         // that the app is busy until the response is handled.
         EspressoIdlingResource.increment(); // App is busy until further notice
         mCalendarView.showLoading();
+
+
 
         mAppExecutors.diskIO().execute(new Runnable() {
             @Override
@@ -55,16 +69,19 @@ public class CalendarPresenter implements CalendarContract.Presenter{
                     @Override
                     public void onTargetsLoaded(final List<Target> targets) {
 
+                        Log.d(TAG, "onTargetsLoaded: starting new LoadDayTargetsTask");
                         new LoadDayTargetsForCalendarTask(new DataSource.GetTargetsCallback() {
                             @Override
-                            public void onTargetsLoaded(List<Target> targets) {
+                            public void onTargetsLoaded(@Nullable List<Target> targets) {
+                                // Called when task finished (targets = null)
+                                Log.d(TAG, "onTargetsLoaded: setting target spinners");
                                 mCalendarView.setTargetSpinners();
                                 initCalendar();
                             }
 
                             @Override
                             public void onTargetLoaded(Target target) {
-                                mCalendarView.addToTargetSpinners(target);
+                                mCalendarView.updateOrAddTarget(target);
                             }
 
                             @Override
@@ -76,9 +93,7 @@ public class CalendarPresenter implements CalendarContract.Presenter{
 
                     @Override
                     public void onTargetLoaded(Target target) {
-                        if(target.isRollingTarget() && target.getInterval().equals("DAY")){
-                            mCalendarView.addToTargetSpinners(target);
-                        }
+                        // Staggered load = false
                     }
 
                     @Override
@@ -92,6 +107,8 @@ public class CalendarPresenter implements CalendarContract.Presenter{
 
     @Override
     public void initCalendar() {
+
+        mCalendarView.showLoading();
 
         final Target target1 = mCalendarView.getFirstSelectedTarget();
         final Target target2 = mCalendarView.getSecondSelectedTarget();

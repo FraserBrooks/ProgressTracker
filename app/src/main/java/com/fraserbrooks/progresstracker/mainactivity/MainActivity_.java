@@ -15,7 +15,7 @@ import com.fraserbrooks.progresstracker.SettingsScreenFragment;
 import com.fraserbrooks.progresstracker.data.source.Repository;
 
 /**
- * Created by Frase on 06/04/2018.
+ * Created by Fraser on 06/04/2018.
  */
 
 public class MainActivity_ extends AppCompatActivity {
@@ -63,8 +63,6 @@ public class MainActivity_ extends AppCompatActivity {
 
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
 
-            int oldPosition = 0;
-
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
 
@@ -72,18 +70,14 @@ public class MainActivity_ extends AppCompatActivity {
 
             @Override
             public void onPageSelected(int newPosition) {
-                if(newPosition == 1 && oldPosition == 0){
-                    Log.d(TAG, "onPageSelected: home to target screen");
+                if(newPosition == 2){
+                    Log.d(TAG, "onPageSelected: calendar screen loaded");
 
-                    if(adapter.getTrackersFragment() != null){
-                        adapter.getTrackersFragment().onPause();
+                    if(adapter.getCalendarFragment() != null){
+                        adapter.getCalendarFragment().onResume();
                     }
 
-                    if(adapter.getTargetFragment() != null){
-                        adapter.getTargetFragment().onResume();
-                    }
                 }
-                oldPosition = newPosition;
 
             }
 
@@ -99,16 +93,14 @@ public class MainActivity_ extends AppCompatActivity {
 
         private TrackersFragment trackersFragment;
         private TargetsFragment targetFragment;
+        private CalendarFragment calendarFragment;
 
-
-        private Repository r;
 
         public MainPageAdapter(FragmentManager fm, int numOfTabs, Repository repo) {
             super(fm);
             this.numberOfTabs = numOfTabs;
             trackersFragment = null;
             targetFragment = null;
-            r = repo;
         }
 
         @Override
@@ -124,6 +116,7 @@ public class MainActivity_ extends AppCompatActivity {
                     return targetFragment;
                 case 2:
                     CalendarFragment calendarFragment = new CalendarFragment();
+                    setCalendarFragment(calendarFragment);
                     return calendarFragment;
                 case 3:
                     SettingsScreenFragment settingsScreen = new SettingsScreenFragment();
@@ -153,6 +146,14 @@ public class MainActivity_ extends AppCompatActivity {
 
         public TargetsFragment getTargetFragment() {
             return targetFragment;
+        }
+
+        public CalendarFragment getCalendarFragment() {
+            return calendarFragment;
+        }
+
+        public void setCalendarFragment(CalendarFragment calendarFragment) {
+            this.calendarFragment = calendarFragment;
         }
     }
 

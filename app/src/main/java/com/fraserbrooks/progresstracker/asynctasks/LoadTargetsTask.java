@@ -33,7 +33,7 @@ public class LoadTargetsTask extends AsyncTask<Target, Target, Void>{
             publishProgress(t);
             
             try {
-                Thread.sleep(100);
+                Thread.sleep(80);
             } catch (InterruptedException e) {
                 Log.e(TAG, "doInBackground: interrupted");
             }
@@ -57,6 +57,7 @@ public class LoadTargetsTask extends AsyncTask<Target, Target, Void>{
         if (!EspressoIdlingResource.getIdlingResource().isIdleNow()) {
             EspressoIdlingResource.decrement(); // Set app as idle.
         }
+        mCallback.onTargetsLoaded(null);
     }
 
 

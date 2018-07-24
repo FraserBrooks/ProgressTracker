@@ -44,6 +44,16 @@ public class Repository implements DataSource {
     private Map<String, Target> mCachedTargets;
 
 
+    public interface DeleteTargetListener{
+
+        boolean isActive();
+
+        void trackerDeleted(Target targetToDelete);
+
+    }
+    private List<DeleteTargetListener> mDeleteTargetListeners;
+
+
     private boolean mSyncEnabled = false;
 
     // Prevent direct instantiation.
@@ -53,6 +63,7 @@ public class Repository implements DataSource {
         mRemoteDataSource = checkNotNull(tasksRemoteDataSource);
         mLocalDataSource = checkNotNull(tasksLocalDataSource);
         mAppExecutors = checkNotNull(appExecutors);
+        mDeleteTargetListeners = new ArrayList<>();
     }
 
     /**
@@ -188,11 +199,44 @@ public class Repository implements DataSource {
     }
 
     @Override
-    public boolean deleteTracker(@NonNull String trackerId) {
+    public boolean deleteTracker(@NonNull final String trackerId) {
         boolean local = mRemoteDataSource.deleteTracker(checkNotNull(trackerId));
         boolean remote = mLocalDataSource.deleteTracker(checkNotNull(trackerId));
 
         mCachedTrackers.remove(trackerId);
+
+        // delete/remove targets with that tracker id
+        mAppExecutors.diskIO().execute(new Runnable() {
+            @Override
+            public void run() {
+                ArrayList<Target> ts = new ArrayList<>(mCachedTargets.values());
+                for(int i = 0;  i < ts.size() ; i++){
+                    if(ts.get(i).getTrackId().equals(trackerId)){
+                        final String idOfTargetToDelete = ts.get(i).getId();
+                        final Target targetToDelete = mCachedTargets.get(idOfTargetToDelete);
+                        mCachedTargets.remove(idOfTargetToDelete);
+                        ts.remove(i);
+                        i--;
+                        mAppExecutors.mainThread().execute(new Runnable() {
+                            @Override
+                            public void run() {
+                                for(int j = 0; j< mDeleteTargetListeners.size(); j++){
+                                    if(mDeleteTargetListeners.get(j).isActive()){
+                                        mDeleteTargetListeners.get(j).trackerDeleted(targetToDelete);
+                                    }else{
+                                        mDeleteTargetListeners.remove(j);
+                                        j--;
+                                    }
+                                }
+                            }
+                        });
+
+                    }
+                }
+            }
+        });
+
+
 
         return local;
     }
@@ -240,19 +284,24 @@ public class Repository implements DataSource {
     }
 
     @Override
-    public boolean saveTarget(@NonNull Target target) {
+    public boolean saveTarget(@NonNull final Target target) {
         checkNotNull(target);
+
         boolean remote = mRemoteDataSource.saveTarget(target);
         boolean local = mLocalDataSource.saveTarget(target);
 
-        // Do in memory cache update to keep the app UI up to date
-        if (mCachedTargets == null) {
-            mCachedTargets = new ConcurrentHashMap<>();
-        }else{
-            mCachedTargets.put(target.getId(), target);
-        }
-
-        return local;
+        mAppExecutors.diskIO().execute(new Runnable() {
+            @Override
+            public void run() {
+                // Do in memory cache update to keep the app UI up to date
+                if (mCachedTargets == null) {
+                    mCachedTargets = new ConcurrentHashMap<>();
+                }else{
+                    loadOrRefreshTarget(target);
+                }
+            }
+        });
+        return true;
     }
 
     @Override
@@ -302,8 +351,20 @@ public class Repository implements DataSource {
     }
 
     @Override
-    public void incrementScore(@NonNull String trackerId, int increment) {
+    public void incrementScore(@NonNull final String trackerId, int increment) {
         mLocalDataSource.incrementScore(trackerId, increment);
+
+        mAppExecutors.diskIO().execute(new Runnable() {
+            @Override
+            public void run() {
+                for(Target target : mCachedTargets.values()){
+                    if(target.getTrackId().equals(trackerId)){
+                        loadOrRefreshTarget(target);
+                    }
+                }
+            }
+        });
+
         if(mCachedTrackers != null){
             if(mCachedTrackers.get(trackerId) != null){
                 Tracker t = mCachedTrackers.get(trackerId);
@@ -314,6 +375,10 @@ public class Repository implements DataSource {
         if(mSyncEnabled){
             //todo
         }
+
+
+
+
     }
 
     @Override
@@ -424,80 +489,7 @@ public class Repository implements DataSource {
 
                 for (final Target target : targets) {
 
-                    mLocalDataSource.getTracker(target.getTrackId(), new GetTrackersCallback() {
-                        @Override
-                        public void onTrackersLoaded(List<Tracker> trackers) {
-                            // Shouldn't be used
-                            Log.e(TAG, "onTrackersLoaded called while refreshing Target cache");
-                        }
-
-                        @Override
-                        public void onTrackerLoaded(Tracker tracker) {
-                            target.setTrackerName(tracker.getTitle());
-                        }
-
-                        @Override
-                        public void onDataNotAvailable() {
-
-                        }
-                    });
-
-                    mLocalDataSource.getTargetAverageCompletion(target.getId(), new GetNumberCallback() {
-                        @Override
-                        public void onNumberLoaded(Integer number) {
-                            Log.d(TAG, "onNumberLoaded: calculated average for '" + target.getId()  + "' = " + number);
-                            target.setAverageOverTime(number);
-                        }
-
-                        @Override
-                        public void onDataNotAvailable() {
-                            // shouldn't happen
-                            Log.e(TAG, "SQL Error, target average not available");
-                        }
-                    });
-
-                    DataSource.GetNumberCallback callback = new DataSource.GetNumberCallback() {
-                        @Override
-                        public void onNumberLoaded(Integer number) {
-
-                            int percentage = (number * 100) / target.getNumberToAchieve();
-                            percentage = (percentage > 100) ? 100 : percentage;
-
-                            target.setCurrentProgressPercentage(percentage);
-
-                        }
-
-                        @Override
-                        public void onDataNotAvailable() {
-                            Log.e(TAG, "onDataNotAvailable: could not load target progress");
-                        }
-                    };
-
-                    if(target.isRollingTarget()){
-                        // Get progress for this day/week/month
-                        Calendar cal = Calendar.getInstance();
-                        switch (target.getInterval()){
-                            case "DAY":
-                                mLocalDataSource.getScoreOnDay(target.getTrackId(), cal, callback);
-                                break;
-                            case "WEEK":
-                                mLocalDataSource.getScoreOnWeek(target.getTrackId(), cal, callback);
-                                break;
-                            case "MONTH":
-                                mLocalDataSource.getScoreOnMonth(target.getTrackId(), cal, callback);
-                                break;
-                            case "YEAR":
-                                mLocalDataSource.getScoreOnYear(target.getTrackId(), cal, callback);
-                                break;
-                            default:
-                                mLocalDataSource.getScoreOnDay(target.getTrackId(), cal, callback);
-                                break;
-                        }
-                    }else{
-                        // todo: progress when not a rolling target
-                        target.setCurrentProgressPercentage(5);
-                    }
-                    mCachedTargets.put(target.getId(), target);
+                    loadOrRefreshTarget(target);
 
                     if(targetId == null && staggeredLoad){
                         // Callback wants all the targets but not loaded all at once
@@ -526,6 +518,84 @@ public class Repository implements DataSource {
                 targetCallback.onDataNotAvailable();
             }
         }, false);
+    }
+
+    private void loadOrRefreshTarget(final Target target) {
+        // Never call on the main thread
+        mLocalDataSource.getTracker(target.getTrackId(), new GetTrackersCallback() {
+            @Override
+            public void onTrackersLoaded(List<Tracker> trackers) {
+                // Shouldn't be used
+                Log.e(TAG, "onTrackersLoaded called while refreshing Target cache");
+            }
+
+            @Override
+            public void onTrackerLoaded(Tracker tracker) {
+                target.setTrackerName(tracker.getTitle());
+            }
+
+            @Override
+            public void onDataNotAvailable() {
+
+            }
+        });
+
+        mLocalDataSource.getTargetAverageCompletion(target.getId(), new GetNumberCallback() {
+            @Override
+            public void onNumberLoaded(Integer number) {
+                Log.d(TAG, "onNumberLoaded: calculated average for '" + target.getId()  + "' = " + number);
+                target.setAverageOverTime(number);
+            }
+
+            @Override
+            public void onDataNotAvailable() {
+                // shouldn't happen
+                Log.e(TAG, "SQL Error, target average not available");
+            }
+        });
+
+        GetNumberCallback callback = new GetNumberCallback() {
+            @Override
+            public void onNumberLoaded(Integer number) {
+
+                int percentage = (number * 100) / target.getNumberToAchieve();
+                percentage = (percentage > 100) ? 100 : percentage;
+
+                target.setCurrentProgressPercentage(percentage);
+
+            }
+
+            @Override
+            public void onDataNotAvailable() {
+                Log.e(TAG, "onDataNotAvailable: could not load target progress");
+            }
+        };
+
+        if(target.isRollingTarget()){
+            // Get progress for this day/week/month
+            Calendar cal = Calendar.getInstance();
+            switch (target.getInterval()){
+                case "DAY":
+                    mLocalDataSource.getScoreOnDay(target.getTrackId(), cal, callback);
+                    break;
+                case "WEEK":
+                    mLocalDataSource.getScoreOnWeek(target.getTrackId(), cal, callback);
+                    break;
+                case "MONTH":
+                    mLocalDataSource.getScoreOnMonth(target.getTrackId(), cal, callback);
+                    break;
+                case "YEAR":
+                    mLocalDataSource.getScoreOnYear(target.getTrackId(), cal, callback);
+                    break;
+                default:
+                    mLocalDataSource.getScoreOnDay(target.getTrackId(), cal, callback);
+                    break;
+            }
+        }else{
+            // todo: progress when not a rolling target
+            target.setCurrentProgressPercentage(5);
+        }
+        mCachedTargets.put(target.getId(), target);
     }
 
 
@@ -566,6 +636,11 @@ public class Repository implements DataSource {
         } else {
             return mCachedTargets.get(id);
         }
+    }
+
+
+    public void addDeleteTargetListener(DeleteTargetListener listener){
+        mDeleteTargetListeners.add(listener);
     }
 
 

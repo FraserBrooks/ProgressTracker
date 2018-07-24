@@ -51,7 +51,7 @@ public abstract class TrackersDao {
 
     @Query("SELECT day FROM entries WHERE " +
             "trackId = (SELECT trackId FROM targets WHERE targetId = :targetId)" +
-            "AND scoreThisDay = (SELECT numberToAchieve FROM targets WHERE targetId = :targetId)")
+            "AND scoreThisDay >= (SELECT numberToAchieve FROM targets WHERE targetId = :targetId)")
     @TypeConverters({Converters.DayConverters.class})
     public abstract List<Calendar> getDaysTargetCompleted(String targetId);
 
@@ -262,7 +262,12 @@ public abstract class TrackersDao {
     @TypeConverters({Converters.MonthConverters.class})
     abstract int getCountScoresOverMonthTarget(String targetId, int targetScore, Calendar start, Calendar end);
 
-
+    @Query("SELECT COUNT() FROM (SELECT * FROM entries " +
+            "WHERE trackId = (SELECT trackId FROM targets WHERE targetId = :targetId) " +
+            "AND year BETWEEN :start AND :end " +
+            "GROUP BY year HAVING SUM(scoreThisDay) >= :targetScore)")
+    @TypeConverters({Converters.YearConverters.class})
+    abstract int getCountScoresOverYearTarget(String targetId, int targetScore, Calendar start, Calendar end);
 
 
 

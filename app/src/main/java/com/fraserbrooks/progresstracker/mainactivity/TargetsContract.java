@@ -14,6 +14,8 @@ public interface TargetsContract {
 
         void updateOrAddTarget(Target target);
 
+        void removeTarget(Target target);
+
         void showLoading();
 
         void hideLoading();

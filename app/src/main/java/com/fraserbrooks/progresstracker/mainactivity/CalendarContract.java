@@ -18,19 +18,23 @@ public interface CalendarContract {
 
         Target getThirdSelectedTarget();
 
+        void targetDeleted(Target target);
+
         void updateCalendar(List<Calendar> firstTargetDays,
                             List<Calendar> secondTargetDays,
                             List<Calendar> thirdTargetDays);
 
         void setTargetSpinners();
 
-        void addToTargetSpinners(Target target);
+        void updateOrAddTarget(Target target);
 
         void showLoading();
 
         void hideLoading();
 
         void showNoDataAvailable();
+
+        boolean isActive();
 
     }
 

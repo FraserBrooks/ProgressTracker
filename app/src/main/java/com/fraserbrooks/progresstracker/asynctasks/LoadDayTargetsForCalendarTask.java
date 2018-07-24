@@ -52,6 +52,7 @@ public class LoadDayTargetsForCalendarTask extends AsyncTask<Target, Target, Voi
             EspressoIdlingResource.decrement(); // Set app as idle.
         }
 
+        mCallback.onTargetsLoaded(null);
 
     }
 

@@ -70,20 +70,15 @@ public class TrackersFragment extends Fragment implements TrackersContract.View 
     }
 
     @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
+    public void onResume(){
+        Log.d(TAG, "onResume: called");
+        super.onResume();
         mPresenter.start();
     }
 
     @Override
     public void setPresenter(@NonNull TrackersContract.Presenter presenter) {
         mPresenter = checkNotNull(presenter);
-    }
-
-    @Override
-    public void onResume(){
-        super.onResume();
-        mPresenter.start();
     }
 
     @Nullable
@@ -165,11 +160,13 @@ public class TrackersFragment extends Fragment implements TrackersContract.View 
     public void removeTracker(Tracker tracker) {
         mListAdapter.remove(tracker);
         mBarGraph.remove(tracker);
+
+        if(mListAdapter.getCount() == 0) showNoTrackers();
     }
 
     @Override
     public void showNoTrackers() {
-        mListAdapter.add(new Tracker("NO_TRACKERS", 0));
+        updateOrAddTracker(new Tracker("NO_TRACKERS", 0));
     }
 
     @Override

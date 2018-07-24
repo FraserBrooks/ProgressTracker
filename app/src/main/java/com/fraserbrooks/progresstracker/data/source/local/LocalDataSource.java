@@ -242,6 +242,7 @@ public class LocalDataSource implements DataSource{
     @Override
     public void getScoreOnYear(@NonNull final String trackerId, final Calendar year, @NonNull final GetNumberCallback callback) {
         int num = mTrackersDao.getScoreOnSpecificYear(trackerId, year);
+        Log.d(TAG, "getScoreOnYear: for " + trackerId + " = " + num);
         callback.onNumberLoaded(num);
     }
 
@@ -260,6 +261,8 @@ public class LocalDataSource implements DataSource{
             case "WEEK": intervalPeriod = Calendar.WEEK_OF_YEAR;
                 break;
             case "MONTH": intervalPeriod = Calendar.MONTH;
+                break;
+            case "YEAR": intervalPeriod = Calendar.YEAR;
                 break;
             default:
                 Log.e(TAG, "getTargetAverageCompletion: couldn't find match for interval: " + t.getInterval());
@@ -287,6 +290,8 @@ public class LocalDataSource implements DataSource{
             case "WEEK": achieved = mTrackersDao.getCountScoresOverWeekTarget(targetId, t.getNumberToAchieve(), startDate, now);
                 break;
             case "MONTH": achieved = mTrackersDao.getCountScoresOverMonthTarget(targetId, t.getNumberToAchieve(), startDate, now);
+                break;
+            case "YEAR": achieved = mTrackersDao.getCountScoresOverYearTarget(targetId, t.getNumberToAchieve(), startDate, now);
                 break;
         }
 

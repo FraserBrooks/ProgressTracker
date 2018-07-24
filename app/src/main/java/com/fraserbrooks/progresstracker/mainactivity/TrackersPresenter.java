@@ -121,18 +121,7 @@ public class TrackersPresenter implements TrackersContract.Presenter {
                     @Override
                     public void onTrackerLoaded(final Tracker tracker) {
                         Log.e(TAG, "onTrackerLoaded: called");
-//                        mAppExecutors.mainThread().execute(new Runnable() {
-//                            @Override
-//                            public void run() {
-//                                // The view may not be able to handle UI updates anymore
-//                                if (!mTrackersView.isActive()) {
-//                                    Log.d(TAG, "onTrackersLoaded: mTackersView not active. exiting from callback");
-//                                    return;
-//                                }
-//                                mTrackersView.updateOrAddTracker(tracker);
-//                                mTrackersView.updateInGraph(tracker);
-//                            }
-//                        });
+                        // should never be called when staggeredLoad = false
                     }
 
                     @Override

@@ -1,6 +1,7 @@
 package com.fraserbrooks.progresstracker.mainactivity;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.fraserbrooks.progresstracker.asynctasks.LoadTargetsTask;
@@ -33,6 +34,19 @@ public class TargetsPresenter implements TargetsContract.Presenter{
 
     @Override
     public void start() {
+        mRepository.addDeleteTargetListener(new Repository.DeleteTargetListener() {
+            @Override
+            public boolean isActive() {
+                return mTargetsView.isActive();
+            }
+
+            @Override
+            public void trackerDeleted(Target targetToDelete) {
+                mTargetsView.removeTarget(targetToDelete);
+            }
+
+
+        });
         loadTargets();
     }
 
@@ -71,9 +85,10 @@ public class TargetsPresenter implements TargetsContract.Presenter{
                                     Log.d(TAG, "onTargetsLoaded: creating new LoadTargetsTask");
                                     new LoadTargetsTask(new DataSource.GetTargetsCallback() {
                                         @Override
-                                        public void onTargetsLoaded(List<Target> targets) {
-                                            // Should not be called
-                                            Log.e(TAG, "onTargetsLoaded: called" );
+                                        public void onTargetsLoaded(@Nullable List<Target> targets) {
+                                            //called when AsyncTask finished but targets = null
+                                            //nothing to do
+                                            Log.d(TAG, "onTargetsLoaded: LoadTargetsTask finished" );
                                         }
 
                                         @Override
@@ -99,16 +114,7 @@ public class TargetsPresenter implements TargetsContract.Presenter{
                     @Override
                     public void onTargetLoaded(final Target target) {
                         Log.e(TAG, "onTargetLoaded: called");
-//                        mAppExecutors.mainThread().execute(new Runnable() {
-//                            @Override
-//                            public void run() {
-//                                // The view may not be able to handle UI updates anymore
-//                                if (!mTargetsView.isActive()) {
-//                                    return;
-//                                }
-//                                mTargetsView.updateOrAddTarget(target);
-//                            }
-//                        });
+//                      // should never be called when staggeredLoad = false
                     }
 
                     @Override

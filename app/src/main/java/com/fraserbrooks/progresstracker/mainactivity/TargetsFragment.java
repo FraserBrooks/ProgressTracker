@@ -58,13 +58,8 @@ public class TargetsFragment extends Fragment implements TargetsContract.View{
     }
 
     @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        mPresenter.start();
-    }
-
-    @Override
     public void onResume(){
+        Log.d(TAG, "onResume: called");
         super.onResume();
         mPresenter.start();
     }
@@ -155,6 +150,11 @@ public class TargetsFragment extends Fragment implements TargetsContract.View{
         i = (i == -1) ? mListAdapter.getCount() : i;
 
         mListAdapter.insert(target, i);
+    }
+
+    @Override
+    public void removeTarget(Target target) {
+        mListAdapter.remove(target);
     }
 
 

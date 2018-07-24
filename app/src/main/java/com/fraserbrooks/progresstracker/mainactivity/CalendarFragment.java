@@ -19,6 +19,7 @@ import android.widget.TextView;
 
 import com.applandeo.materialcalendarview.CalendarView;
 import com.applandeo.materialcalendarview.EventDay;
+import com.applandeo.materialcalendarview.exceptions.OutOfDateRangeException;
 import com.fraserbrooks.progresstracker.Injection;
 import com.fraserbrooks.progresstracker.R;
 import com.fraserbrooks.progresstracker.data.Target;
@@ -47,6 +48,7 @@ public class CalendarFragment extends Fragment implements CalendarContract.View 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
+        Log.d(TAG, "onCreate: called");
 
 
         //todo load preferences earlier to reduce lag
@@ -56,25 +58,28 @@ public class CalendarFragment extends Fragment implements CalendarContract.View 
 
         if(getContext() == null) return;
 
-        storedSpinnerPositions = getStoredSpinnerSelections(sharedPref);
+
         mAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item);
         mAdapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
 
         new CalendarPresenter(Injection.provideRepository(getContext()),
                 this, AppExecutors.getInstance());
-        mPresenter.start();
-//        try {
-//            Thread.sleep(445);
-//        } catch (InterruptedException e) {
-//            e.printStackTrace();
-//        }
     }
 
+    @Override
+    public void onResume(){
+        super.onResume();
+        Log.d(TAG, "onResume: called");
+        mPresenter.start();
+    }
 
 
     @Override
     public void setTargetSpinners() {
 
+        storedSpinnerPositions = getStoredSpinnerSelections(sharedPref);
+
+        Log.d(TAG, "setTargetSpinners: adapter count = " + mAdapter.getCount());
         for(int i = 0; i < storedSpinnerPositions.length; i++){
             if(storedSpinnerPositions[i] > mAdapter.getCount()) storedSpinnerPositions[i] = 0;
         }
@@ -86,8 +91,14 @@ public class CalendarFragment extends Fragment implements CalendarContract.View 
     }
 
     @Override
-    public void addToTargetSpinners(Target target) {
-        mAdapter.add(target);
+    public void updateOrAddTarget(Target target) {
+        int i = mAdapter.getPosition(target);
+        mAdapter.remove(target);
+
+        if (i == -1) Log.d(TAG, "updateOrAddTarget: does not exist in adapter. Placing at bottom");
+        i = (i == -1) ? mAdapter.getCount() : i;
+
+        mAdapter.insert(target, i);
     }
 
     @Override
@@ -107,6 +118,13 @@ public class CalendarFragment extends Fragment implements CalendarContract.View 
                 fragmentScreen.findViewById(R.id.calendar_view);
 
         calendarView.setBackgroundColor(getResources().getColor(R.color.appBG));
+
+        try {
+            calendarView.setDate(Calendar.getInstance());
+        } catch (OutOfDateRangeException e) {
+            Log.e(TAG, "onCreateView: error, invalid date range");
+        }
+
 
         mSpinner1 = fragmentScreen.findViewById(R.id.calendar_spinner_1);
         mSpinner2 = fragmentScreen.findViewById(R.id.calendar_spinner_2);
@@ -140,26 +158,80 @@ public class CalendarFragment extends Fragment implements CalendarContract.View 
     }
 
     @Override
+    public void targetDeleted(Target target) {
+        Log.d(TAG, "targetDeleted: called with " + target.getTargetTitle());
+        if(target.isRollingTarget() && target.getInterval().equals("DAY")){
+            int position = mAdapter.getPosition(target);
+
+            if(position < 0){
+                Log.e(TAG, "targetDeleted: no target to delete");
+                return;
+            }
+
+            mAdapter.remove(target);
+            int[] stored = getStoredSpinnerSelections(sharedPref);
+
+            editor = sharedPref.edit();
+            if(stored[0] > position) {
+                editor.putInt( getString(R.string.calendar_saved_target_1), stored[0] - 1);
+            } else if (stored[0] == position){
+                editor.putInt( getString(R.string.calendar_saved_target_1), 0);
+            }
+            if(stored[1] > position) {
+                editor.putInt( getString(R.string.calendar_saved_target_2), stored[1] - 1);
+            } else if (stored[1] == position){
+                editor.putInt( getString(R.string.calendar_saved_target_2), 0);
+            }
+            if(stored[2] > position) {
+                editor.putInt( getString(R.string.calendar_saved_target_3), stored[2] - 1);
+            } else if (stored[2] == position){
+                editor.putInt( getString(R.string.calendar_saved_target_3), 0);
+            }
+            editor.apply();
+        }
+    }
+
+    @Override
     public void updateCalendar(final List<Calendar> firstTargetDays, final List<Calendar> secondTargetDays, final List<Calendar> thirdTargetDays) {
 
         final ArrayList<EventDay> days = new ArrayList<>();
 
+        if(getActivity() == null) return;
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                CalendarView calendarView =
+                        fragmentScreen.findViewById(R.id.calendar_view);
+                calendarView.setEvents(days);
+            }
+        });
+
+
         if(firstTargetDays != null){
+            Log.d(TAG, "updateCalendar: firstTarget number of days met = " + firstTargetDays.size());
             for(Calendar c : firstTargetDays){
                 days.add(new EventDay(c, R.drawable.calendar_square_1));
             }
+        }else{
+            Log.d(TAG, "updateCalendar: first = null");
         }
 
         if(secondTargetDays != null){
+            Log.d(TAG, "updateCalendar: secondTarget number of days met = " + secondTargetDays.size());
             for(Calendar c : secondTargetDays){
                 days.add(new EventDay(c, R.drawable.calendar_square_2));
             }
+        }else{
+            Log.d(TAG, "updateCalendar: second = null");
         }
 
         if(thirdTargetDays != null){
+            Log.d(TAG, "updateCalendar: thirdTarget number of days met = " + thirdTargetDays.size());
             for(Calendar c : thirdTargetDays){
                 days.add(new EventDay(c, R.drawable.calendar_square_3));
             }
+        }else{
+            Log.d(TAG, "updateCalendar: third = null");
         }
 
 
@@ -192,6 +264,11 @@ public class CalendarFragment extends Fragment implements CalendarContract.View 
         // todo
     }
 
+    @Override
+    public boolean isActive() {
+        return isAdded();
+    }
+
     @NonNull
     private int[] getStoredSpinnerSelections(SharedPreferences sharedPref) {
 
@@ -199,6 +276,11 @@ public class CalendarFragment extends Fragment implements CalendarContract.View 
         setSpinnerSelections[0] = sharedPref.getInt(getString(R.string.calendar_saved_target_1), 0);
         setSpinnerSelections[1] = sharedPref.getInt(getString(R.string.calendar_saved_target_2), 0);
         setSpinnerSelections[2] = sharedPref.getInt(getString(R.string.calendar_saved_target_3), 0);
+
+        Log.d(TAG, "getStoredSpinnerSelections: stored_1 = " + setSpinnerSelections[0]);
+        Log.d(TAG, "getStoredSpinnerSelections: stored_2 = " + setSpinnerSelections[1]);
+        Log.d(TAG, "getStoredSpinnerSelections: stored_3 = " + setSpinnerSelections[2]);
+
 
         return setSpinnerSelections;
     }
@@ -209,6 +291,7 @@ public class CalendarFragment extends Fragment implements CalendarContract.View 
             new AdapterView.OnItemSelectedListener() {
                 @Override
                 public void onItemSelected(AdapterView<?> adapterView, View view, int position, long l) {
+                    Log.d(TAG, "onItemSelected: called");
                     editor = sharedPref.edit();
                     switch (adapterView.getId()){
                         case R.id.calendar_spinner_1:
@@ -237,35 +320,5 @@ public class CalendarFragment extends Fragment implements CalendarContract.View 
                 public void onNothingSelected(AdapterView<?> adapterView) {
                 }
             };
-
-//    private class TargetSpinnerAdapter extends ArrayAdapter<Target> {
-//
-//        private int mResource;
-//
-//        public TargetSpinnerAdapter(@NonNull Context context, int resource) {
-//            super(context, resource);
-//            mResource = resource;
-//        }
-//
-//
-//        @NonNull
-//        @Override
-//        public View getView(int i, View convertView, ViewGroup viewGroup){
-//            // Check if an existing view is being reused, otherwise inflate the view
-//            if (convertView == null){
-//                convertView = super.getView(i, null, viewGroup);
-//            }
-//
-//            final Target target = getItem(i);
-//
-//            if (target != null){
-//                TextView tv = (TextView) convertView;
-//                tv.setText(target.getTargetTitle());
-//            }
-//
-//            return convertView;
-//        }
-//
-//    }
 
 }
