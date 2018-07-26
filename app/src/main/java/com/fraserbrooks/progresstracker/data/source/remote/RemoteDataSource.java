@@ -104,6 +104,11 @@ public class RemoteDataSource implements DataSource{
     }
 
     @Override
+    public void saveTrackers(@NonNull List<Tracker> trackers) {
+
+    }
+
+    @Override
     public void updateTracker(@NonNull Tracker tracker) {
 
     }
@@ -141,6 +146,11 @@ public class RemoteDataSource implements DataSource{
     }
 
     @Override
+    public void saveTargets(@NonNull List<Target> targets) {
+
+    }
+
+    @Override
     public void updateTarget(@NonNull Target target) {
 
     }
@@ -161,7 +171,12 @@ public class RemoteDataSource implements DataSource{
     }
 
     @Override
-    public void getDaysTargetWasMet(String targetId1, String targetId2, String targetId3, GetDaysTargetsMetCallback callback) {
+    public void saveEntries(List<ScoreEntry> entries) {
+
+    }
+
+    @Override
+    public void getDaysTargetsMet(String targetId1, String targetId2, String targetId3, Calendar month, GetDaysTargetsMetCallback callback) {
 
     }
 

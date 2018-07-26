@@ -63,6 +63,8 @@ public interface DataSource {
 
     boolean saveTracker(@NonNull Tracker tracker);
 
+    void saveTrackers(@NonNull List<Tracker> trackers);
+
     void updateTracker(@NonNull Tracker tracker);
 
     void refreshAllCache();
@@ -75,10 +77,9 @@ public interface DataSource {
 
     void getTarget(@NonNull String targetId, @NonNull GetTargetsCallback callback);
 
-
-//    void getDayTargetNames(@NonNull GetDayTargetNamesCallback callback);
-
     boolean saveTarget(@NonNull Target target);
+
+    void saveTargets(@NonNull List<Target> targets);
 
     void updateTarget(@NonNull Target target);
 
@@ -88,8 +89,10 @@ public interface DataSource {
 
     List<ScoreEntry> getEntries();
 
-    void getDaysTargetWasMet(@Nullable String targetId1,@Nullable String targetId2,@Nullable String targetId3,
-                             GetDaysTargetsMetCallback callback);
+    void saveEntries(List<ScoreEntry> entries);
+
+    void getDaysTargetsMet(@Nullable String targetId1, @Nullable String targetId2, @Nullable String targetId3, Calendar range,
+                           GetDaysTargetsMetCallback callback);
 
     void deleteAllEntries();
 

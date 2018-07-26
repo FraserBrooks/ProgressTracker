@@ -45,6 +45,9 @@ public interface TrackersContract {
 
     interface Presenter extends BasePresenter {
 
+        // todo: remove
+        void addTestData();
+
         void loadTrackers(boolean forceUpdate);
 
         void addTrackerButtonClicked();

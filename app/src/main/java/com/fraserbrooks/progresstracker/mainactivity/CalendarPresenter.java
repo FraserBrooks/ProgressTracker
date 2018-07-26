@@ -4,6 +4,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
+import com.fraserbrooks.progresstracker.asynctasks.LoadDayIconsForCalendarTask;
 import com.fraserbrooks.progresstracker.asynctasks.LoadDayTargetsForCalendarTask;
 import com.fraserbrooks.progresstracker.data.Target;
 import com.fraserbrooks.progresstracker.data.source.DataSource;
@@ -11,6 +12,7 @@ import com.fraserbrooks.progresstracker.data.source.Repository;
 import com.fraserbrooks.progresstracker.util.AppExecutors;
 import com.fraserbrooks.progresstracker.util.EspressoIdlingResource;
 
+import java.util.Calendar;
 import java.util.List;
 
 public class CalendarPresenter implements CalendarContract.Presenter{
@@ -41,7 +43,7 @@ public class CalendarPresenter implements CalendarContract.Presenter{
 
             @Override
             public void trackerDeleted(Target targetToDelete) {
-                mCalendarView.targetDeleted(targetToDelete);
+                mCalendarView.deleteTarget(targetToDelete);
             }
         });
     }
@@ -76,7 +78,8 @@ public class CalendarPresenter implements CalendarContract.Presenter{
                                 // Called when task finished (targets = null)
                                 Log.d(TAG, "onTargetsLoaded: setting target spinners");
                                 mCalendarView.setTargetSpinners();
-                                initCalendar();
+                                mCalendarView.hideLoading();
+                                loadCalendar();
                             }
 
                             @Override
@@ -106,9 +109,10 @@ public class CalendarPresenter implements CalendarContract.Presenter{
     }
 
     @Override
-    public void initCalendar() {
-
-        mCalendarView.showLoading();
+    public void loadCalendar() {
+        Log.d(TAG, "loadCalendar: called");
+        
+        final Calendar month = mCalendarView.getCalendarViewMonth();
 
         final Target target1 = mCalendarView.getFirstSelectedTarget();
         final Target target2 = mCalendarView.getSecondSelectedTarget();
@@ -125,7 +129,7 @@ public class CalendarPresenter implements CalendarContract.Presenter{
                 if(target2 != null) id2 = target2.getId();
                 if(target3 != null) id3 = target3.getId();
 
-                mRepository.getDaysTargetWasMet(id1, id2, id3, new DataSource.GetDaysTargetsMetCallback() {
+                mRepository.getDaysTargetsMet(id1, id2, id3, month, new DataSource.GetDaysTargetsMetCallback() {
                     @Override
                     public void onDaysLoaded(final DataSource.CalendarTriple calendars) {
                         // This callback may be called twice, once for the cache and once for loading
@@ -135,17 +139,8 @@ public class CalendarPresenter implements CalendarContract.Presenter{
                             EspressoIdlingResource.decrement(); // Set app as idle.
                         }
 
-                        mCalendarView.updateCalendar(
-                                calendars.list1,
-                                calendars.list2,
-                                calendars.list3);
-
-                        mAppExecutors.mainThread().execute(new Runnable() {
-                            @Override
-                            public void run() {
-                                mCalendarView.hideLoading();
-                            }
-                        });
+                        Log.d(TAG, "onDaysLoaded: creating new LoadDayIcons task");
+                        new LoadDayIconsForCalendarTask(mCalendarView).execute(calendars);
 
                     }
 

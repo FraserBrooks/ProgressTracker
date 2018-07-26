@@ -47,6 +47,17 @@ public class TargetsPresenter implements TargetsContract.Presenter{
 
 
         });
+        mRepository.addTargetChangeListener(new Repository.TargetChangeListener() {
+            @Override
+            public boolean isActive() {
+                return mTargetsView.isActive();
+            }
+
+            @Override
+            public void targetUpdated(Target target) {
+                mTargetsView.updateOrAddTarget(target);
+            }
+        });
         loadTargets();
     }
 

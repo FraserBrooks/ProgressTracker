@@ -92,6 +92,11 @@ public class LocalDataSource implements DataSource{
     }
 
     @Override
+    public void saveTrackers(@NonNull List<Tracker> trackers) {
+        for(Tracker t : trackers) mTrackersDao.insertTracker(t);
+    }
+
+    @Override
     public void updateTracker(@NonNull final Tracker tracker) {
         mTrackersDao.updateTracker(tracker);
     }
@@ -160,6 +165,11 @@ public class LocalDataSource implements DataSource{
     }
 
     @Override
+    public void saveTargets(@NonNull List<Target> targets) {
+        for(Target t : targets) mTrackersDao.insertTarget(t);
+    }
+
+    @Override
     public void updateTarget(@NonNull final Target target) {
         mTrackersDao.updateTarget(target);
     }
@@ -189,12 +199,32 @@ public class LocalDataSource implements DataSource{
     }
 
     @Override
-    public void getDaysTargetWasMet(final String targetId1, final String targetId2, final String targetId3, final GetDaysTargetsMetCallback callback) {
+    public void saveEntries(List<ScoreEntry> entries) {
+        for(ScoreEntry e :  entries) mTrackersDao.insertEntry(e);
+    }
+
+    @Override
+    public void getDaysTargetsMet(final String targetId1, final String targetId2, final String targetId3, Calendar month, final GetDaysTargetsMetCallback callback) {
         CalendarTriple calendars = new CalendarTriple();
 
-        if (targetId1 != null) calendars.list1 = mTrackersDao.getDaysTargetCompleted(targetId1);
-        if (targetId2 != null) calendars.list2 = mTrackersDao.getDaysTargetCompleted(targetId2);
-        if (targetId3 != null) calendars.list3 = mTrackersDao.getDaysTargetCompleted(targetId3);
+        Calendar previousMonth = Calendar.getInstance();
+        Calendar nextMonth = Calendar.getInstance();
+
+        previousMonth.setTime(month.getTime());
+        previousMonth.add(Calendar.MONTH, -1);
+        previousMonth.set(Calendar.DAY_OF_MONTH, previousMonth.getActualMinimum(Calendar.DAY_OF_MONTH));
+
+        nextMonth.setTime(month.getTime());
+        nextMonth.add(Calendar.MONTH, 1);
+        nextMonth.set(Calendar.DAY_OF_MONTH, nextMonth.getActualMaximum(Calendar.DAY_OF_MONTH));
+
+        if (targetId1 != null) calendars.list1 = mTrackersDao.getDaysTargetCompleted(targetId1, previousMonth, nextMonth);
+        if (targetId2 != null) calendars.list2 = mTrackersDao.getDaysTargetCompleted(targetId2, previousMonth, nextMonth);
+        if (targetId3 != null) calendars.list3 = mTrackersDao.getDaysTargetCompleted(targetId3, previousMonth, nextMonth);
+
+        if (targetId1 != null) Log.d(TAG, "getDaysTargetsMet: list1: found " + calendars.list1.size() + " days where target was met");
+        if (targetId1 != null) Log.d(TAG, "getDaysTargetsMet: list2: found " + calendars.list2.size() + " days where target was met");
+        if (targetId1 != null) Log.d(TAG, "getDaysTargetsMet: list3: found " + calendars.list3.size() + " days where target was met");
 
         callback.onDaysLoaded(calendars);
     }

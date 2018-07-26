@@ -1,5 +1,6 @@
 package com.fraserbrooks.progresstracker.mainactivity;
 
+import com.applandeo.materialcalendarview.EventDay;
 import com.fraserbrooks.progresstracker.BasePresenter;
 import com.fraserbrooks.progresstracker.BaseView;
 import com.fraserbrooks.progresstracker.data.Target;
@@ -18,11 +19,11 @@ public interface CalendarContract {
 
         Target getThirdSelectedTarget();
 
-        void targetDeleted(Target target);
+        void deleteTarget(Target target);
 
-        void updateCalendar(List<Calendar> firstTargetDays,
-                            List<Calendar> secondTargetDays,
-                            List<Calendar> thirdTargetDays);
+//        void updateCalendar(List<Calendar> firstTargetDays,
+//                            List<Calendar> secondTargetDays,
+//                            List<Calendar> thirdTargetDays);
 
         void setTargetSpinners();
 
@@ -36,12 +37,23 @@ public interface CalendarContract {
 
         boolean isActive();
 
+        Calendar getCalendarViewMonth();
+
+        void addDayIcon(EventDay day);
+
+        void clearDayIcons();
+        void refreshCalendarView();
+
+        int getTarget1ResourceId();
+        int getTarget2ResourceId();
+        int getTarget3ResourceId();
+
     }
 
 
     interface Presenter extends BasePresenter{
 
-        void initCalendar();
+        void loadCalendar();
 
         void loadTargetNamesAndSetSpinners();
 

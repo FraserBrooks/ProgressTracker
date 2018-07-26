@@ -111,7 +111,12 @@ public class TrackersFragment extends Fragment implements TrackersContract.View 
                     mPresenter.graphClicked();
                 }else if (position == parent.getCount() - 1 ){
                     Log.d(TAG, "onItemClick: footer clicked");
-                    mPresenter.addTrackerButtonClicked();
+                    if(mListAdapter.getCount() == 0){
+                        Log.e(TAG, "onItemClick: adding dummy test data");
+                        mPresenter.addTestData();
+                    }else{
+                        mPresenter.addTrackerButtonClicked();
+                    }
                 }else {
                     Tracker tracker = (Tracker) parent.getItemAtPosition(position);
 
@@ -166,7 +171,7 @@ public class TrackersFragment extends Fragment implements TrackersContract.View 
 
     @Override
     public void showNoTrackers() {
-        updateOrAddTracker(new Tracker("NO_TRACKERS", 0));
+        //eupdateOrAddTracker(new Tracker("NO_TRACKERS", 0));
     }
 
     @Override

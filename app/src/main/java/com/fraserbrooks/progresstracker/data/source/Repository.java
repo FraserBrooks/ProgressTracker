@@ -53,6 +53,12 @@ public class Repository implements DataSource {
     }
     private List<DeleteTargetListener> mDeleteTargetListeners;
 
+    public interface TargetChangeListener{
+        boolean isActive();
+
+        void targetUpdated(Target target);
+    }
+    private final List<TargetChangeListener> mTargetChangeListeners;
 
     private boolean mSyncEnabled = false;
 
@@ -64,6 +70,7 @@ public class Repository implements DataSource {
         mLocalDataSource = checkNotNull(tasksLocalDataSource);
         mAppExecutors = checkNotNull(appExecutors);
         mDeleteTargetListeners = new ArrayList<>();
+        mTargetChangeListeners = new ArrayList<>();
     }
 
     /**
@@ -92,7 +99,8 @@ public class Repository implements DataSource {
 
     @Override
     public void refreshAllCache() {
-        //todo
+        mCachedTrackers = null;
+        mCachedTrackers = null;
     }
 
     /**
@@ -164,6 +172,11 @@ public class Repository implements DataSource {
         mCachedTrackers.put(tracker.getId(), tracker);
 
         return local;
+    }
+
+    @Override
+    public void saveTrackers(@NonNull List<Tracker> trackers) {
+        mLocalDataSource.saveTrackers(trackers);
     }
 
     @Override
@@ -305,6 +318,11 @@ public class Repository implements DataSource {
     }
 
     @Override
+    public void saveTargets(@NonNull List<Target> targets) {
+        mLocalDataSource.saveTargets(targets);
+    }
+
+    @Override
     public void updateTarget(@NonNull final Target target) {
         mLocalDataSource.updateTarget(target);
 
@@ -340,8 +358,13 @@ public class Repository implements DataSource {
     }
 
     @Override
-    public void getDaysTargetWasMet(String targetId1, String targetId2, String targetId3, GetDaysTargetsMetCallback callback) {
-        mLocalDataSource.getDaysTargetWasMet(targetId1, targetId2, targetId3, callback);
+    public void saveEntries(List<ScoreEntry> entries) {
+        mLocalDataSource.saveEntries(entries);
+    }
+
+    @Override
+    public void getDaysTargetsMet(String targetId1, String targetId2, String targetId3, Calendar month, GetDaysTargetsMetCallback callback) {
+        mLocalDataSource.getDaysTargetsMet(targetId1, targetId2, targetId3, month, callback);
     }
 
 
@@ -359,7 +382,31 @@ public class Repository implements DataSource {
             public void run() {
                 for(Target target : mCachedTargets.values()){
                     if(target.getTrackId().equals(trackerId)){
-                        loadOrRefreshTarget(target);
+                        loadOrRefreshTarget(target, new GetTargetsCallback() {
+                            @Override
+                            public void onTargetsLoaded(List<Target> targets) {
+                                // Not used
+                            }
+
+                            @Override
+                            public void onTargetLoaded(final Target target) {
+                                mAppExecutors.mainThread().execute(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        synchronized (mTargetChangeListeners){
+                                            for(TargetChangeListener listener: mTargetChangeListeners){
+                                                if(listener.isActive()) listener.targetUpdated(target);
+                                            }
+                                        }
+                                    }
+                                });
+                            }
+
+                            @Override
+                            public void onDataNotAvailable() {
+                                // Not used
+                            }
+                        });
                     }
                 }
             }
@@ -521,6 +568,10 @@ public class Repository implements DataSource {
     }
 
     private void loadOrRefreshTarget(final Target target) {
+        loadOrRefreshTarget(target, null);
+    }
+
+    private void loadOrRefreshTarget(final Target target, @Nullable GetTargetsCallback targetCallback){
         // Never call on the main thread
         mLocalDataSource.getTracker(target.getTrackId(), new GetTrackersCallback() {
             @Override
@@ -596,8 +647,9 @@ public class Repository implements DataSource {
             target.setCurrentProgressPercentage(5);
         }
         mCachedTargets.put(target.getId(), target);
-    }
 
+        if(targetCallback != null) targetCallback.onTargetLoaded(target);
+    }
 
     private void refreshLocalDataSourceTrackers(List<Tracker> trackers) {
         mLocalDataSource.deleteAllTrackers();
@@ -643,6 +695,9 @@ public class Repository implements DataSource {
         mDeleteTargetListeners.add(listener);
     }
 
+    public void addTargetChangeListener(TargetChangeListener listener){
+        mTargetChangeListeners.add(listener);
+    }
 
 
 

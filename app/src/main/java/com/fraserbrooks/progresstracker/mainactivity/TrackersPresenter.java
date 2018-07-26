@@ -4,13 +4,18 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.fraserbrooks.progresstracker.asynctasks.LoadTrackersTask;
+import com.fraserbrooks.progresstracker.data.ScoreEntry;
+import com.fraserbrooks.progresstracker.data.Target;
 import com.fraserbrooks.progresstracker.data.Tracker;
 import com.fraserbrooks.progresstracker.data.source.DataSource;
 import com.fraserbrooks.progresstracker.data.source.Repository;
 import com.fraserbrooks.progresstracker.util.AppExecutors;
 import com.fraserbrooks.progresstracker.util.EspressoIdlingResource;
 
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
+import java.util.Random;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -44,6 +49,111 @@ public class TrackersPresenter implements TrackersContract.Presenter {
     public void start() {
         Log.d(TAG, "start: called");
         loadTrackers(false);
+    }
+
+    @Override
+    public void addTestData() {
+        mAppExecutors.diskIO().execute(new Runnable() {
+            @Override
+            public void run() {
+                ArrayList<Tracker> trackers = new ArrayList<>();
+
+                Tracker tracker1 = new Tracker("Guitar Practice", 5000*60);
+                Tracker tracker2 = new Tracker("Java", 10000*60);
+                Tracker tracker3 = new Tracker("Haskell", 100 * 60);
+                Tracker tracker4 = new Tracker("Exercise", 10000*60);
+                Tracker tracker5 = new Tracker("Reading", 1000, "books read");
+                Tracker tracker6 = new Tracker("Jiu-Jitsu", 500, "sessions");
+                Tracker tracker7 = new Tracker("NLP Revision", 20, "lectures");
+
+                Target target1 = new Target(tracker1.getId(), 2*60, "DAY");
+                Target target2 = new Target(tracker2.getId(), 200*60, "YEAR");
+                Target target3 = new Target(tracker3.getId(), 60, "DAY");
+                Target target4 = new Target(tracker4.getId(), 60, "DAY");
+                Target target5 = new Target(tracker5.getId(), 1, "WEEK");
+                Target target6 = new Target(tracker1.getId(), 1000*60, "YEAR");
+                Target target7 = new Target(tracker6.getId(), 2, "WEEK");
+                Target target8 = new Target(tracker7.getId(), 1, "DAY");
+
+                Calendar startDate = Calendar.getInstance();
+                startDate.add(Calendar.YEAR, -3);
+
+                target1.setStartDate(startDate);
+                target2.setStartDate(startDate);
+                target3.setStartDate(startDate);
+                target4.setStartDate(startDate);
+                target5.setStartDate(startDate);
+                target6.setStartDate(startDate);
+                target7.setStartDate(startDate);
+                target8.setStartDate(startDate);
+
+
+
+                trackers.add(tracker1);
+                trackers.add(tracker2);
+                trackers.add(tracker3);
+                trackers.add(tracker4);
+
+                Random rand = new Random();
+
+                ArrayList<ScoreEntry> entries = new ArrayList<>();
+
+                for(Tracker t : trackers){
+                    for(int i = 0; i < 450; i++){
+                        Calendar cal = Calendar.getInstance();
+                        cal.add(Calendar.DAY_OF_YEAR, -i);
+                        entries.add(new ScoreEntry(cal, cal, cal, cal, t.getId(), rand.nextInt(181)));
+                    }
+                }
+
+                trackers.clear();
+                trackers.add(tracker5);
+                trackers.add(tracker6);
+                trackers.add(tracker7);
+
+                for(Tracker t : trackers){
+                    for(int i = 0; i < 450; i++){
+                        Calendar cal = Calendar.getInstance();
+                        cal.add(Calendar.DAY_OF_YEAR, -i);
+                        int k = rand.nextInt(5) - 3;
+                        k = (k <= 0) ? 0 : 1;
+                        entries.add(new ScoreEntry(cal, cal, cal, cal, t.getId(), k));
+                    }
+                }
+
+                trackers.add(tracker1);
+                trackers.add(tracker2);
+                trackers.add(tracker3);
+                trackers.add(tracker4);
+
+                mTrackersRepository.saveTrackers(trackers);
+
+                ArrayList<Target> targets = new ArrayList<>();
+
+                targets.add(target1);
+                targets.add(target2);
+                targets.add(target3);
+                targets.add(target4);
+                targets.add(target5);
+                targets.add(target6);
+                targets.add(target7);
+                targets.add(target8);
+
+                mTrackersRepository.saveTargets(targets);
+
+                mTrackersRepository.saveEntries(entries);
+
+
+                mAppExecutors.mainThread().execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        loadTrackers(true);
+                    }
+                });
+
+            }
+        });
+
     }
 
     /**

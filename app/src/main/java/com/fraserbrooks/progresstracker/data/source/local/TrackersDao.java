@@ -51,9 +51,10 @@ public abstract class TrackersDao {
 
     @Query("SELECT day FROM entries WHERE " +
             "trackId = (SELECT trackId FROM targets WHERE targetId = :targetId)" +
-            "AND scoreThisDay >= (SELECT numberToAchieve FROM targets WHERE targetId = :targetId)")
+            "AND scoreThisDay >= (SELECT numberToAchieve FROM targets WHERE targetId = :targetId)" +
+            "AND day BETWEEN :previousMonth AND :nextMonth")
     @TypeConverters({Converters.DayConverters.class})
-    public abstract List<Calendar> getDaysTargetCompleted(String targetId);
+    public abstract List<Calendar> getDaysTargetCompleted(String targetId, Calendar previousMonth, Calendar nextMonth);
 
 
     /**
