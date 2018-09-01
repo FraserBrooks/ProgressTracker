@@ -1,0 +1,23 @@
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/target_screen_container"
+    tools:context="com.fraserbrooks.progresstracker.mainActivity.MainActivity_">
+
+
+
+    <com.fraserbrooks.progresstracker.TouchInterceptor
+        android:id="@+id/target_list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:listitem="@layout/frag_targets_target_item"
+        tools:listfooter="@layout/shared_ui_add_item_button"
+        android:layout_marginTop="8dp"
+        android:divider="@null"
+        android:dividerHeight="0dp">
+
+    </com.fraserbrooks.progresstracker.TouchInterceptor>
+
+</FrameLayout>

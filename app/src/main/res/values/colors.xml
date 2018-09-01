@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#3F51B5</color>
-    <color name="colorPrimaryDark">#303F9F</color>
-    <color name="colorAccent">#FF4081</color>
-    <color name="colorError">#FF6061</color>
-    <color name="appBG">#d9d9d9</color>
+    <color name="colorPrimary">#FF3F51B5</color>
+    <color name="colorPrimaryDark">#FF303F9F</color>
+    <color name="colorAccent">#FFFF4081</color>
+    <color name="colorError">#FFFF6061</color>
+    <color name="appBG">#FFd9d9d9</color>
 
     <color name="default_text_color">#303030</color>
 
@@ -15,6 +15,8 @@
     <color name="title_bar">#eeeeee</color>
 
     <color name="graph_line">#505050</color>
+
+    <color name="button_colour">#FFEEEEEE</color>
 
     <color name="heart">#e65050</color>
     <color name="dark1_heart">#dc1e1e</color>

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="@layout/frag_trackers_tracker_item_expanded"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <LinearLayout
+        android:layout_height="match_parent"
+        android:layout_width="match_parent"
+        android:id="@+id/progress_bar_layout"
+
+        android:orientation="horizontal"
+        >
+
+        <TextView
+            android:id="@+id/progress_bar_filled_part"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0.6"
+            tools:background="@drawable/frag_trackers_level3_colour_rect" />
+
+        <TextView
+            android:id="@+id/progress_bar_not_filled_part"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0.4"
+            android:background="@color/appBG" />
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/progress_bar_image"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:contentDescription="@string/progress_bar"
+        android:scaleType="fitXY"
+        android:src="@drawable/shared_ui_progress_bar_t3"/>
+
+</FrameLayout>

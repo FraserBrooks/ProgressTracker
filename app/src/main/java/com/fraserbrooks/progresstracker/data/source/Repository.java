@@ -396,6 +396,7 @@ public class Repository implements DataSource {
                                         synchronized (mTargetChangeListeners){
                                             for(TargetChangeListener listener: mTargetChangeListeners){
                                                 if(listener.isActive()) listener.targetUpdated(target);
+                                                else mTargetChangeListeners.remove(listener);
                                             }
                                         }
                                     }

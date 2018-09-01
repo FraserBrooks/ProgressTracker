@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.fraserbrooks.progresstracker.addTargetActivity.AddTargetActivity">
+
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/activity_main_tab_item_background"
+        android:paddingTop="20dp">
+
+        <Spinner
+            android:id="@+id/add_target_tracker_name_spinner"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginEnd="30dp"
+            android:layout_marginLeft="30dp"
+            android:layout_marginRight="30dp"
+            android:layout_marginStart="30dp"
+            android:background="@drawable/shared_ui_button_background_selector"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <Switch
+            android:id="@+id/is_repeating_target_switch"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:checked="true"
+            android:gravity="start|center"
+            android:paddingEnd="90dp"
+            android:paddingLeft="90dp"
+            android:paddingRight="90dp"
+            android:paddingStart="90dp"
+            android:paddingTop="20dp"
+            android:text="@string/repeating_target"
+            android:textSize="16sp"
+            app:layout_constraintTop_toBottomOf="@id/add_target_tracker_name_spinner" />
+
+        <LinearLayout
+            android:id="@+id/time_input_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintTop_toBottomOf="@id/is_repeating_target_switch">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingEnd="40dp"
+                android:paddingLeft="40dp"
+                android:paddingRight="40dp"
+                android:paddingStart="40dp"
+                android:paddingTop="15dp"
+                android:text="@string/timeColon"
+                android:textSize="16sp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingBottom="20dp"
+                android:paddingEnd="50dp"
+                android:paddingLeft="50dp"
+                android:paddingRight="50dp"
+                android:paddingStart="50dp"
+                android:paddingTop="10dp">
+
+                <EditText
+                    android:id="@+id/add_target_hour_input_etv"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="3"
+                    android:hint="@string/hours"
+                    android:imeOptions="actionNext"
+                    android:inputType="numberPassword"
+                    android:nextFocusDown="@id/add_target_minutes_input_etv" />
+
+                <EditText
+                    android:id="@+id/add_target_minutes_input_etv"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="3"
+                    android:hint="@string/minutes"
+                    android:imeOptions="actionDone"
+                    android:inputType="numberPassword" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/level_input_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone"
+            app:layout_constraintTop_toBottomOf="@id/time_input_layout">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingEnd="40dp"
+                android:paddingStart="100dp"
+                android:paddingTop="15dp"
+                android:text="@string/timeColon"
+                android:textSize="14sp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingBottom="20dp"
+                android:paddingEnd="150dp"
+                android:paddingLeft="150dp"
+                android:paddingRight="150dp"
+                android:paddingStart="150dp">
+
+                <EditText
+                    android:id="@+id/add_target_level_input_etv"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="3"
+                    android:hint="@string/hours"
+                    android:imeOptions="actionNext"
+                    android:inputType="numberPassword"
+                    android:nextFocusDown="@id/add_target_minutes_input_etv" />
+            </LinearLayout>
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:id="@+id/add_target_every_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintTop_toBottomOf="@id/level_input_layout"
+            android:paddingStart="30dp"
+            android:paddingLeft="30dp"
+            android:paddingEnd="30dp"
+            android:paddingRight="30dp">
+
+            <TextView
+
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="3"
+                android:paddingEnd="20dp"
+                android:gravity="end|center"
+                android:text="@string/every"
+                android:textSize="18sp"
+                app:layout_constraintStart_toStartOf="parent"
+                 />
+
+            <Spinner
+                android:id="@+id/rollover_period_spinner"
+                android:layout_width="0dp"
+                android:layout_height="50dp"
+                android:layout_weight="7"
+                android:background="@drawable/shared_ui_button_background_selector"
+                android:entries="@array/target_periods"
+                android:textAlignment="center"/>
+
+        </LinearLayout>
+
+
+
+        <LinearLayout
+            android:id="@+id/add_target_set_deadline_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone"
+            app:layout_constraintTop_toBottomOf="@id/add_target_every_layout"></LinearLayout>
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:onClick="addButtonClicked"
+            android:text="@string/create_new_target"
+            app:layout_constraintTop_toBottomOf="@id/add_target_set_deadline_layout" />
+
+
+    </android.support.constraint.ConstraintLayout>
+</ScrollView>
+

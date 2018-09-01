@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Background for buttons in their default (non-clicked) state -->
+<layer-list
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Grey box/outline for the button -->
+    <item
+        android:bottom="4dp"
+        android:top="4dp"
+        android:left="4dp"
+        android:right="4dp"
+        >
+        <shape android:shape="rectangle"
+            >
+            <stroke
+                android:color="@color/appBG"
+                android:width="2dp"/>
+            <corners android:radius="4dp" />
+            <gradient
+                android:startColor="@color/menuItemWhite"
+                android:centerColor="@color/button_colour"
+                android:centerX="1.2">
+            </gradient>
+        </shape>
+    </item>
+
+</layer-list>

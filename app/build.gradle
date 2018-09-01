@@ -64,6 +64,17 @@ android {
         }
     }
 
+    sourceSets {
+        main.res.srcDirs += 'src/main/res/res_fragment_trackers'
+        main.res.srcDirs += 'src/main/res/res_fragment_targets'
+        main.res.srcDirs += 'src/main/res/res_fragment_settings'
+        main.res.srcDirs += 'src/main/res/res_fragment_calendar'
+        main.res.srcDirs += 'src/main/res/res_shared_ui_elements'
+        main.res.srcDirs += 'src/main/res/res_add_tracker'
+        main.res.srcDirs += 'src/main/res/res_add_target'
+        main.res.srcDirs += 'src/main/res/res_details_screens'
+    }
+
 }
 
 dependencies {

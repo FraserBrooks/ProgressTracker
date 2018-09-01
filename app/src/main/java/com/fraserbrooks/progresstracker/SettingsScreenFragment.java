@@ -27,7 +27,7 @@ public class SettingsScreenFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        ViewGroup fragmentScreen = (ViewGroup) inflater.inflate(R.layout.fragment_target_screen,
+        ViewGroup fragmentScreen = (ViewGroup) inflater.inflate(R.layout.frag_targets,
                         container, false);
 
 

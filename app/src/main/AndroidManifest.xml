@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+<manifest
+    xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.fraserbrooks.progresstracker">
 
     <application
@@ -10,7 +11,7 @@
         android:supportsRtl="true">
         <activity
 
-            android:name="com.fraserbrooks.progresstracker.mainactivity.MainActivity_"
+            android:name="com.fraserbrooks.progresstracker.mainActivity.MainActivity_"
 
             android:label="@string/app_name"
 
@@ -38,7 +39,7 @@
 
             android:theme="@style/AppSecondaryTheme"
 
-            android:parentActivityName=".mainactivity.MainActivity_">
+            android:parentActivityName=".mainActivity.MainActivity_">
 
         </activity>
 
@@ -50,9 +51,21 @@
 
             android:theme="@style/AppSecondaryTheme"
 
-            android:parentActivityName=".mainactivity.MainActivity_">
+            android:parentActivityName=".mainActivity.MainActivity_">
 
         </activity>
+
+        <activity
+            android:name=".trackerDetailsActivity.TrackerDetailsActivity"
+
+            android:label="Tracker Details"
+
+            android:theme="@style/AppSecondaryTheme"
+
+            android:parentActivityName=".mainActivity.MainActivity_">
+
+        </activity>
+
     </application>
 
 </manifest>

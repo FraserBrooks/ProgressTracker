@@ -19,7 +19,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 public class AddTrackerActivity_ extends AppCompatActivity implements AddTrackerContract.View{
 
-    public final String TAG = "AddTrackerActivity";
+    private final String TAG = "AddTrackerActivity";
 
     private AddTrackerContract.Presenter mPresenter;
 

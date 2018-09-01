@@ -5,7 +5,7 @@
 
     <dimen name="normal_height">65dp</dimen>
 
-    <dimen name="expanded_height">65dp</dimen>
+    <dimen name="expanded_height">200dp</dimen>
 
     <integer name="target_bar_red_lower" >230</integer>
     <integer name="target_bar_red_higher" >168</integer>

@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_height="wrap_content"
+    android:layout_width="match_parent">
+
+
+    <LinearLayout
+        android:id="@+id/target_item"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/normal_height"
+        android:orientation="horizontal"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginLeft="4dp"
+        android:layout_marginRight="4dp"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/frag_trackers_tracker_item_background">
+
+        <!-- Left Layout text and progress bar -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_weight="8">
+
+            <!-- for text: name and minutes-->
+            <android.support.constraint.ConstraintLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingLeft="16dp"
+                android:paddingTop="0dp"
+                android:paddingStart="16dp"
+                android:paddingEnd="0dp"
+                android:paddingRight="0dp">
+
+                <TextView
+                    android:id="@+id/title_tv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    tools:text="6 hours a week of Programming a week"
+                    android:textSize="13sp"
+                    android:textStyle="bold"
+                    android:paddingBottom="8dp"/>
+
+
+
+                <TextView
+                    android:id="@+id/this_period_tv"
+                    android:layout_width="80dp"
+                    android:layout_height="wrap_content"
+                    android:gravity="end"
+                    android:layout_alignLeft="@id/title_tv"
+                    android:layout_alignStart="@id/title_tv"
+                    app:layout_constraintTop_toBottomOf="@id/title_tv"
+                    tools:text="this week:"/>
+
+                <!--  progress bar -->
+                <LinearLayout
+                    android:id="@+id/progress_bar_layout"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintTop_toBottomOf="@id/title_tv"
+                    app:layout_constraintStart_toEndOf="@id/this_period_tv"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    android:paddingBottom="2dp"
+                    android:paddingLeft="8dp"
+                    android:paddingStart="8dp"
+                    android:paddingEnd="0dp"
+                    android:paddingRight="0dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/filled_rect"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/shared_ui_top_border_grey"
+                        android:layout_weight="0.6"/>
+                    <TextView
+                        android:id="@+id/not_filled_rect"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/shared_ui_white_rectangle"
+                        android:layout_weight="0.4"/>
+                </LinearLayout>
+
+                <ImageView
+                    android:id="@+id/prog_bar"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintTop_toBottomOf="@id/title_tv"
+                    app:layout_constraintStart_toEndOf="@id/this_period_tv"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    android:scaleType="fitXY"
+                    android:src="@drawable/shared_ui_progress_bar_t3"
+                    android:paddingBottom="2dp"
+                    android:paddingLeft="8dp"
+                    android:paddingStart="8dp"
+                    android:paddingEnd="0dp"
+                    android:paddingRight="0dp"/>
+
+            </android.support.constraint.ConstraintLayout>
+
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_weight="2">
+
+            <TextView
+                android:id="@+id/secondary_tv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                tools:text=" All time:"
+                android:textSize="12sp"
+                />
+
+            <!-- Percentage indicator icon -->
+            <TextView
+                android:id="@+id/percentage_tv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                tools:text="45%"
+                android:textSize="24sp"
+                android:gravity="center"/>
+        </LinearLayout>
+
+
+
+    </LinearLayout>
+
+
+</FrameLayout>

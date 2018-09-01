@@ -7,7 +7,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/appBG"
-    tools:context="com.fraserbrooks.progresstracker.mainactivity.MainActivity_">
+    tools:context="com.fraserbrooks.progresstracker.mainActivity.MainActivity_">
 
 
     <LinearLayout
@@ -15,7 +15,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:background="@drawable/tab_item_background"
+        android:background="@drawable/activity_main_tab_item_background"
         android:layout_alignParentTop="true">
         <FrameLayout
             android:layout_width="0dp"
@@ -26,7 +26,7 @@
             android:id="@+id/tab_layout"
             android:layout_width="0dp"
             android:layout_height="50dp"
-            app:tabBackground="@drawable/tab_item_background"
+            app:tabBackground="@drawable/activity_main_tab_item_background"
             app:tabIndicatorColor="@color/menuItemWhite"
             android:minHeight="?attr/actionBarSize"
             android:layout_weight="20"/>

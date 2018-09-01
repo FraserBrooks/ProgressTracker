@@ -1,0 +1,356 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.fraserbrooks.progresstracker.trackerDetailsActivity.TrackerDetailsActivity">
+
+
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <FrameLayout
+            android:id="@+id/graph_view"
+            android:layout_width="0dp"
+            android:layout_height="90dp"
+            android:background="@drawable/shared_ui_button_background_clicked"
+            app:layout_constraintBottom_toTopOf="@id/small_tracker_layout"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"></FrameLayout>
+
+        <include
+            android:id="@+id/small_tracker_layout"
+            layout="@layout/frag_trackers_tracker_item_small"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:layout_marginTop="8dp"
+            app:layout_constraintBottom_toTopOf="@+id/top_buttons_layout"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <LinearLayout
+            android:id="@+id/top_buttons_layout"
+            android:layout_width="0dp"
+            android:layout_height="75dp"
+            android:layout_marginBottom="16dp"
+            android:layout_marginEnd="25dp"
+            android:layout_marginStart="25dp"
+            android:baselineAligned="false"
+            android:orientation="horizontal"
+            app:layout_constraintBottom_toTopOf="@id/custom_time_layout"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/small_tracker_layout"
+            android:visibility="gone">
+
+            <Button
+                android:id="@+id/top_button_1"
+                style="?android:attr/buttonBarButtonStyle"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@drawable/shared_ui_button_background_selector"
+                android:text="@string/start_timer"
+                android:textAllCaps="false"
+                android:textSize="14sp" />
+
+            <Button
+                android:id="@+id/top_button_2"
+                style="?android:attr/buttonBarButtonStyle"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@drawable/shared_ui_button_background_selector"
+                android:text="@string/plus_15_minutes"
+                android:textAllCaps="false"
+                android:textSize="14sp" />
+
+            <Button
+                android:id="@+id/top_button_3"
+                style="?android:attr/buttonBarButtonStyle"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@drawable/shared_ui_button_background_selector"
+                android:text="@string/plus_1_hour"
+                android:textAllCaps="false"
+                android:textSize="14sp" />
+
+            <Button
+                android:id="@+id/top_button_4"
+                style="?android:attr/buttonBarButtonStyle"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@drawable/shared_ui_button_background_selector"
+                android:text="@string/plus_other"
+                android:textAllCaps="false"
+                android:textSize="14sp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/custom_time_layout"
+            android:layout_width="0dp"
+            android:layout_height="75dp"
+            android:layout_marginBottom="16dp"
+            android:layout_marginEnd="25dp"
+            android:layout_marginStart="25dp"
+            android:baselineAligned="false"
+            android:orientation="horizontal"
+            app:layout_constraintBottom_toTopOf="@id/new_name_layout"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/top_buttons_layout">
+
+            <Button
+                android:id="@+id/sub_button"
+                style="?android:attr/buttonBarButtonStyle"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@drawable/shared_ui_button_background_selector"
+                android:text="@string/subtract"
+                android:textAllCaps="false"
+                android:textSize="14sp" />
+
+            <EditText
+                android:id="@+id/hour_etv"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_gravity="bottom"
+                android:layout_weight="1"
+                android:gravity="bottom|center"
+                android:hint="@string/hours"
+                android:imeOptions="actionNext"
+                android:inputType="numberPassword"
+                android:nextFocusDown="@id/minutes_etv"
+                android:textSize="14sp"/>
+
+            <EditText
+                android:id="@+id/minutes_etv"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_gravity="bottom"
+                android:layout_weight="1"
+                android:gravity="bottom|center"
+                android:hint="@string/minutes"
+                android:imeOptions="actionDone"
+                android:inputType="numberPassword"
+                android:textSize="14sp"/>
+
+
+            <Button
+                android:id="@+id/add_button"
+                style="?android:attr/buttonBarButtonStyle"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@drawable/shared_ui_button_background_selector"
+                android:text="@string/add"
+                android:textAllCaps="false"
+                android:textSize="14sp" />
+
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:id="@+id/new_name_layout"
+            android:layout_width="0dp"
+            android:layout_height="75dp"
+            android:layout_marginEnd="25dp"
+            android:layout_marginStart="25dp"
+            android:background="@drawable/shared_ui_top_border_grey"
+            android:baselineAligned="false"
+            android:orientation="horizontal"
+            android:paddingBottom="20dp"
+            android:paddingTop="20dp"
+            app:layout_constraintBottom_toTopOf="@id/new_difficulty_layout"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/custom_time_layout">
+
+            <TextView
+                android:id="@+id/edit_name_tv"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="1"
+                android:text="@string/edit_name"
+                android:textColor="#000000"
+                android:textSize="14sp" />
+
+
+            <EditText
+                android:id="@+id/name_etv"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginEnd="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_weight="4"
+                android:gravity="bottom"
+                android:hint="@string/guitar_practice"
+                android:imeOptions="actionDone"
+                android:inputType="textVisiblePassword"
+                android:maxLength="20"
+                android:maxLines="1"
+                android:textColor="#000000"
+                android:textSize="14sp" />
+
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/new_difficulty_layout"
+            android:layout_width="0dp"
+            android:layout_height="75dp"
+            android:layout_marginEnd="25dp"
+            android:layout_marginStart="25dp"
+            android:background="@drawable/shared_ui_top_border_grey"
+            android:baselineAligned="false"
+            android:orientation="horizontal"
+            android:paddingBottom="20dp"
+            android:paddingTop="20dp"
+            app:layout_constraintBottom_toTopOf="@id/custom_difficulty_layout"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/new_name_layout">
+
+            <TextView
+                android:id="@+id/edit_difficulty_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:padding="4dp"
+                android:text="@string/edit_xxx_to_complete"
+                android:textColor="#000000"
+                android:textSize="14sp"
+                tools:text="Edit hours to complete:" />
+
+            <ImageView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="1"
+                android:contentDescription="@string/level_icon"
+                android:padding="4dp"
+                android:scaleType="fitCenter"
+                android:src="@drawable/frag_trackers_gem_black" />
+
+            <Spinner
+                android:id="@+id/max_count_spinner"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="5"
+                android:background="@drawable/shared_ui_grey_border_rounded"
+                android:paddingEnd="4dp"
+                android:paddingStart="4dp">
+                <!--android:entries="@array/tracker_count_strings"-->
+            </Spinner>
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:id="@+id/custom_difficulty_layout"
+            android:layout_width="0dp"
+            android:layout_height="75dp"
+            android:layout_marginEnd="50dp"
+            android:layout_marginStart="50dp"
+            android:background="@drawable/shared_ui_top_border_grey"
+            android:baselineAligned="false"
+            android:orientation="horizontal"
+            android:paddingEnd="25dp"
+            android:paddingStart="25dp"
+            app:layout_constraintBottom_toTopOf="@id/new_counter_label_layout"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/new_difficulty_layout">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:text="@string/other_colon"
+                android:textColor="#000000"
+                android:textSize="14sp" />
+
+            <EditText
+                android:id="@+id/add_custom_max_count_etv"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                android:layout_weight="2"
+                android:hint="@string/hours"
+                android:imeOptions="actionDone"
+                android:inputType="numberPassword"
+                android:textAlignment="center"
+                android:textColor="#000000"
+                android:textSize="14sp" />
+
+            <Button
+                android:id="@+id/update_difficulty_button"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_gravity="center"
+                android:background="@drawable/shared_ui_button_background_selector"
+                android:text="@string/update"
+                android:textAllCaps="false"
+                android:textSize="14sp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/new_counter_label_layout"
+            android:layout_width="0dp"
+            android:layout_height="75dp"
+            android:layout_marginEnd="25dp"
+            android:layout_marginStart="25dp"
+            android:background="@drawable/shared_ui_top_border_grey"
+            android:baselineAligned="false"
+            android:orientation="horizontal"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/custom_difficulty_layout">
+
+            <TextView
+                android:id="@+id/edit_label_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:text="@string/edit_counter_label_colon"
+                android:textColor="#000000"
+                android:textSize="14sp" />
+
+            <EditText
+                android:id="@+id/label_etv"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="4"
+                android:layout_marginEnd="8dp"
+                android:layout_marginStart="8dp"
+                android:hint="@string/paintings"
+                android:imeOptions="actionDone"
+                android:inputType="textVisiblePassword"
+                android:maxLength="20"
+                android:maxLines="1"
+                android:textColor="#000000"
+                android:textSize="14sp" />
+
+        </LinearLayout>
+
+
+    </android.support.constraint.ConstraintLayout>
+
+</ScrollView>
