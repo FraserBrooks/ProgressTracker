@@ -3,6 +3,7 @@ package com.fraserbrooks.progresstracker.mainActivity;
 import com.fraserbrooks.progresstracker.BasePresenter;
 import com.fraserbrooks.progresstracker.BaseView;
 import com.fraserbrooks.progresstracker.data.Tracker;
+import com.fraserbrooks.progresstracker.util.TrackerFunctionsInterface;
 
 import java.util.List;
 
@@ -43,7 +44,7 @@ public interface TrackersContract {
 
     }
 
-    interface Presenter extends BasePresenter {
+    interface Presenter extends BasePresenter, TrackerFunctionsInterface {
 
         // todo: remove
         void addTestData();
@@ -55,20 +56,6 @@ public interface TrackersContract {
         void graphClicked();
 
         void setTrackerExpandCollapse(Tracker tracker);
-
-        String getTrackerQuantifier(Tracker tracker);
-
-        String getTrackerQuantifierTwo(Tracker tracker);
-
-        String getLevelIndicator(Tracker tracker);
-
-        void addToTrackerScore(Tracker tracker, int c);
-
-        void timerButtonClicked(Tracker tracker);
-
-        void moreDetailsButtonClicked(Tracker tracker);
-
-        void changeTrackerOrder(int from,int to);
 
     }
 

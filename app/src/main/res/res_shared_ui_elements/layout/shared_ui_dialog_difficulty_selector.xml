@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="50dp"
+    android:background="@drawable/shared_ui_button_background_default"
+    android:padding="20dp">
+
+    <TextView
+        android:id="@+id/dialog_difficulty_selector_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="bottom"
+        android:text="@string/Select_Progress_Rate"
+        android:textColor="@color/default_text_color"
+        android:textSize="18sp"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/dialog_difficulty_selector_desc"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:fontFamily="sans-serif"
+        android:paddingEnd="4dp"
+        android:paddingStart="4dp"
+        android:text="@string/difficulty_selector_desc"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toTopOf="@id/dialog_difficulty_selector_spinner_tv"
+        app:layout_constraintTop_toBottomOf="@id/dialog_difficulty_selector_title" />
+
+    <TextView
+        android:id="@+id/dialog_difficulty_selector_spinner_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:fontFamily="sans-serif"
+        android:paddingEnd="4dp"
+        android:paddingStart="4dp"
+        android:textSize="16sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/dialog_difficulty_selector_desc"
+        tools:text="Hours to:" />
+
+    <ImageView
+        android:layout_width="25dp"
+        android:layout_height="25dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginStart="10dp"
+        android:scaleType="centerInside"
+        android:src="@drawable/frag_trackers_gem_black"
+        app:layout_constraintStart_toEndOf="@id/dialog_difficulty_selector_spinner_tv"
+        app:layout_constraintTop_toTopOf="@id/dialog_difficulty_selector_spinner_tv" />
+
+    <Spinner
+        android:id="@+id/dialog_difficulty_selector_spinner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginStart="50dp"
+        android:layout_marginEnd="50dp"
+        android:padding="8dp"
+        android:background="@drawable/shared_ui_button_background_default"
+        app:layout_constraintTop_toBottomOf="@id/dialog_difficulty_selector_spinner_tv"
+        tools:entries="@array/tracker_count_strings">
+
+    </Spinner>
+
+    <EditText
+        android:id="@+id/dialog_difficulty_selector_custom_edit_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginStart="75dp"
+        android:layout_marginEnd="75dp"
+        android:textSize="16sp"
+        android:inputType="number"
+        app:layout_constraintTop_toBottomOf="@id/dialog_difficulty_selector_spinner"
+        android:visibility="gone"/>
+
+
+</android.support.constraint.ConstraintLayout>

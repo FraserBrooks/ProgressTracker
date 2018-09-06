@@ -18,7 +18,7 @@ import com.fraserbrooks.progresstracker.data.source.Repository;
  * Created by Fraser on 06/04/2018.
  */
 
-public class MainActivity_ extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "main>MainActivity";
     private static final int NUMBER_OF_TABS = 4;

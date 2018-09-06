@@ -57,7 +57,7 @@ public class AddTrackerActivity_ extends AppCompatActivity implements AddTracker
         });
 
         //To stop numberPassword mode from hiding text
-        EditText hours_input = findViewById(R.id.add_custom_max_count_etv);
+        EditText hours_input = findViewById(R.id.custom_max_count_etv);
         hours_input.setTransformationMethod(null);
 
     }
@@ -93,7 +93,7 @@ public class AddTrackerActivity_ extends AppCompatActivity implements AddTracker
                 maxScore = 10000 * 60;
                 break;
             case R.id.rad7_custom:
-                EditText number_input = findViewById(R.id.add_custom_max_count_etv);
+                EditText number_input = findViewById(R.id.custom_max_count_etv);
                 String input = number_input.getText().toString();
                 if(input.equals("")){
                     longToast("You must enter a number!");

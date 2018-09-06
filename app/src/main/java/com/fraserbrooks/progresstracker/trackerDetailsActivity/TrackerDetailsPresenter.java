@@ -3,7 +3,10 @@ package com.fraserbrooks.progresstracker.trackerDetailsActivity;
 import android.support.annotation.NonNull;
 
 import com.fraserbrooks.progresstracker.data.Tracker;
+import com.fraserbrooks.progresstracker.data.source.DataSource;
 import com.fraserbrooks.progresstracker.data.source.Repository;
+
+import java.util.List;
 
 public class TrackerDetailsPresenter implements TrackerDetailsContract.Presenter {
 
@@ -13,81 +16,61 @@ public class TrackerDetailsPresenter implements TrackerDetailsContract.Presenter
     public TrackerDetailsPresenter(@NonNull Repository repo, @NonNull TrackerDetailsActivity trackerDetailsActivity) {
         mTrackerDetailsView = trackerDetailsActivity;
         mRepository = repo;
+        mTrackerDetailsView.setPresenter(this);
     }
 
 
     @Override
     public void getTracker(String id) {
 
-    }
+        mRepository.getTracker(id, new DataSource.GetTrackersCallback() {
+            @Override
+            public void onTrackersLoaded(List<Tracker> trackers) {
+                // Not called
+            }
 
-    @Override
-    public void changeTrackerTitle(Tracker tracker, String newTitle) {
+            @Override
+            public void onTrackerLoaded(Tracker tracker) {
+                mTrackerDetailsView.setTracker(tracker);
+                mTrackerDetailsView.trackerChanged();
+            }
 
-    }
-
-    @Override
-    public void changeTrackerMaxScore(Tracker tracker, int newMax) {
-
-    }
-
-    @Override
-    public void changeTrackerLabel() {
-
-    }
-
-    @Override
-    public void incrementTrackerScore() {
+            @Override
+            public void onDataNotAvailable() {
+                mTrackerDetailsView.showTrackerLoadError();
+            }
+        });
 
     }
 
     @Override
-    public void decrementTrackerScore() {
+    public void archiveTracker(Tracker tracker) {
 
     }
 
     @Override
-    public void archiveTracker() {
+    public void deleteTracker(Tracker tracker) {
 
     }
 
     @Override
-    public void timerButtonClicked() {
-
+    public void newTrackerName(Tracker tracker, String newName) {
+        tracker.setTitle(newName);
+        mRepository.saveTracker(tracker);
+        mTrackerDetailsView.setTracker(tracker);
+        mTrackerDetailsView.trackerChanged();
     }
 
     @Override
-    public void addToTrackerScore(int amount) {
-
+    public void newTrackerLabel(Tracker tracker, String newLabel) {
+        tracker.setCounterLabel(newLabel);
+        mRepository.saveTracker(tracker);
+        mTrackerDetailsView.setTracker(tracker);
+        mTrackerDetailsView.trackerChanged();
     }
 
     @Override
-    public void subButtonClicked() {
-
-    }
-
-    @Override
-    public void addButtonClicked() {
-
-    }
-
-    @Override
-    public void newTrackerName(String s) {
-
-    }
-
-    @Override
-    public void newTrackerLabel(String s) {
-
-    }
-
-    @Override
-    public void updateDifficultyButtonClicked() {
-
-    }
-
-    @Override
-    public void newMaxCountSelected(String selected) {
+    public void newTrackerMaxScore(Tracker tracker, int newMax) {
 
     }
 
@@ -95,4 +78,27 @@ public class TrackerDetailsPresenter implements TrackerDetailsContract.Presenter
     public void start() {
 
     }
+
+
+    @Override
+    public void addToTrackerScore(Tracker tracker, int amount) {
+        mRepository.incrementScore(tracker.getId(), amount);
+        mTrackerDetailsView.trackerChanged();
+    }
+
+    @Override
+    public void timerButtonClicked(Tracker tracker) {
+
+    }
+
+    @Override
+    public void moreDetailsButtonClicked(Tracker tracker) {
+
+    }
+
+    @Override
+    public void changeTrackerOrder(Tracker tracker, int from, int to) {
+
+    }
+
 }

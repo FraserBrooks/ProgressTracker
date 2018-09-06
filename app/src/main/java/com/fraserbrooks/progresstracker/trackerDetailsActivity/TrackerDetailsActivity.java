@@ -2,26 +2,34 @@ package com.fraserbrooks.progresstracker.trackerDetailsActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AppCompatActivity;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.Button;
-import android.widget.EditText;
-import android.widget.Spinner;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.fraserbrooks.progresstracker.Injection;
 import com.fraserbrooks.progresstracker.R;
 import com.fraserbrooks.progresstracker.data.Tracker;
+import com.fraserbrooks.progresstracker.dialogs.AddSubCustomInputDialog;
+import com.fraserbrooks.progresstracker.dialogs.DialogCallerContract;
+import com.fraserbrooks.progresstracker.dialogs.DifficultySelectorDialog;
+import com.fraserbrooks.progresstracker.dialogs.TextInputDialog;
+import com.fraserbrooks.progresstracker.dialogs.YesNoDialog;
+import com.fraserbrooks.progresstracker.util.TrackerViewInflater;
 
-public class TrackerDetailsActivity extends AppCompatActivity implements TrackerDetailsContract.View{
+import static junit.framework.Assert.assertNotNull;
+
+public class TrackerDetailsActivity extends AppCompatActivity
+        implements TrackerDetailsContract.View, DialogCallerContract{
 
     private final String TAG = "TrackerDetailsActivity";
     private TrackerDetailsContract.Presenter mPresenter;
     private Tracker mTracker;
-
+    private DialogCallerContract mDialogCallback;
+    private TrackerViewInflater  mTrackerInflater;
 
 
     @Override
@@ -43,82 +51,447 @@ public class TrackerDetailsActivity extends AppCompatActivity implements Tracker
 
         String mTrackerId = intent.getStringExtra("id");
 
+        mTrackerInflater = new TrackerViewInflater(this, mPresenter);
+
         mPresenter.getTracker(mTrackerId);
 
-        initButtons();
 
-        initEditTexts();
-
-        initSpinner();
 
     }
 
-    private void initSpinner() {
+    @Override
+    public void trackerChanged() {
+        initButtons();
 
-        final View customDifficultyLayout = findViewById(R.id.custom_difficulty_layout);
-        customDifficultyLayout.setVisibility(View.GONE);
+        initTextViews();
 
-        Spinner maxCountSpinner = findViewById(R.id.max_count_spinner);
-        maxCountSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        initClickListeners();
+
+        mTrackerInflater.inflateTracker(findViewById(R.id.tracker_details_root_view), mTracker, false);
+
+    }
+
+    @Override
+    public void returnToTrackersScreen() {
+        finish();
+    }
+
+    @Override
+    public void setTracker(Tracker t) {
+        mTracker = t;
+    }
+
+    @Override
+    public void showNoNumberError() {
+        Toast.makeText(this, R.string.must_enter_a_number, Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void showBlankNameError() {
+        Toast.makeText(this, R.string.name_cannot_be_blank, Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void showInvalidDifficultyError() {
+        Toast.makeText(this, R.string.label_cannot_be_blank, Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void showTrackerLoadError() {
+        // TODO
+        Log.e(TAG, "showTrackerLoadError: Error loading tracker");
+    }
+
+
+    @Override
+    public void onPositiveClicked(String string) {
+        if(mDialogCallback != null) mDialogCallback.onPositiveClicked(string);
+    }
+
+    @Override
+    public void onNegativeClicked() {
+        if(mDialogCallback != null) mDialogCallback.onNegativeClicked();
+    }
+
+    @Override
+    public String getPositiveButtonText() {
+        if(mDialogCallback != null) return mDialogCallback.getPositiveButtonText();
+        else return "";
+    }
+
+    @Override
+    public String getNegativeButtonText() {
+        if(mDialogCallback != null) return mDialogCallback.getNegativeButtonText();
+        else return "";
+    }
+
+    @Override
+    public String getTitleText() {
+        return mDialogCallback.getTitleText();
+    }
+
+    @Override
+    public String getDescriptiveText() {
+        return mDialogCallback.getDescriptiveText();
+    }
+
+    @Override
+    public Tracker getTracker() {
+        return mTracker;
+    }
+
+    @Override
+    public void returnInt(int amount) {
+
+    }
+
+
+    private void showNewNameDialog() {
+
+        mDialogCallback = new DialogCallerContract() {
             @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                String selected = (String) parent.getItemAtPosition(position);
+            public void onPositiveClicked(String string) {
+                if(string.isEmpty()) showBlankNameError();
+                else mPresenter.newTrackerName(mTracker, string);
+            }
 
-                if(selected.equals(getResources().getString(R.string.custom))){
-                    customDifficultyLayout.setVisibility(View.VISIBLE);
-                }else{
-                    customDifficultyLayout.setVisibility(View.VISIBLE);
-                    mPresenter.newMaxCountSelected(selected);
+            @Override
+            public void onNegativeClicked() {
+                Log.d(TAG, "onNegativeClicked: ");
+                // Do Nothing
+            }
+
+            @Override
+            public String getPositiveButtonText() {
+                return getString(R.string.Save);
+            }
+
+            @Override
+            public String getNegativeButtonText() {
+                return getString(R.string.Cancel);
+            }
+
+            @Override
+            public String getTitleText() {
+                // Not used
+                return null;
+            }
+
+            @Override
+            public String getDescriptiveText() {
+                // Not used
+                return null;
+            }
+
+            @Override
+            public Tracker getTracker() {
+                return mTracker;
+            }
+
+            @Override
+            public void returnInt(int amount) {
+                // not used
+            }
+        };
+        DialogFragment newNameDialog = new TextInputDialog();
+        newNameDialog.show(getSupportFragmentManager(), "new_name");
+
+    }
+
+    private void showNewLabelDialog() {
+        mDialogCallback = new DialogCallerContract(){
+            @Override
+            public void onPositiveClicked(String string) {
+                if(string.isEmpty()) showBlankNameError();
+                else mPresenter.newTrackerLabel(mTracker, string);
+            }
+
+            @Override
+            public void onNegativeClicked() {
+                Log.d(TAG, "onNegativeClicked: ");
+                // Do nothing
+            }
+
+            @Override
+            public String getPositiveButtonText() {
+                return getString(R.string.Save);
+            }
+
+            @Override
+            public String getNegativeButtonText() {
+                return getString(R.string.Cancel);
+            }
+
+            @Override
+            public String getTitleText() {
+                // Not used
+                return null;
+            }
+
+            @Override
+            public String getDescriptiveText() {
+                // Not used
+                return null;
+            }
+
+            @Override
+            public Tracker getTracker() {
+                return mTracker;
+            }
+
+            @Override
+            public void returnInt(int amount) {
+                // not used
+            }
+        };
+        DialogFragment newLabelDialog = new TextInputDialog();
+        newLabelDialog.show(getSupportFragmentManager(), "new_label");
+    }
+
+    private void showNewDifficultyDialog() {
+        mDialogCallback = new DialogCallerContract(){
+            @Override
+            public void onPositiveClicked(String difficulty) {
+                if(difficulty.isEmpty()) showNoNumberError();
+                else{
+                    int i = 0;
+                    try{
+                        i = Integer.parseInt(difficulty);
+                    } catch (NumberFormatException e){
+                        Log.e(TAG, "onPositiveClicked: NumberFormatException");
+                        return;
+                    }
+                    mPresenter.newTrackerMaxScore(mTracker, i);
                 }
             }
 
             @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-                // DO Nothing
+            public void onNegativeClicked() {
+                Log.d(TAG, "onNegativeClicked: ");
+                // Do nothing
             }
-        });
+
+            @Override
+            public String getPositiveButtonText() {
+                return getString(R.string.Confirm);
+            }
+
+            @Override
+            public String getNegativeButtonText() {
+                return getString(R.string.Cancel);
+            }
+
+            @Override
+            public String getTitleText() {
+                // Not used
+                return null;
+            }
+
+            @Override
+            public String getDescriptiveText() {
+                // Not used
+                return null;
+            }
+
+            @Override
+            public Tracker getTracker() {
+                return mTracker;
+            }
+
+            @Override
+            public void returnInt(int amount) {
+                // not used
+            }
+        };
+        DialogFragment newDifficultyDialog = new DifficultySelectorDialog();
+        newDifficultyDialog.show(getSupportFragmentManager(), "new_difficulty_dialog");
+    }
+
+    private void showAddSubCustomDialog(){
+        mDialogCallback = new DialogCallerContract() {
+            @Override
+            public void onPositiveClicked(String string) {
+                // not used
+            }
+
+            @Override
+            public void onNegativeClicked() {
+                Log.d(TAG, "onNegativeClicked: ");
+            }
+
+            @Override
+            public String getPositiveButtonText() {
+                // Not used
+                return null;
+            }
+
+            @Override
+            public String getNegativeButtonText() {
+                return getString(R.string.Cancel);
+            }
+
+            @Override
+            public String getTitleText() {
+                // Not used
+                return null;
+            }
+
+            @Override
+            public String getDescriptiveText() {
+                // Not used
+                return null;
+            }
+
+            @Override
+            public Tracker getTracker() {
+                return mTracker;
+            }
+
+            @Override
+            public void returnInt(int amount) {
+                // Amount returned is the amount to add
+                // to tracker (could be negative)
+                mPresenter.addToTrackerScore(mTracker, amount);
+            }
+        };
+        DialogFragment addSubCustomDialog = new AddSubCustomInputDialog();
+        addSubCustomDialog.show(getSupportFragmentManager(), "add_sub_custom");
 
     }
 
-    private void initEditTexts() {
+    private void showArchiveTrackerDialog(){
 
-        EditText nameEditText = findViewById(R.id.name_etv);
-        nameEditText.setText(mTracker.getTitle());
-        nameEditText.addTextChangedListener(new TextWatcher() {
+        mDialogCallback = new DialogCallerContract() {
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                // Do Nothing
+            public void onPositiveClicked(String result) {
+                mPresenter.archiveTracker(mTracker);
             }
 
             @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                mPresenter.newTrackerName(s.toString());
+            public void onNegativeClicked() {
+                Log.d(TAG, "onNegativeClicked: ");
+                // Nothing to do
             }
 
             @Override
-            public void afterTextChanged(Editable s) {
-                // Do Nothing
+            public String getPositiveButtonText() {
+                return getString(R.string.Confirm);
             }
-        });
 
-        EditText labelEditText = findViewById(R.id.label_etv);
+            @Override
+            public String getNegativeButtonText() {
+                return getString(R.string.Cancel);
+            }
+
+            @Override
+            public String getTitleText() {
+                if(mTracker.isArchived()){
+                    return getString(R.string.unarchive_tracker);
+                }else{
+                    return getString(R.string.archive_tracker);
+                }
+            }
+
+            @Override
+            public String getDescriptiveText() {
+                if(mTracker.isArchived()){
+                    return getString(R.string.unarchive_tracker_desc);
+                }else{
+                    return getString(R.string.archive_tracker_desc);
+                }
+            }
+
+            @Override
+            public Tracker getTracker() {
+                return mTracker;
+            }
+
+            @Override
+            public void returnInt(int amount) {
+                // Not used
+            }
+        };
+
+        DialogFragment yesNoDialog = new YesNoDialog();
+        yesNoDialog.show(getSupportFragmentManager(), "yes_no_archive_dialog");
+
+    }
+
+    private void showDeleteTrackerDialog(){
+
+        mDialogCallback = new DialogCallerContract() {
+            @Override
+            public void onPositiveClicked(String result) {
+                mPresenter.deleteTracker(mTracker);
+            }
+
+            @Override
+            public void onNegativeClicked() {
+                Log.d(TAG, "onNegativeClicked: ");
+                // Nothing to do
+            }
+
+            @Override
+            public String getPositiveButtonText() {
+                return getString(R.string.Confirm);
+            }
+
+            @Override
+            public String getNegativeButtonText() {
+                return getString(R.string.Cancel);
+            }
+
+            @Override
+            public String getTitleText() {
+                return getString(R.string.delete_tracker);
+            }
+
+            @Override
+            public String getDescriptiveText() {
+                return getString(R.string.delete_tracker_desc);
+            }
+
+            @Override
+            public Tracker getTracker() {
+                return mTracker;
+            }
+
+            @Override
+            public void returnInt(int amount) {
+                // Not used
+            }
+        };
+
+        DialogFragment yesNoDialog = new YesNoDialog();
+        yesNoDialog.show(getSupportFragmentManager(), "yes_no_delete_dialog");
+
+    }
+
+    private void initTextViews() {
+
+        Log.d(TAG, "initTextViews: tracker title = " + mTracker.getTitle());
+
+        TextView nameTextView = findViewById(R.id.current_name_tv);
+        nameTextView.setText(mTracker.getTitle());
+
+        TextView labelEditText = findViewById(R.id.label_tv);
         labelEditText.setText(mTracker.getCounterLabel());
-        labelEditText.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                // Do Nothing
-            }
 
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                mPresenter.newTrackerLabel(s.toString());
-            }
+        // Capitalise first letter
+        String unCapitalisedLabel = getString(R.string.string_to_colon, mTracker.getCounterLabel());
+        String editDifficultyLabel = unCapitalisedLabel.substring(0,1).toUpperCase() + unCapitalisedLabel.substring(1);
+        TextView editDifficultyTv = findViewById(R.id.edit_difficulty_tv);
+        editDifficultyTv.setText(editDifficultyLabel);
 
-            @Override
-            public void afterTextChanged(Editable s) {
-                // Do Nothing
-            }
-        });
+        TextView maxCountTv = findViewById(R.id.max_count_tv);
+        maxCountTv.setText(getString(R.string.x_ys, mTracker.getCountToMaxLevel(), mTracker.getCounterLabel()));
+
+        TextView archiveTv = findViewById(R.id.archive_tracker_button_text_view);
+        if(mTracker.isArchived()){
+            archiveTv.setText(R.string.unarchive_tracker);
+        }else{
+            archiveTv.setText(R.string.archive_tracker);
+        }
 
     }
 
@@ -142,7 +515,7 @@ public class TrackerDetailsActivity extends AppCompatActivity implements Tracker
         topButton1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mPresenter.timerButtonClicked();
+                mPresenter.timerButtonClicked(mTracker);
             }
         });
 
@@ -179,14 +552,14 @@ public class TrackerDetailsActivity extends AppCompatActivity implements Tracker
         topButton2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mPresenter.addToTrackerScore(button2AddAmount);
+                mPresenter.addToTrackerScore(mTracker, button2AddAmount);
             }
         });
 
         topButton3.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mPresenter.addToTrackerScore( button3AddAmount);
+                mPresenter.addToTrackerScore(mTracker, button3AddAmount);
             }
         });
 
@@ -194,76 +567,54 @@ public class TrackerDetailsActivity extends AppCompatActivity implements Tracker
         topButton4.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                View customTimeLayout = findViewById(R.id.custom_time_layout);
-
-                if(customTimeLayout.getVisibility() == View.VISIBLE){
-                    customTimeLayout.setVisibility(View.GONE);
-                }else{
-                    customTimeLayout.setVisibility(View.VISIBLE);
-                }
-
+                showAddSubCustomDialog();
             }
         });
 
-        // Get buttons
-        Button subButton = findViewById(R.id.sub_button);
-        Button addButton = findViewById(R.id.add_button);
+    }
 
-        subButton.setOnClickListener(new View.OnClickListener() {
+    private void initClickListeners(){
+
+        View newNameLayout = findViewById(R.id.new_name_layout);
+        newNameLayout.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
-                mPresenter.subButtonClicked();
+            public void onClick(View view) {
+                showNewNameDialog();
             }
         });
 
-        addButton.setOnClickListener(new View.OnClickListener() {
+        View newDifficultyLayout = findViewById(R.id.new_difficulty_layout);
+        newDifficultyLayout.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
-                mPresenter.addButtonClicked();
+            public void onClick(View view) {
+                showNewDifficultyDialog();
             }
         });
 
-        // Get Button
-        Button updateDifficultyButton = findViewById(R.id.update_difficulty_button);
-        updateDifficultyButton.setOnClickListener(new View.OnClickListener() {
+        View newLabelLayout = findViewById(R.id.new_counter_label_layout);
+        newLabelLayout.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
-                mPresenter.updateDifficultyButtonClicked();
+            public void onClick(View view) {
+                showNewLabelDialog();
+            }
+        });
+
+        View deleteTrackerLayout = findViewById(R.id.tracker_details_delete_button_layout);
+        deleteTrackerLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showDeleteTrackerDialog();
+            }
+        });
+
+        View archiveTrackerLayout = findViewById(R.id.tracker_details_archive_button_layout);
+        archiveTrackerLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showArchiveTrackerDialog();
             }
         });
 
     }
-
-
-    @Override
-    public int getDecrementValue() {
-        return 0;
-    }
-
-    @Override
-    public int getIncrementValue() {
-        return 0;
-    }
-
-    @Override
-    public String getNewName() {
-        return null;
-    }
-
-    @Override
-    public String getNewLabel() {
-        return null;
-    }
-
-    @Override
-    public void returnToTrackersScreen() {
-
-    }
-
-    @Override
-    public void setTracker(Tracker t) {
-        mTracker = t;
-    }
-
 
 }

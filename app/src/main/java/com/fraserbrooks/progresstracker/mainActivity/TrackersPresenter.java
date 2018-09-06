@@ -265,30 +265,7 @@ public class TrackersPresenter implements TrackersContract.Presenter {
         mTrackersView.updateOrAddTracker(tracker);
     }
 
-    @Override
-    public String getTrackerQuantifier(Tracker tracker) {
-        String quantifier;
-        if(tracker.isTimeTracker()){
-            quantifier = (tracker.getCountSoFar() > 59)
-                    ? " - " + tracker.getCountSoFar()/60 + " hours"
-                    : " - " + tracker.getCountSoFar() + " minutes";
-        }else{
-            quantifier = " - " + tracker.getCountSoFar() + " " + tracker.getCounterLabel();
-        }
-        return quantifier;
-    }
 
-
-    @Override
-    public String getTrackerQuantifierTwo(Tracker tracker) {
-        return " - " + tracker.getCountSoFar() + " minutes";
-    }
-
-
-    @Override
-    public String getLevelIndicator(Tracker tracker) {
-        return tracker.getLevelToDisplay();
-    }
 
     @Override
     public void addToTrackerScore(Tracker tracker, final int increment) {
@@ -304,16 +281,11 @@ public class TrackersPresenter implements TrackersContract.Presenter {
 
     @Override
     public void moreDetailsButtonClicked(Tracker tracker) {
-        // todo (currently temp delete)
-
-        mTrackersRepository.deleteTracker(tracker.getId());
-        mTrackersView.removeTracker(tracker);
-
-        //mTrackersView.showTrackerDetailsScreen(tracker.getId());
+        mTrackersView.showTrackerDetailsScreen(tracker.getId());
     }
 
     @Override
-    public void changeTrackerOrder(int from, int to) {
+    public void changeTrackerOrder(Tracker tracker, int from, int to) {
 
         //todo
 //                ArrayList<Tracker> ls = mListAdapter.getItems();
@@ -347,5 +319,15 @@ public class TrackersPresenter implements TrackersContract.Presenter {
 //                ls.set(to, (Tracker) target);
 //
 //                trackerAdapter.setItems(ls);
+    }
+
+    @Override
+    public void archiveTracker(Tracker tracker) {
+
+    }
+
+    @Override
+    public void deleteTracker(Tracker tracker) {
+
     }
 }

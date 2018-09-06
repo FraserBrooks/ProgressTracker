@@ -222,7 +222,11 @@ public class Repository implements DataSource {
         mAppExecutors.diskIO().execute(new Runnable() {
             @Override
             public void run() {
+
+                // Get all targets
                 ArrayList<Target> ts = new ArrayList<>(mCachedTargets.values());
+
+                // Search all targets for any that pertain to the deleted tracker
                 for(int i = 0;  i < ts.size() ; i++){
                     if(ts.get(i).getTrackId().equals(trackerId)){
                         final String idOfTargetToDelete = ts.get(i).getId();
@@ -233,6 +237,7 @@ public class Repository implements DataSource {
                         mAppExecutors.mainThread().execute(new Runnable() {
                             @Override
                             public void run() {
+                                // Update UI through subscribed listeners
                                 for(int j = 0; j< mDeleteTargetListeners.size(); j++){
                                     if(mDeleteTargetListeners.get(j).isActive()){
                                         mDeleteTargetListeners.get(j).trackerDeleted(targetToDelete);
@@ -390,13 +395,21 @@ public class Repository implements DataSource {
 
                             @Override
                             public void onTargetLoaded(final Target target) {
+
+                                // Update target in UI
                                 mAppExecutors.mainThread().execute(new Runnable() {
                                     @Override
                                     public void run() {
                                         synchronized (mTargetChangeListeners){
-                                            for(TargetChangeListener listener: mTargetChangeListeners){
-                                                if(listener.isActive()) listener.targetUpdated(target);
-                                                else mTargetChangeListeners.remove(listener);
+                                            for( int i = 0; i < mTargetChangeListeners.size() ; i++){
+                                                if(mTargetChangeListeners.get(i).isActive()){
+                                                    // Update target
+                                                    mTargetChangeListeners.get(i).targetUpdated(target);
+                                                }else{
+                                                    // Listener no longer active so remove it
+                                                    mTargetChangeListeners.remove(i);
+                                                    i--;
+                                                }
                                             }
                                         }
                                     }
@@ -410,6 +423,7 @@ public class Repository implements DataSource {
                         });
                     }
                 }
+
             }
         });
 

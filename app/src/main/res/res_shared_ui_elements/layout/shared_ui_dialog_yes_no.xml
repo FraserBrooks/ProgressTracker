@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="50dp"
+    android:padding="20dp"
+    android:background="@drawable/shared_ui_button_background_default">
+    <TextView
+        android:id="@+id/dialog_yes_no_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="18sp"
+        android:gravity="bottom"
+        android:textColor="@color/default_text_color"
+        tools:text="@string/archive_tracker"
+        />
+    <TextView
+        android:id="@+id/dialog_yes_no_desc"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="4dp"
+        android:paddingEnd="4dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="12dp"
+        android:textSize="16sp"
+        android:fontFamily="sans-serif"
+        tools:text="@string/archive_tracker_desc"/>
+
+</LinearLayout>

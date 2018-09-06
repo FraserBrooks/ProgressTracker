@@ -143,7 +143,7 @@
                     android:layout_weight="1"
                     android:background="@drawable/shared_ui_button_background_selector"
                     android:button="@null"
-                    android:text="@string/custom"
+                    android:text="@string/Custom"
                     android:textAlignment="center"
                     android:textSize="16sp" />
 
@@ -179,7 +179,7 @@
                 android:textSize="18sp" />
 
             <EditText
-                android:id="@+id/add_custom_max_count_etv"
+                android:id="@+id/custom_max_count_etv"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="3"

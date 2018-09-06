@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="50dp"
+    android:padding="20dp"
+    android:background="@drawable/shared_ui_button_background_default">
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="12dp"
+        android:textSize="18sp"
+        android:gravity="bottom"
+        android:text="@string/enter_new_name"
+        android:textColor="#000"
+        />
+    <EditText
+        android:id="@+id/dialog_new_name_etv"
+        android:inputType="text"
+        android:layout_width="match_parent"
+        android:layout_height="48sp"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="12dp"
+        android:textSize="16sp"
+        android:fontFamily="sans-serif"
+        android:hint="@string/enter_new_name"/>
+
+</LinearLayout>

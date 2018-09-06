@@ -4,57 +4,38 @@ import com.fraserbrooks.progresstracker.BasePresenter;
 import com.fraserbrooks.progresstracker.BaseView;
 import com.fraserbrooks.progresstracker.data.Tracker;
 import com.fraserbrooks.progresstracker.mainActivity.TrackersContract;
+import com.fraserbrooks.progresstracker.util.TrackerFunctionsInterface;
 
 public interface TrackerDetailsContract {
 
     interface View extends BaseView<Presenter> {
 
-        int getDecrementValue();
-
-        int getIncrementValue();
-
-        String getNewName();
-
-        String getNewLabel();
-
         void returnToTrackersScreen();
         
         void setTracker(Tracker t);
-        
+
+        void showNoNumberError();
+
+        void showBlankNameError();
+
+        void showInvalidDifficultyError();
+
+        void showTrackerLoadError();
+
+        void trackerChanged();
+
     }
 
-    interface Presenter extends BasePresenter {
+    interface Presenter extends BasePresenter, TrackerFunctionsInterface {
 
         void getTracker(String id);
 
-        void changeTrackerTitle(Tracker tracker, String newTitle);
+        void newTrackerName(Tracker tracker, String newName);
 
-        void changeTrackerMaxScore(Tracker tracker, int newMax);
+        void newTrackerLabel(Tracker tracker, String newLabel);
 
-        void changeTrackerLabel();
+        void newTrackerMaxScore(Tracker tracker, int newMax);
 
-        void incrementTrackerScore();
-
-        void decrementTrackerScore();
-
-        void archiveTracker();
-
-
-        void timerButtonClicked();
-
-        void addToTrackerScore(int amount);
-
-        void subButtonClicked();
-
-        void addButtonClicked();
-
-        void newTrackerName(String s);
-
-        void newTrackerLabel(String s);
-
-        void updateDifficultyButtonClicked();
-
-        void newMaxCountSelected(String selected);
     }
 
 }

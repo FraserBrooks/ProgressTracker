@@ -4,7 +4,6 @@
     <string name="title_dashboard">Dashboard</string>
     <string name="title_notifications">Notifications</string>
     <string name="_20_hours">20_hours</string>
-    <string name="does_not_matter">Doesn\'t Matter</string>
     <string name="lifetime">Lifetime</string>
     <string name="_1000_hours">1000 hours</string>
     <string name="_500_hours">500 hours</string>
@@ -36,18 +35,22 @@
     <string name="timeColon">Time:</string>
     <string name="time">time</string>
 
+
     <string name="every">Every:</string>
 
     <string name="count_to_complete"> %1$d to complete.</string>
 
     <string name="edit_xxx_to_complete">Edit %1$s to complete:</string>
+    <string name="string_to_colon">%1$s to:</string>
     <string name="to_complete">To Complete</string>
 
     <string name="add_1_count">+ 1 %1$s</string>
     <string name="add_5_count">+ 5 %1$s</string>
     <string name="more">More…</string>
 
-    <string name="custom">Custom</string>
+    <string name="does_not_matter_base_level">1000</string>
+    <string name="does_not_matter">Doesn\'t Matter</string>
+    <string name="Custom">Custom</string>
     <string-array name="tracker_count_strings">
         <item>"Custom"</item>
         <item>"20 "</item>
@@ -110,6 +113,9 @@
     <string name="target">target:</string>
     <string name="set">Set</string>
     <string name="must_enter_a_time">You must enter a time!</string>
+    <string name="must_enter_a_number">You must enter a number!</string>
+    <string name="name_cannot_be_blank">Name must not be blank!</string>
+    <string name="label_cannot_be_blank">Label must not be blank!</string>
     <string name="custom_time_greater_than_0">Custom time must be greater than 0!</string>
     <string name="edit_counter_label_colon">Edit Counter Label:</string>
     <string name="paintings">paintings</string>
@@ -117,10 +123,23 @@
     <string name="progress_bar">progress bar</string>
     <string name="ellipsis">…\n </string>
     <string name="save_changes">Save Changes</string>
+    <string name="Save">Save</string>
+    <string name="Cancel">Cancel</string>
+    <string name="Confirm">Confirm</string>
     <string name="subtract">Subtract</string>
     <string name="custom_colon">Custom:</string>
-
-
+    <string name="enter_new_name">Enter New Name</string>
+    <string name="x_minutes">%1$d minutes</string>
+    <string name="x_hours">%1$f hours</string>
+    <string name="x_ys">%1$d %2$s</string>
+    <string name="archive_tracker">Archive Tracker</string>
+    <string name="archive_tracker_desc">Hide this tracker from the trackers screen and add to archived trackers?</string>
+    <string name="unarchive_tracker">Unarchive Tracker</string>
+    <string name="unarchive_tracker_desc">Unarchive this tracker and add it back to the trackers screen?</string>
+    <string name="delete_tracker">Delete Tracker</string>
+    <string name="delete_tracker_desc">Permanently delete this tracker?</string>
+    <string name="Select_Progress_Rate">Select Progress Rate</string>
+    <string name="difficulty_selector_desc">How long should it take to level up this tracker?</string>
 
 
 </resources>
