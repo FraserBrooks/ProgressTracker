@@ -1,31 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/add_dabble_button_layout"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/add_tracker_button_layout"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:paddingTop="8dp"
-    android:paddingBottom="24dp"
-    android:paddingEnd="4dp"
-    android:paddingRight="4dp"
-    android:paddingStart="4dp"
-    android:paddingLeft="4dp"
-    >
-    <android.support.constraint.ConstraintLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingTop="8dp"
-        android:paddingBottom="8dp"
-        android:background="@drawable/frag_trackers_tracker_item_background">
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            android:text="+"
-            android:textSize="40sp"/>
+    android:layout_height="match_parent">
 
-    </android.support.constraint.ConstraintLayout>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="4dp"
+            android:layout_marginStart="4dp"
+            android:layout_marginEnd="4dp"
+            android:layout_marginBottom="4dp"
+            android:text="@string/plus_symbol"
+            android:textSize="40sp"
+            android:textAlignment="center"
+            android:textColor="@color/default_text_color"
+            android:background="@drawable/frag_trackers_tracker_item_background_selector"/>
+
 </FrameLayout>

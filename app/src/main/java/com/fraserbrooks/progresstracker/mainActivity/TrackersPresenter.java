@@ -58,13 +58,20 @@ public class TrackersPresenter implements TrackersContract.Presenter {
             public void run() {
                 ArrayList<Tracker> trackers = new ArrayList<>();
 
-                Tracker tracker1 = new Tracker("Guitar Practice", 5000*60);
-                Tracker tracker2 = new Tracker("Java", 10000*60);
-                Tracker tracker3 = new Tracker("Haskell", 100 * 60);
-                Tracker tracker4 = new Tracker("Exercise", 10000*60);
-                Tracker tracker5 = new Tracker("Reading", 1000, "books read");
-                Tracker tracker6 = new Tracker("Jiu-Jitsu", 500, "sessions");
-                Tracker tracker7 = new Tracker("NLP Revision", 20, "lectures");
+                Tracker tracker1 = new Tracker("Guitar Practice", "hours",5000*60,
+                        true, true, false);
+                Tracker tracker2 = new Tracker("Java", "hours", 10000*60,
+                        true, true, false);
+                Tracker tracker3 = new Tracker("Haskell", "hours",  100 * 60,
+                        true, true, false);
+                Tracker tracker4 = new Tracker("Exercise", "hours", 10000*60,
+                        true, true, false);
+                Tracker tracker5 = new Tracker("Reading", "books read", 1000,
+                        false, true, false);
+                Tracker tracker6 = new Tracker("Jiu-Jitsu", "sessions", 500,
+                        false, true, false);
+                Tracker tracker7 = new Tracker("Maths Revision", "lectures", 20,
+                        false, true, false);
 
                 Target target1 = new Target(tracker1.getId(), 2*60, "DAY");
                 Target target2 = new Target(tracker2.getId(), 200*60, "YEAR");
@@ -285,41 +292,10 @@ public class TrackersPresenter implements TrackersContract.Presenter {
     }
 
     @Override
-    public void changeTrackerOrder(Tracker tracker, int from, int to) {
-
-        //todo
-//                ArrayList<Tracker> ls = mListAdapter.getItems();
-//
-//                //Assuming that item is moved up the list
-//                int direction = -1;
-//
-//                //For instance where the item is dragged down the list
-//                if(from < to) {
-//                    direction = 1;
-//                }
-//
-//                if(from == 0 || from == (ls.size() + 1)){
-//                    Log.d(TAG, "drop: can't move graph or footer");
-//                    return;
-//                }
-//                if(to == 0){
-//                    to = 1;
-//                }
-//                if (to  == (ls.size() + 1)){
-//                    to = ls.size();
-//                }
-//
-//                from -= 1;
-//                to -= 1;
-//
-//                Object target = ls.get(from);
-//                for(int i = from; i != to ; i += direction){
-//                    ls.set(i, ls.get(i+direction));
-//                }
-//                ls.set(to, (Tracker) target);
-//
-//                trackerAdapter.setItems(ls);
+    public void updateTracker(Tracker tracker) {
+        mTrackersRepository.updateTracker(tracker);
     }
+
 
     @Override
     public void archiveTracker(Tracker tracker) {

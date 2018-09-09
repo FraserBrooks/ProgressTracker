@@ -3,16 +3,9 @@
     android:shape="rectangle"
     >
 
-
     <solid
         android:color="@color/menuItemWhite" />
 
     <corners android:radius="8dp" />
-
-    <padding
-        android:left="0dp"
-        android:top="0dp"
-        android:right="0dp"
-        android:bottom="0dp"    />
 
 </shape>

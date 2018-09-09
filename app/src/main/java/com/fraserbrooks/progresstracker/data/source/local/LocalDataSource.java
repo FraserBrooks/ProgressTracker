@@ -92,13 +92,26 @@ public class LocalDataSource implements DataSource{
     }
 
     @Override
-    public void saveTrackers(@NonNull List<Tracker> trackers) {
-        for(Tracker t : trackers) mTrackersDao.insertTracker(t);
+    public void saveTrackers(@NonNull final List<Tracker> trackers) {
+        Runnable saveRunnable = new Runnable() {
+            @Override
+            public void run() {
+                for(Tracker t : trackers) mTrackersDao.insertTracker(t);
+            }
+        };
+        mAppExecutors.diskIO().execute(saveRunnable);
     }
 
     @Override
     public void updateTracker(@NonNull final Tracker tracker) {
-        mTrackersDao.updateTracker(tracker);
+
+        Runnable updateRunnable = new Runnable() {
+            @Override
+            public void run() {
+                mTrackersDao.updateTracker(tracker);
+            }
+        };
+        mAppExecutors.diskIO().execute(updateRunnable);
     }
 
     @Override

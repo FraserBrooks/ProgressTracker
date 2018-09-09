@@ -50,13 +50,13 @@ public class RemoteDataSource implements DataSource{
     // Prevent direct instantiation.
     private RemoteDataSource(){};
 
-    private static void addTracker(String title, int toMaxLevel){
-        Tracker newTracker = new Tracker(title, toMaxLevel);
+    private static void addTracker(String title, int progressionRate){
+        Tracker newTracker = new Tracker(title,"hours", progressionRate, true, true, false);
         TRACKERS_SERVICE_DATA.put(newTracker.getId(), newTracker);
     }
 
-    private static void addTracker(String title, int toMaxLevel, String counterName){
-        Tracker newTracker = new Tracker(title, toMaxLevel, counterName);
+    private static void addTracker(String title, int progressionRate, String counterName){
+        Tracker newTracker = new Tracker(title,  counterName, progressionRate, false, true, false);
         TRACKERS_SERVICE_DATA.put(newTracker.getId(), newTracker);
     }
 

@@ -484,7 +484,7 @@ public class TrackerDetailsActivity extends AppCompatActivity
         editDifficultyTv.setText(editDifficultyLabel);
 
         TextView maxCountTv = findViewById(R.id.max_count_tv);
-        maxCountTv.setText(getString(R.string.x_ys, mTracker.getCountToMaxLevel(), mTracker.getCounterLabel()));
+        maxCountTv.setText(getString(R.string.x_ys, mTracker.getProgressionRate(), mTracker.getCounterLabel()));
 
         TextView archiveTv = findViewById(R.id.archive_tracker_button_text_view);
         if(mTracker.isArchived()){

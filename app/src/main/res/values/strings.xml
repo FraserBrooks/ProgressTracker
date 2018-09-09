@@ -140,6 +140,7 @@
     <string name="delete_tracker_desc">Permanently delete this tracker?</string>
     <string name="Select_Progress_Rate">Select Progress Rate</string>
     <string name="difficulty_selector_desc">How long should it take to level up this tracker?</string>
+    <string name="plus_symbol">+</string>
 
 
 </resources>

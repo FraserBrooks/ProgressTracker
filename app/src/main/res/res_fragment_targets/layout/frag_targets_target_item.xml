@@ -18,7 +18,7 @@
         android:layout_marginLeft="4dp"
         android:layout_marginRight="4dp"
         android:layout_marginTop="8dp"
-        android:background="@drawable/frag_trackers_tracker_item_background">
+        android:background="@drawable/frag_trackers_tracker_item_background_selector">
 
         <!-- Left Layout text and progress bar -->
         <LinearLayout
@@ -84,7 +84,7 @@
                         android:id="@+id/not_filled_rect"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:background="@drawable/shared_ui_white_rectangle"
+                        tools:background="@drawable/shared_ui_grey_rectangle"
                         android:layout_weight="0.4"/>
                 </LinearLayout>
 

@@ -109,7 +109,7 @@ public class BarGraph extends LinearLayout {
         TextView tvBlankRect = graph_entry.findViewById(R.id.bar_graph_blank_rect);
 
         // set colour
-        if(tracker.getCountToMaxLevel() == 0){
+        if(tracker.getProgressionRate() == 0){
             tvColourRect.setBackgroundResource(levelRects[0]);
         }else{
             int i = (tracker.getLevel() >= 8) ? 8 : tracker.getLevel() + 1;

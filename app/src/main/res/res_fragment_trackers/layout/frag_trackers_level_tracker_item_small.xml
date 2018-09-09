@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="@dimen/normal_height"
-    android:background="@drawable/frag_trackers_tracker_item_background"
+    android:background="@drawable/frag_trackers_tracker_item_background_selector"
     android:paddingBottom="12dp"
     android:paddingLeft="12dp"
     android:paddingRight="12dp"

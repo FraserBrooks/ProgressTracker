@@ -9,14 +9,8 @@ import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.PrimaryKey;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 
 
-import java.util.Calendar;
-import java.util.Date;
-import java.text.SimpleDateFormat;
-import java.util.HashMap;
-import java.util.Locale;
 import java.util.UUID;
 
 @Entity(tableName = "trackers")
@@ -31,8 +25,8 @@ public class Tracker {
     @ColumnInfo(name = "title")
     private String mTitle;
 
-    @ColumnInfo(name = "tomaxlevel")
-    private int mCountToMaxLevel;
+    @ColumnInfo(name = "progressionrate")
+    private int mProgressionRate;
 
     @ColumnInfo(name = "sofar")
     private int mCountSoFar;
@@ -53,11 +47,17 @@ public class Tracker {
     @ColumnInfo(name = "archived")
     private boolean mArchived;
 
-    @Ignore
-    private boolean mExpanded;
+    @ColumnInfo(name = "trackerindex")
+    private int mIndex;
+
+    @ColumnInfo(name = "leveluptracker")
+    private boolean mLevelUpTracker;
+
+    @ColumnInfo(name = "ticklisttracker")
+    private boolean  mTickListTracker;
 
     @Ignore
-    private static final int COUNT_TO_MAX_WHEN_NO_DIFFICULTY_SET = 4800;
+    private boolean mExpanded;
 
     @Ignore
     private int mLevel;
@@ -68,61 +68,65 @@ public class Tracker {
     @Ignore
     private String mLevelToDisplay = "";
 
+    @Ignore
+    private static final int DEFAULT_INDEX = 99;
+
     /**
      * Use this constructor to create a new Tracker that tracks time (eg. minutes/hours).
      *
      * @param title           title of the tracker
-     * @param toMaxLevel      number of minutes/'counterName' to max level
+     * @param counterLabel    thing counted if not time (eg. 'projects done', 'miles ran', etc.)
+     * @param progressionRate number of 'counterLabel's (minutes if time tracker) to get to level 8
+     * @param timeTracker     this tracker will track time (i.e hours/minutes spent on an activity)
+     * @param levelUpTracker  this tracker will 'level up' as it is incremented
+     * @param tickListTracker this tracker will be a yes/no tracker rather than a numerical one
      */
     @Ignore
-    public Tracker(@NonNull String title, int toMaxLevel) {
-        this(title, UUID.randomUUID().toString(), toMaxLevel, 0,
-                0, false, true, "hours", false);
-    }
-
-    /**
-     * Use this constructor to create a new Tracker that tracks something
-     * other than time (eg. 'projects completed', 'paintings sold', 'miles ran').
-     *
-     * @param title           title of the tracker
-     * @param toMaxLevel      number of minutes/'counterName' to max level
-     * @param counterLabel     thing counted if not time (eg. 'projects done', 'miles ran', etc.)
-     */
-    @Ignore
-    public Tracker(@NonNull String title, int toMaxLevel, String counterLabel){
-        this(title, UUID.randomUUID().toString(), toMaxLevel, 0,
-                0, false, false, counterLabel, false);
+    public Tracker(@NonNull String title, @NonNull String counterLabel, int progressionRate,
+                   boolean timeTracker, boolean levelUpTracker, boolean tickListTracker) {
+        this(title, UUID.randomUUID().toString(), counterLabel, DEFAULT_INDEX, progressionRate, 0,
+                0,false,false, timeTracker,levelUpTracker,tickListTracker);
     }
 
 
     /**
      * This constructor should only ever really be used by room
      *
-     * @param title           title of the tracker
-     * @param id              id of the tracker
-     * @param countToMaxLevel      number of minutes/'counterName' to max level
-     * @param countSoFar      the count of minutes/'counterName' so far
-     * @param timerStartTime  time that the user started timing. Used only if 'isTimeTracker' = true
-     * @param currentlyTiming currently timing. When set to false, minutes will be added to
-     *                        countSoFar based on minutes since 'timerStartTime'
-     * @param timeTracker   count refers to minutes/hours else count refers to 'counterName'
-     * @param counterLabel     thing counted if not time (eg. 'projects done', 'miles ran', etc.)
-     * @param archived         boolean: whether or not the tracker has been archived
+     * @param title               title of the tracker
+     * @param id                  id of the tracker
+     * @param counterLabel        thing counted if not time (eg. 'projects done', 'miles ran', etc.)
+     * @param index               index used for user defined ordering in the UI
+     * @param progressionRate     number of 'counterLabel's (minutes if time tracker) to get to level 8
+     * @param countSoFar          count of minutes/'counterName' so far
+     * @param timerStartTime      time that the user started timing. Used only if 'isTimeTracker' = true
+     * @param currentlyTiming     currently timing. When set to false, minutes will be added to
+     *                            countSoFar based on minutes since 'timerStartTime'
+     * @param archived            boolean: whether or not the tracker has been archived
+     * @param timeTracker     this tracker will track time (i.e hours/minutes spent on an activity)
+     * @param levelUpTracker  this tracker will 'level up' as it is incremented
+     * @param tickListTracker this tracker will be a yes/no tracker rather than a numerical one
      */
-    public Tracker(@NonNull String title, @NonNull String id,
-                   int countToMaxLevel,  int countSoFar,
-                   long timerStartTime,
-                   boolean currentlyTiming, boolean timeTracker,
-                   String counterLabel, boolean archived) {
+    public Tracker(@NonNull String title, @NonNull String id, @NonNull String counterLabel,
+                   int index, int progressionRate,  int countSoFar,
+                   long timerStartTime, boolean currentlyTiming,
+                   boolean archived, boolean timeTracker,
+                   boolean levelUpTracker, boolean tickListTracker){
+
+        // A tracker cannot be both a levelUpTracker and a tickListTracker
+        if(levelUpTracker && tickListTracker) throw new IllegalArgumentException();
+
         this.mId = id;
         this.mTitle = title;
-        this.mCountToMaxLevel = countToMaxLevel;
+        this.mIndex = index;
+        this.mProgressionRate = progressionRate;
         this.mCountSoFar = countSoFar;
         this.mTimerStartTime = timerStartTime;
         this.mCurrentlyTiming = currentlyTiming;
         this.mTimeTracker = timeTracker;
         this.mCounterLabel = counterLabel;
         this.mArchived = archived;
+        this.mLevelUpTracker = levelUpTracker;
+        this.mTickListTracker = tickListTracker;
         mExpanded = false;
     }
 
@@ -140,12 +144,12 @@ public class Tracker {
         mTitle = title;
     }
 
-    public int getCountToMaxLevel() {
-        return mCountToMaxLevel;
+    public int getProgressionRate() {
+        return mProgressionRate;
     }
 
-    public void setCountToMaxLevel(int countToMaxLevel){
-        mCountToMaxLevel = countToMaxLevel;
+    public void setProgressionRate(int progressionRate){
+        mProgressionRate = progressionRate;
     }
 
     public int getCountSoFar() {
@@ -223,8 +227,7 @@ public class Tracker {
     public void setUiValues(){
         int level = 0;
         float score = getCountSoFar();
-        int countToMax = (getCountToMaxLevel() != 0)
-                ? getCountToMaxLevel() : COUNT_TO_MAX_WHEN_NO_DIFFICULTY_SET;
+        int countToMax = getProgressionRate();
         while((score / (float) countToMax) > (1/8f)){
             level += 1;
             score -= (float) countToMax / 8;
@@ -245,9 +248,9 @@ public class Tracker {
 
         // Only display level if past max level or if no difficulty is set
         if (getLevel() > 8 ||
-                (getCountToMaxLevel() == 0 && getLevel() > 0)){
+                (getProgressionRate() == 0 && getLevel() > 0)){
             int l = getLevel();
-            l = (getCountToMaxLevel() == 0) ? l : l-8; //subtract 8 if no difficulty
+            l = (getProgressionRate() == 0) ? l : l-8; //subtract 8 if no difficulty
             levelToDisplay = "" + l;
         } else{
             levelToDisplay = ""; // Don't display level
@@ -283,6 +286,24 @@ public class Tracker {
     }
 
 
+    public int getIndex() {
+        return mIndex;
+    }
 
+    public void setIndex(int index) {
+        this.mIndex = index;
+    }
+
+    public boolean isLevelUpTracker() {
+        return mLevelUpTracker;
+    }
+
+    public void setLevelUpTracker(boolean levelUpTracker) {
+        this.mLevelUpTracker = levelUpTracker;
+    }
+
+    public boolean isTickListTracker() {
+        return mTickListTracker;
+    }
 
 }

@@ -97,7 +97,7 @@ public class TrackerDetailsPresenter implements TrackerDetailsContract.Presenter
     }
 
     @Override
-    public void changeTrackerOrder(Tracker tracker, int from, int to) {
+    public void updateTracker(Tracker tracker) {
 
     }
 

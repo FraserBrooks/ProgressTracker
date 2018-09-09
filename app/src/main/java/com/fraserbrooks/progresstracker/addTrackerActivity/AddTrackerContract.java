@@ -7,7 +7,7 @@ public interface AddTrackerContract {
 
     interface View extends BaseView<Presenter>{
 
-        int getMaxScore();
+        int getProgressionRate();
 
         String getNewTrackerName();
 

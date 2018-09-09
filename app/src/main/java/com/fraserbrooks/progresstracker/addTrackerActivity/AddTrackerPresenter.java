@@ -38,14 +38,14 @@ public class AddTrackerPresenter implements AddTrackerContract.Presenter {
             return;
         }
 
-        int trackerMaxScore = mAddTrackerView.getMaxScore();
+        int trackerProgressionRate = mAddTrackerView.getProgressionRate();
 
-        if(trackerMaxScore == 0){
+        if(trackerProgressionRate == 0){
             mAddTrackerView.longToast("You must select a number.");
             return;
         }
 
-        Tracker newTracker = new Tracker(trackerName, trackerMaxScore);
+        Tracker newTracker = new Tracker(trackerName, "hours", trackerProgressionRate, true, true, false);
 
         if(mTrackersRepository.saveTracker(newTracker)){
             mAddTrackerView.longToast("New Tracker added.");

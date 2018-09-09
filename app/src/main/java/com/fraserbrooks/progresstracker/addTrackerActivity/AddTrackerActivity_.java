@@ -70,7 +70,7 @@ public class AddTrackerActivity_ extends AppCompatActivity implements AddTracker
 
 
     @Override
-    public int getMaxScore() {
+    public int getProgressionRate() {
         int maxScore = 0;
         RadioButtonTableLayout max_score_buttons = findViewById(R.id.radio_button_table);
         switch (max_score_buttons.getCheckedRadioButtonId()){

@@ -35,7 +35,7 @@ public abstract class TrackersDao {
      *
      * @return all trackers.
      */
-    @Query("SELECT * FROM trackers")
+    @Query("SELECT * FROM trackers ORDER BY trackerindex")
     public abstract List<Tracker> getTrackers();
 
     /**

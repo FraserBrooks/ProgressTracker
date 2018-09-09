@@ -10,7 +10,7 @@ public interface TrackerFunctionsInterface {
 
     void moreDetailsButtonClicked(Tracker tracker);
 
-    void changeTrackerOrder(Tracker tracker, int from,int to);
+    void updateTracker(Tracker tracker);
 
     void archiveTracker(Tracker tracker);
 

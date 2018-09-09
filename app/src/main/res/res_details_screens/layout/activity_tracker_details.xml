@@ -16,7 +16,7 @@
             android:id="@+id/graph_view"
             android:layout_width="0dp"
             android:layout_height="100dp"
-            android:background="@drawable/shared_ui_button_background_clicked"
+            android:background="@drawable/shared_ui_button_background_pressed"
             app:layout_constraintBottom_toTopOf="@id/small_tracker_layout"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -24,7 +24,7 @@
 
         <include
             android:id="@+id/small_tracker_layout"
-            layout="@layout/frag_trackers_tracker_item_small"
+            layout="@layout/frag_trackers_level_tracker_item_small"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"

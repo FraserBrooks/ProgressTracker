@@ -19,7 +19,7 @@ import com.fraserbrooks.progresstracker.data.Tracker;
 /**
  * The Room Database that contains the Task table.
  */
-@Database(entities = {Tracker.class, Target.class, ScoreEntry.class}, version = 2)
+@Database(entities = {Tracker.class, Target.class, ScoreEntry.class}, version = 4)
 @TypeConverters({Converters.class})
 public abstract class ProgressTrackerDatabase extends RoomDatabase {
 

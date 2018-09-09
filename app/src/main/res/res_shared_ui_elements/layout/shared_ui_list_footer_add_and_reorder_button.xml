@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <FrameLayout
+        android:id="@+id/list_footer_reorder_button_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/list_footer_add_button_layout"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_margin="4dp">
+
+        <include
+            layout="@layout/shared_ui_reorder_button"/>
+
+    </FrameLayout>
+
+
+    <FrameLayout
+        android:id="@+id/list_footer_add_button_layout"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintStart_toEndOf="@id/list_footer_reorder_button_layout"
+        app:layout_constraintTop_toTopOf="@id/list_footer_reorder_button_layout"
+        app:layout_constraintBottom_toBottomOf="@id/list_footer_reorder_button_layout"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginEnd="4dp"
+        >
+
+        <include layout="@layout/shared_ui_add_item_button" />
+
+    </FrameLayout>
+
+
+</android.support.constraint.ConstraintLayout>

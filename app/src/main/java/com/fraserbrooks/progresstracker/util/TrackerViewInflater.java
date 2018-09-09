@@ -109,7 +109,7 @@ public class TrackerViewInflater {
             TextView countToMaxTv = view.findViewById(R.id.count_to_max_tv);
             countToMaxTv.setText(mContext.getResources().getString(
                     R.string.count_to_complete,
-                    tracker.getCountToMaxLevel()));
+                    tracker.getProgressionRate()));
 
             initButtons(view, tracker);
         }
@@ -133,7 +133,7 @@ public class TrackerViewInflater {
     }
 
     private void setIconAndProgressBarColours(Tracker tracker, TextView tvFilledRect, ImageView iconImage) {
-        if(tracker.getCountToMaxLevel() == 0){
+        if(tracker.getProgressionRate() == 0){
             iconImage.setImageResource(levelIcons[0]);
             tvFilledRect.setBackgroundResource(levelRects[0]);
         }else{
