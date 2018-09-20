@@ -5,6 +5,7 @@
     <color name="colorAccent">#FFFF4081</color>
     <color name="colorError">#FFFF6061</color>
     <color name="appBG">#FFd9d9d9</color>
+    <color name="transparent">#00FFFFFF</color>
 
     <color name="default_text_color">#303030</color>
 
@@ -53,5 +54,28 @@
     <color name="level8">#4b4b4b</color>
     <color name="dark1_level8">#2d2d2d</color>
     <color name="light1_level8">#696969</color>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <color name="daysLabelColor">#8A000000</color>
+    <color name="currentMonthDayColor">#de000000</color>
+    <color name="nextMonthDayColor">#1F000000</color>
+    <color name="disabledDialogButtonColor">#1F000000</color>
+
+    <color name="itemHighlightColor">#1F000000</color>
+
+    <color name="defaultColor">#2962FF</color>
+
 
 </resources>

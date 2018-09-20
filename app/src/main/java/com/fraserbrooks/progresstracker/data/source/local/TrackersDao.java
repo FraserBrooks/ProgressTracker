@@ -5,6 +5,7 @@ import android.arch.persistence.room.Insert;
 import android.arch.persistence.room.OnConflictStrategy;
 import android.arch.persistence.room.Query;
 import android.arch.persistence.room.Transaction;
+import android.arch.persistence.room.TypeConverter;
 import android.arch.persistence.room.TypeConverters;
 import android.arch.persistence.room.Update;
 import android.database.sqlite.SQLiteConstraintException;
@@ -13,9 +14,12 @@ import android.util.Log;
 import com.fraserbrooks.progresstracker.data.ScoreEntry;
 import com.fraserbrooks.progresstracker.data.Target;
 import com.fraserbrooks.progresstracker.data.Tracker;
+import com.fraserbrooks.progresstracker.data.UserSetting;
 
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by Fraser on 07/04/2018.
@@ -54,7 +58,7 @@ public abstract class TrackersDao {
             "AND scoreThisDay >= (SELECT numberToAchieve FROM targets WHERE targetId = :targetId)" +
             "AND day BETWEEN :previousMonth AND :nextMonth")
     @TypeConverters({Converters.DayConverters.class})
-    public abstract List<Calendar> getDaysTargetCompleted(String targetId, Calendar previousMonth, Calendar nextMonth);
+    public abstract List<Date> getDaysTargetCompleted(String targetId, Calendar previousMonth, Calendar nextMonth);
 
 
     /**
@@ -271,6 +275,19 @@ public abstract class TrackersDao {
     abstract int getCountScoresOverYearTarget(String targetId, int targetScore, Calendar start, Calendar end);
 
 
+
+    /**
+     * Insert or add a user setting in the database.
+     *
+     * @param userSetting the setting to be saved.
+     */
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    public abstract void insertUserSetting(UserSetting userSetting);
+
+
+    @Query("SELECT settingvalue FROM settings WHERE setting = :setting")
+    @TypeConverters({Converters.class})
+    public abstract String getSettingValue(UserSetting.Setting setting);
 
 
 }

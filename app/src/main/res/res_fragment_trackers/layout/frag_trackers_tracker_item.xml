@@ -1,47 +1,65 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<FrameLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="4dp"
-    >
+    xmlns:tools="http://schemas.android.com/tools"
+    android:padding="4dp">
 
     <android.support.constraint.ConstraintLayout
         android:id="@+id/frag_trackers_constraint_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/shared_ui_rounded_menu_item_color_box"
-        android:animateLayoutChanges="true">
-
-        <FrameLayout
-            android:id="@+id/reorder_drag_button_layout"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintEnd_toStartOf="@id/small_tracker_layout_frame"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            android:visibility="gone">
-
-            <include
-                layout="@layout/shared_ui_reorder_button"/>
-
-        </FrameLayout>
+        android:paddingStart="@dimen/tracker_list_item_side_padding"
+        android:paddingEnd="@dimen/tracker_list_item_side_padding"
+        android:paddingBottom="@dimen/tracker_list_item_bottom_padding"
+        android:paddingTop="@dimen/tracker_list_item_top_padding"
+        android:background="@drawable/frag_trackers_tracker_item_background_selector"
+        >
 
         <FrameLayout
             android:id="@+id/small_tracker_layout_frame"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/reorder_drag_button_layout">
+            app:layout_constraintEnd_toStartOf="@id/gem_bitmap_unexpanded"
+            app:layout_constraintStart_toStartOf="parent">
 
             <include
                 android:id="@+id/small_tracker_layout"
                 layout="@layout/frag_trackers_level_tracker_item_small" />
 
         </FrameLayout>
+
+        <!-- Level indicator icon -->
+        <ImageView
+            android:id="@+id/gem_bitmap_unexpanded"
+            android:layout_width="50dp"
+            android:layout_height="0dp"
+            android:paddingTop="4dp"
+            android:paddingStart="2dp"
+            android:paddingEnd="2dp"
+            android:contentDescription="@string/level_icon"
+            tools:src="@drawable/frag_trackers_gem_green"
+            app:layout_constraintBottom_toBottomOf="@id/small_tracker_layout_frame"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toEndOf="@id/small_tracker_layout_frame"/>
+
+        <!-- Level Text Box -->
+        <TextView
+            android:id="@+id/text_level_tv_unexpanded"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:textColor="@color/textLevelOverlay"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="@id/gem_bitmap_unexpanded"
+            app:layout_constraintEnd_toEndOf="@id/gem_bitmap_unexpanded"
+            app:layout_constraintStart_toStartOf="@id/gem_bitmap_unexpanded"
+            app:layout_constraintTop_toTopOf="@id/gem_bitmap_unexpanded"
+            tools:text="32" />
 
 
         <FrameLayout
@@ -50,10 +68,9 @@
             android:layout_height="wrap_content"
             app:layout_constraintTop_toBottomOf="@id/small_tracker_layout_frame"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/reorder_drag_button_layout">
+            app:layout_constraintStart_toStartOf="parent">
 
             <include
-                android:id="@+id/expanded_tracker_layout"
                 layout="@layout/frag_trackers_level_tracker_item_expanded" />
 
         </FrameLayout>

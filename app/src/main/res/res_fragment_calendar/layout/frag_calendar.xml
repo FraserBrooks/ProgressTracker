@@ -15,14 +15,18 @@
         android:orientation="vertical">
 
 
-        <com.applandeo.materialcalendarview.CalendarView
+        <com.fraserbrooks.progresstracker.calendar.CalendarView
             android:id="@+id/calendar_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:headerColor="@color/appBG"
             app:headerLabelColor="@color/default_text_color"
             app:todayLabelColor="@color/colorAccent"
-            app:layout_constraintTop_toTopOf="parent"/>
+            app:targetOneIconSrc="@drawable/frag_trackers_level3_colour_rect"
+            app:targetTwoIconSrc="@drawable/frag_trackers_level4_colour_rect"
+            app:targetThreeIconSrc="@drawable/frag_trackers_level6_colour_rect"
+            />
+
 
         <FrameLayout
             android:layout_width="match_parent"

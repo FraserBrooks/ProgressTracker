@@ -8,6 +8,7 @@ import com.fraserbrooks.progresstracker.data.Tracker;
 import com.fraserbrooks.progresstracker.data.source.DataSource;
 import com.fraserbrooks.progresstracker.data.source.Repository;
 import com.fraserbrooks.progresstracker.util.AppExecutors;
+import com.fraserbrooks.progresstracker.util.EspressoIdlingResource;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -19,17 +20,14 @@ public class AddTargetPresenter implements AddTargetContract.Presenter{
     private final String TAG = "AddTargetPresenter";
 
     private final Repository mRepository;
-    private final AppExecutors mAppExecutors;
 
     private Map<String, String> mTrackerIds;
 
     private final AddTargetContract.View mAddTargetView;
 
     AddTargetPresenter(@NonNull Repository repository,
-                       @NonNull AddTargetContract.View addTargetView,
-                       @NonNull AppExecutors appExecutors){
+                       @NonNull AddTargetContract.View addTargetView){
         mRepository = repository;
-        mAppExecutors = appExecutors;
 
         mAddTargetView = addTargetView;
         mAddTargetView.setPresenter(this);
@@ -69,9 +67,9 @@ public class AddTargetPresenter implements AddTargetContract.Presenter{
         }
 
         String trackerId = mTrackerIds.get(trackerName);
-        String period = mAddTargetView.getPeriodInput();
+        int interval = mAddTargetView.getIntervalInput();
 
-        Target newTarget = new Target(trackerId, (hours*60) + minutes, period);
+        Target newTarget = new Target(trackerId, (hours*60) + minutes, interval);
 
         if(mRepository.saveTarget(newTarget)){
             mAddTargetView.longToast("Target saved");
@@ -85,47 +83,51 @@ public class AddTargetPresenter implements AddTargetContract.Presenter{
     @Override
     public void start() {
 
+        // App is busy until further notice
         mAddTargetView.showLoading();
+
+        setWorking();
 
 
         mTrackerIds = new LinkedHashMap<>();
 
-        mAppExecutors.diskIO().execute(new Runnable() {
+        mRepository.getTrackers(new DataSource.GetTrackersCallback() {
             @Override
-            public void run() {
-                mRepository.getTrackers(new DataSource.GetTrackersCallback() {
-                    @Override
-                    public void onTrackersLoaded(List<Tracker> trackers) {
-                        final ArrayList<String> names = new ArrayList<>();
-                        for(Tracker t : trackers){
-                            if(!t.isArchived()){
-                                names.add(t.getTitle());
-                            }
-                            mTrackerIds.put(t.getTitle(), t.getId());
-                        }
-                        mAppExecutors.mainThread().execute(new Runnable() {
-                            @Override
-                            public void run() {
-                                mAddTargetView.setSpinner(names);
-                                mAddTargetView.hideLoading();
-                            }
-                        });
+            public void onTrackersLoaded(List<Tracker> trackers) {
+                final ArrayList<String> names = new ArrayList<>();
+                for(Tracker t : trackers){
+                    if(!t.isArchived()){
+                        names.add(t.getTitle());
                     }
+                    mTrackerIds.put(t.getTitle(), t.getId());
+                }
+                mAddTargetView.setSpinner(names);
 
-                    @Override
-                    public void onTrackerLoaded(Tracker tracker) {
-                        // Shouldn't be called
-                        Log.e(TAG, "onTrackerLoaded: called");
-                    }
+                mAddTargetView.hideLoading();
+                setIdle();
+            }
 
-                    @Override
-                    public void onDataNotAvailable() {
-                        mAddTargetView.hideLoading();
-                        mAddTargetView.showNoTrackers();
-                    }
-                }, false);
+            @Override
+            public void onDataNotAvailable() {
+                mAddTargetView.hideLoading();
+                mAddTargetView.showNoTrackers();
+                setIdle();
             }
         });
 
     }
+
+    private void setWorking(){
+        EspressoIdlingResource.increment(); // App is busy until further notice
+    }
+
+    private void setIdle(){
+        // This callback may be called twice, once for the cache and once for loading
+        // the data from the server API, so we check before decrementing, otherwise
+        // it throws "Counter has been corrupted!" exception.
+        if (!EspressoIdlingResource.getIdlingResource().isIdleNow()) {
+            EspressoIdlingResource.decrement(); // Set app as idle.
+        }
+    }
+
 }

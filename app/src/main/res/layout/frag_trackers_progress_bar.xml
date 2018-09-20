@@ -5,12 +5,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:showIn="@layout/frag_trackers_level_tracker_item_expanded"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="wrap_content">
+
     <LinearLayout
-        android:layout_height="match_parent"
+        android:layout_height="@dimen/progress_bar_height"
         android:layout_width="match_parent"
         android:id="@+id/progress_bar_layout"
-
         android:orientation="horizontal"
         >
 
@@ -32,9 +32,17 @@
     <ImageView
         android:id="@+id/progress_bar_image"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="@dimen/progress_bar_height"
         android:contentDescription="@string/progress_bar"
         android:scaleType="fitXY"
         android:src="@drawable/shared_ui_progress_bar_t3"/>
+
+    <FrameLayout
+        android:id="@+id/progress_bar_graph_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        >
+
+    </FrameLayout>
 
 </FrameLayout>

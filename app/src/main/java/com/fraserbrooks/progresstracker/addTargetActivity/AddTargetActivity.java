@@ -11,6 +11,7 @@ import android.widget.Toast;
 
 import com.fraserbrooks.progresstracker.Injection;
 import com.fraserbrooks.progresstracker.R;
+import com.fraserbrooks.progresstracker.data.Target;
 import com.fraserbrooks.progresstracker.util.AppExecutors;
 
 import java.util.List;
@@ -30,7 +31,7 @@ public class AddTargetActivity extends AppCompatActivity implements AddTargetCon
         setContentView(R.layout.activity_add_target);
 
         new AddTargetPresenter(Injection.provideRepository(getApplicationContext()),
-                this, AppExecutors.getInstance());
+                this);
 
         mPresenter.start();
     }
@@ -60,9 +61,27 @@ public class AddTargetActivity extends AppCompatActivity implements AddTargetCon
     }
 
     @Override
-    public String getPeriodInput() {
-        Spinner periodSpinner = findViewById(R.id.rollover_period_spinner);
-        return ((String) periodSpinner.getSelectedItem());
+    public int getIntervalInput() {
+        Spinner intervalSpinner = findViewById(R.id.rollover_period_spinner);
+
+        int selectedInterval = Target.EVERY_DAY;
+
+        switch (intervalSpinner.getSelectedItemPosition()) {
+            case 0:
+                selectedInterval = Target.EVERY_DAY;
+                break;
+            case 1:
+                selectedInterval = Target.EVERY_WEEK;
+                break;
+            case 2:
+                selectedInterval = Target.EVERY_MONTH;
+                break;
+            case 3:
+                selectedInterval = Target.EVERY_YEAR;
+                break;
+        }
+
+        return selectedInterval;
     }
 
     @Override

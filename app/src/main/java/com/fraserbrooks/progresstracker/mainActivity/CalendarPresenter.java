@@ -4,37 +4,36 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
-import com.fraserbrooks.progresstracker.asyncTasks.LoadDayIconsForCalendarTask;
-import com.fraserbrooks.progresstracker.asyncTasks.LoadDayTargetsForCalendarTask;
 import com.fraserbrooks.progresstracker.data.Target;
+import com.fraserbrooks.progresstracker.data.UserSetting;
 import com.fraserbrooks.progresstracker.data.source.DataSource;
 import com.fraserbrooks.progresstracker.data.source.Repository;
-import com.fraserbrooks.progresstracker.util.AppExecutors;
 import com.fraserbrooks.progresstracker.util.EspressoIdlingResource;
 
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 public class CalendarPresenter implements CalendarContract.Presenter{
 
     private final String TAG = "CalendarPresenter";
 
     private final Repository mRepository;
-    private final AppExecutors mAppExecutors;
 
     private final CalendarContract.View mCalendarView;
 
+    private String mCachedTargetId1 = "";
+    private String mCachedTargetId2 = "";
+    private String mCachedTargetId3 = "";
+
 
     public CalendarPresenter(@NonNull Repository repository,
-                             @NonNull CalendarContract.View view,
-                             @NonNull AppExecutors appExecutors){
+                             @NonNull CalendarContract.View view){
         mRepository = repository;
-        mAppExecutors = appExecutors;
-
         mCalendarView = view;
 
         mCalendarView.setPresenter(this);
-
         mRepository.addDeleteTargetListener(new Repository.DeleteTargetListener() {
             @Override
             public boolean isActive() {
@@ -42,115 +41,195 @@ public class CalendarPresenter implements CalendarContract.Presenter{
             }
 
             @Override
-            public void trackerDeleted(Target targetToDelete) {
-                mCalendarView.deleteTarget(targetToDelete);
+            public void targetDeleted(Target targetToDelete) {
+                mCalendarView.removeTargetOption(targetToDelete);
             }
         });
+        mRepository.addUpdateOrAddTargetListener(new DataSource.UpdateOrAddTargetListener() {
+            @Override
+            public boolean isActive() {
+                return mCalendarView.isActive();
+            }
+
+            @Override
+            public void targetUpdated(Target targetToUpdate) {
+                mCalendarView.updateOrAddTarget(targetToUpdate);
+            }
+        });
+
     }
 
 
     @Override
     public void start() {
-        loadTargetNamesAndSetSpinners();
+        loadDataAndSetSpinners();
     }
 
-    public void loadTargetNamesAndSetSpinners() {
-        Log.d(TAG, "loadTargetNamesAndSetSpinners: called");
 
-        // The network request might be handled in a different thread so make sure Espresso knows
-        // that the app is busy until the response is handled.
+    private void loadDataAndSetSpinners() {
+        Log.d(TAG, "loadDataAndSetSpinners: called");
+
+        // Make sure Espresso knows that the app is busy until the response is handled.
         EspressoIdlingResource.increment(); // App is busy until further notice
         mCalendarView.showLoading();
 
-
-
-        mAppExecutors.diskIO().execute(new Runnable() {
+        mRepository.getTargets(new DataSource.GetTargetsCallback() {
             @Override
-            public void run() {
-                mRepository.getTargets(new DataSource.GetTargetsCallback() {
-                    @Override
-                    public void onTargetsLoaded(final List<Target> targets) {
+            public void onTargetsLoaded(List<Target> targets) {
 
-                        Log.d(TAG, "onTargetsLoaded: starting new LoadDayTargetsTask");
-                        new LoadDayTargetsForCalendarTask(new DataSource.GetTargetsCallback() {
-                            @Override
-                            public void onTargetsLoaded(@Nullable List<Target> targets) {
-                                // Called when task finished (targets = null)
-                                Log.d(TAG, "onTargetsLoaded: setting target spinners");
-                                mCalendarView.setTargetSpinners();
-                                mCalendarView.hideLoading();
-                                loadCalendar();
-                            }
+                int dayTargets = 0;
 
-                            @Override
-                            public void onTargetLoaded(Target target) {
-                                mCalendarView.updateOrAddTarget(target);
-                            }
-
-                            @Override
-                            public void onDataNotAvailable() {
-                                Log.e(TAG, "onDataNotAvailable: data not available");
-                            }
-                        }).execute(targets.toArray(new Target[targets.size()]));
+                for(Target target : targets){
+                    if(target.getInterval() == Target.EVERY_DAY){
+                        dayTargets += 1;
+                        mCalendarView.updateOrAddTarget(target);
                     }
+                }
 
-                    @Override
-                    public void onTargetLoaded(Target target) {
-                        // Staggered load = false
-                    }
+                if(dayTargets == 0){
+                    mCalendarView.showNoDataAvailable();
+                    return;
+                }
 
-                    @Override
-                    public void onDataNotAvailable() {
-                        mCalendarView.showNoDataAvailable();
-                    }
-                }, false);
+                mCalendarView.showCalendarLoading();
+                mCalendarView.disableSpinnerSelectionListeners();
+
+                // load all calendar targets for first load
+                getAndInitTargetDays(UserSetting.Setting.CALENDAR_TARGET_1, () ->
+                        getAndInitTargetDays(UserSetting.Setting.CALENDAR_TARGET_2, () ->
+                                getAndInitTargetDays(UserSetting.Setting.CALENDAR_TARGET_3, () -> {
+
+                                    mCalendarView.calendarNotifyDataSetChange();
+
+                                    mCalendarView.enableSpinnerSelectionListeners();
+                                    mCalendarView.hideCalendarLoading();
+                                    mCalendarView.hideLoading();
+
+                                    // This callback may be called twice, once for the cache and once for loading
+                                    // the data from the server API, so we check before decrementing, otherwise
+                                    // it throws "Counter has been corrupted!" exception.
+                                    if (!EspressoIdlingResource.getIdlingResource().isIdleNow()) {
+                                        EspressoIdlingResource.decrement(); // Set app as idle.
+                                    }
+                                })));
+            }
+
+            @Override
+            public void onDataNotAvailable() {
+                mCalendarView.showNoDataAvailable();
             }
         });
+
     }
 
     @Override
-    public void loadCalendar() {
-        Log.d(TAG, "loadCalendar: called");
-        
-        final Calendar month = mCalendarView.getCalendarViewMonth();
+    public void newTargetSelected(@NonNull UserSetting.Setting targetNumber, @NonNull String newTargetId){
 
-        final Target target1 = mCalendarView.getFirstSelectedTarget();
-        final Target target2 = mCalendarView.getSecondSelectedTarget();
-        final Target target3 = mCalendarView.getThirdSelectedTarget();
+        // Make sure Espresso knows that the app is busy until the response is handled.
+        EspressoIdlingResource.increment(); // App is busy until further notice
 
-        mAppExecutors.diskIO().execute(new Runnable() {
+        mRepository.getSettingValue(targetNumber, new DataSource.GetSettingCallback() {
             @Override
-            public void run() {
-                String id1 = null;
-                String id2 = null;
-                String id3 = null;
+            public void onSettingLoaded(@Nullable String oldTargetId) {
+                if(newTargetId.equals(oldTargetId)){
+                    done();
+                    return;
+                }
 
-                if(target1 != null) id1 = target1.getId();
-                if(target2 != null) id2 = target2.getId();
-                if(target3 != null) id3 = target3.getId();
+                mCalendarView.disableSpinnerSelectionListeners();
+                mCalendarView.showCalendarLoading();
+                mCalendarView.showLoading();
 
-                mRepository.getDaysTargetsMet(id1, id2, id3, month, new DataSource.GetDaysTargetsMetCallback() {
-                    @Override
-                    public void onDaysLoaded(final DataSource.CalendarTriple calendars) {
-                        // This callback may be called twice, once for the cache and once for loading
-                        // the data from the server API, so we check before decrementing, otherwise
-                        // it throws "Counter has been corrupted!" exception.
-                        if (!EspressoIdlingResource.getIdlingResource().isIdleNow()) {
-                            EspressoIdlingResource.decrement(); // Set app as idle.
-                        }
+                mRepository.setSetting(targetNumber, newTargetId);
 
-                        Log.d(TAG, "onDaysLoaded: creating new LoadDayIcons task");
-                        new LoadDayIconsForCalendarTask(mCalendarView).execute(calendars);
+                getAndInitTargetDays(targetNumber, () -> {
+                    mCalendarView.calendarNotifyDataSetChange();
 
-                    }
+                    mCalendarView.enableSpinnerSelectionListeners();
+                    mCalendarView.hideCalendarLoading();
+                    mCalendarView.hideLoading();
 
-                    @Override
-                    public void onDataNotAvailable() {
-                        mCalendarView.showNoDataAvailable();
-                    }
+                    done();
                 });
             }
+
+            private void done(){
+                // This callback may be called twice, once for the cache and once for loading
+                // the data from the server API, so we check before decrementing, otherwise
+                // it throws "Counter has been corrupted!" exception.
+                if (!EspressoIdlingResource.getIdlingResource().isIdleNow()) {
+                    EspressoIdlingResource.decrement(); // Set app as idle.
+                }
+            }
+
         });
+
+
+
+    }
+
+    private void getAndInitTargetDays(@NonNull UserSetting.Setting targetToGet,@NonNull Runnable finishedCallback){
+
+        mRepository.getSettingValue(targetToGet, targetId -> {
+
+            String targetIdSetInView = mCalendarView.tryToSetTargetSpinner(targetToGet, targetId);
+
+            // No day targets exist therefore no target set in view
+            // so no need to update calendar
+            if(targetIdSetInView == null){
+                finishedCallback.run();
+                return;
+            }
+
+            // Persist the set target for the calendar view
+            if(!targetIdSetInView.equals(targetId)) {
+                mRepository.setSetting(targetToGet, targetIdSetInView);
+            }
+
+            Calendar calendar = mCalendarView.getCalendarViewMonth();
+
+            mRepository.getDaysTargetMet(targetIdSetInView, calendar, new DataSource.GetDaysTargetMetCallback() {
+                @Override
+                public void onDaysLoaded(Set<Date> successfulDays) {
+                    Log.d(TAG, "onDaysLoaded: settingDays for " + targetToGet);
+                    mCalendarView.setCalendarTargetDays(targetToGet, successfulDays);
+                    finishedCallback.run();
+                }
+
+                @Override
+                public void onDataNotAvailable() {
+                    mCalendarView.showNoTargetDays(targetToGet);
+                    finishedCallback.run();
+                }
+            });
+
+        });
+
+    }
+
+    @Override
+    public void calendarPositionChanged(){
+
+
+        // Make sure Espresso knows that the app is busy until the response is handled.
+        EspressoIdlingResource.increment(); // App is busy until further notice
+
+        mCalendarView.showCalendarLoading();
+
+        // load all calendar target days for new calendar range
+        getAndInitTargetDays(UserSetting.Setting.CALENDAR_TARGET_1, () ->
+                getAndInitTargetDays(UserSetting.Setting.CALENDAR_TARGET_2, () ->
+                        getAndInitTargetDays(UserSetting.Setting.CALENDAR_TARGET_3, () -> {
+
+                            mCalendarView.hideCalendarLoading();
+
+                            // no longer idle
+                            if (!EspressoIdlingResource.getIdlingResource().isIdleNow()) {
+                                EspressoIdlingResource.decrement(); // Set app as idle.
+                            }
+
+                        })));
+
 
 
 

@@ -6,6 +6,7 @@ import com.fraserbrooks.progresstracker.data.Tracker;
 import com.fraserbrooks.progresstracker.data.source.DataSource;
 import com.fraserbrooks.progresstracker.data.source.Repository;
 
+import java.util.Calendar;
 import java.util.List;
 
 public class TrackerDetailsPresenter implements TrackerDetailsContract.Presenter {
@@ -23,12 +24,8 @@ public class TrackerDetailsPresenter implements TrackerDetailsContract.Presenter
     @Override
     public void getTracker(String id) {
 
-        mRepository.getTracker(id, new DataSource.GetTrackersCallback() {
-            @Override
-            public void onTrackersLoaded(List<Tracker> trackers) {
-                // Not called
-            }
 
+        mRepository.getTracker(id, new DataSource.GetTrackerCallback() {
             @Override
             public void onTrackerLoaded(Tracker tracker) {
                 mTrackerDetailsView.setTracker(tracker);
@@ -37,6 +34,7 @@ public class TrackerDetailsPresenter implements TrackerDetailsContract.Presenter
 
             @Override
             public void onDataNotAvailable() {
+                // Should not happen
                 mTrackerDetailsView.showTrackerLoadError();
             }
         });
@@ -50,7 +48,8 @@ public class TrackerDetailsPresenter implements TrackerDetailsContract.Presenter
 
     @Override
     public void deleteTracker(Tracker tracker) {
-
+        mRepository.deleteTracker(tracker.getId());
+        mTrackerDetailsView.returnToTrackersScreen();
     }
 
     @Override
@@ -82,7 +81,7 @@ public class TrackerDetailsPresenter implements TrackerDetailsContract.Presenter
 
     @Override
     public void addToTrackerScore(Tracker tracker, int amount) {
-        mRepository.incrementScore(tracker.getId(), amount);
+        mRepository.incrementTracker(tracker.getId(), amount);
         mTrackerDetailsView.trackerChanged();
     }
 

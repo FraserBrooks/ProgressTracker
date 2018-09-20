@@ -56,8 +56,10 @@ public class Tracker {
     @ColumnInfo(name = "ticklisttracker")
     private boolean  mTickListTracker;
 
+
+    // Values used by the UI -----------------------
     @Ignore
-    private boolean mExpanded;
+    private boolean mExpanded = false;
 
     @Ignore
     private int mLevel;
@@ -67,6 +69,17 @@ public class Tracker {
 
     @Ignore
     private String mLevelToDisplay = "";
+
+    @Ignore
+    private int[] mPastEightDaysCounts;
+
+    @Ignore
+    private int[] mPastEightWeeksCounts;
+
+    @Ignore
+    private int[] mPastEightMonthsCounts;
+
+
 
     @Ignore
     private static final int DEFAULT_INDEX = 99;
@@ -90,7 +103,7 @@ public class Tracker {
 
 
     /**
-     * This constructor should only ever really be used by room
+     * This constructor should only ever be used by room
      *
      * @param title               title of the tracker
      * @param id                  id of the tracker
@@ -156,7 +169,7 @@ public class Tracker {
         return mCountSoFar;
     }
 
-    public void setCountSoFar(int countSoFar){
+    public void setScoreSoFar(int countSoFar){
         mCountSoFar = countSoFar;
     }
 
@@ -208,7 +221,7 @@ public class Tracker {
 
     public boolean stopTiming(){
         if(isCurrentlyTiming()){
-            setCountSoFar(getCountSoFar() + getMinutesSinceTimerStart() );
+            setScoreSoFar(getCountSoFar() + getMinutesSinceTimerStart() );
             mCurrentlyTiming = false;
             return true;
         }else{
@@ -306,4 +319,36 @@ public class Tracker {
         return mTickListTracker;
     }
 
+    public int[] getPastEightDaysCounts() {
+        return mPastEightDaysCounts;
+    }
+
+    public void setPastEightDaysCounts(int[] pastEightDaysCounts) {
+
+        if(pastEightDaysCounts.length != 8) throw new RuntimeException();
+
+        this.mPastEightDaysCounts = pastEightDaysCounts;
+    }
+
+    public int[] getPastEightWeeksCounts() {
+        return mPastEightWeeksCounts;
+}
+
+    public void setPastEightWeekCounts(int[] pastEightWeekCounts) {
+
+        if(pastEightWeekCounts.length != 8) throw new RuntimeException();
+
+        this.mPastEightWeeksCounts = pastEightWeekCounts;
+    }
+
+    public int[] getPastEightMonthsCounts() {
+        return mPastEightMonthsCounts;
+    }
+
+    public void setPastEightMonthCounts(int[] pastEightMonthCounts) {
+
+        if(pastEightMonthCounts.length != 8) throw new RuntimeException();
+
+        this.mPastEightMonthsCounts = pastEightMonthCounts;
+    }
 }

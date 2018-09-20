@@ -33,7 +33,7 @@
 
         <activity
 
-            android:name="com.fraserbrooks.progresstracker.addTrackerActivity.AddTrackerActivity_"
+            android:name="com.fraserbrooks.progresstracker.addTrackerActivity.AddTrackerActivity"
 
             android:label="@string/title_activity_add_tracker"
 

@@ -1,20 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/add_tracker_button_layout"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginTop="4dp"
-            android:layout_marginStart="4dp"
-            android:layout_marginEnd="4dp"
-            android:layout_marginBottom="4dp"
-            android:text="@string/plus_symbol"
-            android:textSize="40sp"
-            android:textAlignment="center"
-            android:textColor="@color/default_text_color"
-            android:background="@drawable/frag_trackers_tracker_item_background_selector"/>
-
-</FrameLayout>
+<Button
+    android:id="@+id/list_footer_add_button_layout"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="@string/plus_symbol"
+    android:textSize="40sp"
+    android:textAlignment="center"
+    android:gravity="center_vertical"
+    android:textColor="@color/default_text_color"
+    android:background="@drawable/frag_trackers_tracker_item_background_selector"
+    xmlns:android="http://schemas.android.com/apk/res/android" />

@@ -22,6 +22,8 @@ public interface TrackersContract {
 
         void updateOrAddTracker(Tracker tracker);
 
+        void rememberExpanded(Tracker trackerAboutToRefresh);
+
         void removeTracker(Tracker tracker);
 
         void populateGraph(List<Tracker> trackers);
@@ -33,8 +35,6 @@ public interface TrackersContract {
         void hideLoading();
 
         void showNoTrackers();
-
-        void showNoDataAvailable();
 
         void showTrackerDetailsScreen(String trackerId);
 

@@ -2,6 +2,7 @@ package com.applandeo.materialcalendarview.adapters;
 
 import android.content.Context;
 import android.support.v4.view.PagerAdapter;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +18,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * This class is responsible for loading a calendar page content.
@@ -32,8 +34,11 @@ public class CalendarPageAdapter extends PagerAdapter {
      */
     public static final int CALENDAR_SIZE = 2401;
 
+    private static final String TAG = "CalendarPageAdapter";
+
     private Context mContext;
     private CalendarGridView mCalendarGridView;
+    //private ConcurrentHashMap<Integer, CalendarDayAdapter> mCurrentCalendarDayAdapters;
 
     private List<SelectedDay> mSelectedDays = new ArrayList<>();
 
@@ -48,6 +53,8 @@ public class CalendarPageAdapter extends PagerAdapter {
         if (mCalendarProperties.getCalendarType() == CalendarView.ONE_DAY_PICKER) {
             addSelectedDay(new SelectedDay(calendarProperties.getSelectedDate()));
         }
+
+        //mCurrentCalendarDayAdapters = new ConcurrentHashMap<>();
     }
 
     @Override
@@ -149,14 +156,95 @@ public class CalendarPageAdapter extends PagerAdapter {
         }
 
         mPageMonth = calendar.get(Calendar.MONTH) - 1;
-        CalendarDayAdapter calendarDayAdapter = new CalendarDayAdapter(this, mContext,
+        CalendarDayAdapter dayAdapter = new CalendarDayAdapter(this, mContext,
                 mCalendarProperties, days, mPageMonth);
 
-        mCalendarGridView.setAdapter(calendarDayAdapter);
+        mCalendarGridView.setAdapter(dayAdapter);
+
+//        if(mCurrentCalendarDayAdapters.size() < 3){
+//            Log.d(TAG, "loadMonth: size = " + mCurrentCalendarDayAdapters.size());
+//            mCurrentCalendarDayAdapters.put(mPageMonth, dayAdapter);
+//        }else{
+//
+//            boolean replaceSamePositionAdapter = false;
+//
+//            int keyOfIdenticalAdapter = Integer.MIN_VALUE;
+//            int keyOfSmallestDifferenceAdapter = Integer.MIN_VALUE;
+//            int keyOfLargestDifferenceAdapter = Integer.MIN_VALUE;
+//
+//            int smallestDifference = Integer.MAX_VALUE;
+//            int largestDifference = Integer.MIN_VALUE;
+//
+//
+//            for(Integer i : mCurrentCalendarDayAdapters.keySet()){
+//
+//                int m = mCurrentCalendarDayAdapters.get(i).getPageMonth();
+//
+//                if( m == mPageMonth){
+//                    replaceSamePositionAdapter = true;
+//                    keyOfIdenticalAdapter = i;
+//                    break;
+//                }
+//
+//                int difference;
+//                int d = mPageMonth - m;
+//                if(d < 0){
+//                    difference = d*-1;
+//                }else{
+//                    difference = d;
+//                }
+//
+//                if(difference < smallestDifference){
+//                    smallestDifference = difference;
+//                    keyOfSmallestDifferenceAdapter =  i;
+//                }
+//
+//                if(difference > largestDifference){
+//                    largestDifference = difference;
+//                    keyOfLargestDifferenceAdapter = i;
+//                }
+//
+//            }
+//
+//            if(replaceSamePositionAdapter){
+//                mCurrentCalendarDayAdapters.put(keyOfIdenticalAdapter, dayAdapter);
+//            }else{
+//                if(smallestDifference > 3){
+//                    // Crossing over to new year
+//                    mCurrentCalendarDayAdapters.put(keyOfSmallestDifferenceAdapter, dayAdapter);
+//                }else{
+//                    mCurrentCalendarDayAdapters.put(keyOfLargestDifferenceAdapter, dayAdapter);
+//                }
+//            }
+//
+//        }
+
     }
 
     @Override
     public void destroyItem(ViewGroup container, int position, Object object) {
         container.removeView((View) object);
     }
+
+
+
+//        int key = -5;
+//        for(Integer i : mCurrentCalendarDayAdapters.keySet()){
+//            if(mCurrentCalendarDayAdapters.get(i).getPageMonth() == month){
+//                key = i;
+//            }
+//        }
+//
+//        if(key != -5 && mCurrentCalendarDayAdapters.get(key).getPosition(date) != -1){
+//
+//            int oldPos = mCurrentCalendarDayAdapters.get(key).getPosition(date);
+//            mCurrentCalendarDayAdapters.get(key).remove(date);
+//            mCurrentCalendarDayAdapters.get(key).insert(date, oldPos);
+//
+//        }else{
+//            Log.e(TAG, "updateOrAddEventDay: couldn't place new EventDay in adapter" );
+//        }
+
+
+
 }

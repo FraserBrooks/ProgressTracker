@@ -12,13 +12,16 @@ import android.util.Log;
 import com.fraserbrooks.progresstracker.data.ScoreEntry;
 import com.fraserbrooks.progresstracker.data.Target;
 import com.fraserbrooks.progresstracker.data.Tracker;
+import com.fraserbrooks.progresstracker.data.UserSetting;
 import com.fraserbrooks.progresstracker.util.AppExecutors;
 
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -26,7 +29,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 public class Repository implements DataSource {
 
-    private final String TAG = "REPOSITORY>";
+    private final String TAG = "Repository";
 
     private static Repository INSTANCE = null;
 
@@ -35,31 +38,16 @@ public class Repository implements DataSource {
 
     private final AppExecutors mAppExecutors;
 
-
-    /**
-     * These variable has package local visibility so it can be accessed from tests.
-     */
-
     private Map<String, Tracker> mCachedTrackers;
     private Map<String, Target> mCachedTargets;
 
-
-    public interface DeleteTargetListener{
-
-        boolean isActive();
-
-        void trackerDeleted(Target targetToDelete);
-
-    }
+    // Listeners for changes to the cached targets/trackers
     private List<DeleteTargetListener> mDeleteTargetListeners;
+    private List<UpdateOrAddTargetListener> mUpdateOrAddTargetListeners;
+    private List<DeleteTrackerListener> mDeleteTrackerListeners;
+    private List<UpdateOrAddTrackerListener> mUpdateOrAddTrackerListeners;
 
-    public interface TargetChangeListener{
-        boolean isActive();
-
-        void targetUpdated(Target target);
-    }
-    private final List<TargetChangeListener> mTargetChangeListeners;
-
+    // Sync all data with remoteDataSource
     private boolean mSyncEnabled = false;
 
     // Prevent direct instantiation.
@@ -69,8 +57,13 @@ public class Repository implements DataSource {
         mRemoteDataSource = checkNotNull(tasksRemoteDataSource);
         mLocalDataSource = checkNotNull(tasksLocalDataSource);
         mAppExecutors = checkNotNull(appExecutors);
+
+        // todo: make thread safe to be on the safe side
         mDeleteTargetListeners = new ArrayList<>();
-        mTargetChangeListeners = new ArrayList<>();
+        mUpdateOrAddTargetListeners = new ArrayList<>();
+        mDeleteTrackerListeners = new ArrayList<>();
+        mUpdateOrAddTrackerListeners = new ArrayList<>();
+
     }
 
     /**
@@ -100,7 +93,7 @@ public class Repository implements DataSource {
     @Override
     public void refreshAllCache() {
         mCachedTrackers = null;
-        mCachedTrackers = null;
+        mCachedTargets = null;
     }
 
     /**
@@ -111,23 +104,28 @@ public class Repository implements DataSource {
      * get the data.
      */
     @Override
-    public void getTrackers(@NonNull final GetTrackersCallback callback, boolean staggeredLoad) {
+    public void getTrackers(@NonNull final GetTrackersCallback callback) {
         checkNotNull(callback);
 
         // Respond immediately with cache if available and not dirty
         if (mCachedTrackers != null ) {
-            ArrayList<Tracker> trackers =  new ArrayList<>(mCachedTrackers.values());
-            if(staggeredLoad){
-                for(Tracker t : trackers){
-                    callback.onTrackerLoaded(t);
-                }
-            }else{
-                callback.onTrackersLoaded(trackers);
-            }
-
+            ArrayList trackers = new ArrayList<>(mCachedTrackers.values());
+            if(trackers.isEmpty()) callback.onDataNotAvailable();
+            else  callback.onTrackersLoaded(trackers);
         } else{
             // Query the local storage to fill the cache
-            refreshCachedTrackersAndTotals(callback, null, staggeredLoad);
+            mLocalDataSource.getTrackers(new GetTrackersCallback() {
+                @Override
+                public void onTrackersLoaded(List<Tracker> trackers) {
+                    refreshTrackersCache(trackers);
+                    callback.onTrackersLoaded(trackers);
+                }
+
+                @Override
+                public void onDataNotAvailable() {
+                    callback.onDataNotAvailable();
+                }
+            });
         }
 
     }
@@ -140,7 +138,7 @@ public class Repository implements DataSource {
      * get the data.
      */
     @Override
-    public void getTracker(@NonNull final String trackerId, @NonNull final GetTrackersCallback callback) {
+    public void getTracker(@NonNull final String trackerId, @NonNull final GetTrackerCallback callback) {
         checkNotNull(trackerId);
         checkNotNull(callback);
 
@@ -148,28 +146,52 @@ public class Repository implements DataSource {
 
         // Respond immediately with cache if available
         if (cachedTracker != null) {
-            callback.onTrackerLoaded(cachedTracker);
+                callback.onTrackerLoaded(cachedTracker);
         }else if(mCachedTrackers == null){
             // Query the local storage to fill the cache
-            refreshCachedTrackersAndTotals(callback, trackerId, false);
-        }else{
-            callback.onDataNotAvailable();
-        }
+            mLocalDataSource.getTrackers(new GetTrackersCallback() {
+                @Override
+                public void onTrackersLoaded(List<Tracker> trackers) {
+                    refreshTrackersCache(trackers);
+                    // recurse
+                    getTracker(trackerId, callback);
+                }
 
+                @Override
+                public void onDataNotAvailable() {
+                    callback.onDataNotAvailable();
+                }
+            });
+        }else{
+            mLocalDataSource.getTracker(trackerId, callback);
+        }
     }
 
 
     @Override
     public boolean saveTracker(@NonNull Tracker tracker) {
         checkNotNull(tracker);
+
+        // Send to local database
         boolean local = mLocalDataSource.saveTracker(tracker);
-        boolean remote = mRemoteDataSource.saveTracker(tracker);
 
+        mRemoteDataSource.saveTracker(tracker);
 
-        int total = 0;
+        // Retrieve from the local database ready for cache/ui
+        mLocalDataSource.getTracker(tracker.getId(), new GetTrackerCallback() {
+            @Override
+            public void onTrackerLoaded(Tracker tracker) {
+                // Do in memory cache update to keep the app UI up to date
+                if(mCachedTrackers != null) mCachedTrackers.put(tracker.getId(), tracker);
+                notifyTrackerChangeListeners(tracker);
+            }
 
-        // Do in memory cache update to keep the app UI up to date
-        mCachedTrackers.put(tracker.getId(), tracker);
+            @Override
+            public void onDataNotAvailable() {
+                // Should not happen
+                Log.e(TAG, "onDataNotAvailable: retrieving tracker");
+            }
+        });
 
         return local;
     }
@@ -184,21 +206,78 @@ public class Repository implements DataSource {
 
         mLocalDataSource.updateTracker(tracker);
 
-        // todo
         if(mSyncEnabled) {
             mRemoteDataSource.updateTracker(tracker);
         }
 
-        if(mCachedTrackers != null){
-            for(Tracker t : mCachedTrackers.values()){
-                if(t.getId().equals(tracker.getId())){
-                    mCachedTrackers.remove(t.getId());
-                    mCachedTrackers.put(tracker.getId(), tracker);
-                }
-            }
-        }
+        // Retrieve from the local database ready for cache/ui
+        refreshTracker(tracker.getId());
+
+
     }
 
+    @Override
+    public void incrementTracker(@NonNull final String trackerId, int increment) {
+        mLocalDataSource.incrementTracker(trackerId, increment);
+
+        // Retrieve from the local database ready for cache/ui
+        refreshTracker(trackerId);
+
+        // Update targets and trackers in cache and in the UI via any active listeners
+        mAppExecutors.diskIO().execute(new Runnable() {
+            @Override
+            public void run() {
+                if(mCachedTargets != null){
+                    for(final Target target : mCachedTargets.values()){
+                        if(target.getTrackId().equals(trackerId)){
+                            mLocalDataSource.getTarget(target.getId(), new GetTargetCallback() {
+                                @Override
+                                public void onTargetLoaded(Target updatedTarget) {
+                                    mCachedTargets.put(updatedTarget.getId(), updatedTarget);
+                                    // Update target in UI
+                                    mAppExecutors.mainThread().execute(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            notifyTargetChangeListeners(target);
+                                        }
+                                    });
+                                }
+
+                                @Override
+                                public void onDataNotAvailable() {
+                                    Log.d(TAG, "onDataNotAvailable: target not found in local DB");
+                                    mCachedTargets.remove(target.getId());
+                                }
+                            });
+
+                        }
+                    }
+                }
+
+
+
+            }
+        });
+
+    }
+
+    private void refreshTracker(String trackerId) {
+
+        mLocalDataSource.getTracker(trackerId, new GetTrackerCallback() {
+            @Override
+            public void onTrackerLoaded(Tracker tracker) {
+                // Do in memory cache update to keep the app UI up to date
+                if(mCachedTrackers != null) mCachedTrackers.put(tracker.getId(), tracker);
+                notifyTrackerChangeListeners(tracker);
+            }
+
+            @Override
+            public void onDataNotAvailable() {
+                // Should not happen
+                Log.e(TAG, "onDataNotAvailable: could not find tracker that exists in UI");
+            }
+        });
+    }
 
     @Override
     public void deleteAllTrackers() {
@@ -214,9 +293,15 @@ public class Repository implements DataSource {
     @Override
     public boolean deleteTracker(@NonNull final String trackerId) {
         boolean local = mRemoteDataSource.deleteTracker(checkNotNull(trackerId));
-        boolean remote = mLocalDataSource.deleteTracker(checkNotNull(trackerId));
+        mLocalDataSource.deleteTracker(checkNotNull(trackerId));
 
-        mCachedTrackers.remove(trackerId);
+
+        if(mCachedTrackers != null){
+            Tracker tracker = mCachedTrackers.get(trackerId);
+            if(tracker != null) notifyDeleteTrackerListeners(tracker);
+            mCachedTrackers.remove(trackerId);
+        }
+
 
         // delete/remove targets with that tracker id
         mAppExecutors.diskIO().execute(new Runnable() {
@@ -238,14 +323,7 @@ public class Repository implements DataSource {
                             @Override
                             public void run() {
                                 // Update UI through subscribed listeners
-                                for(int j = 0; j< mDeleteTargetListeners.size(); j++){
-                                    if(mDeleteTargetListeners.get(j).isActive()){
-                                        mDeleteTargetListeners.get(j).trackerDeleted(targetToDelete);
-                                    }else{
-                                        mDeleteTargetListeners.remove(j);
-                                        j--;
-                                    }
-                                }
+                                notifyDeleteTargetListeners(targetToDelete);
                             }
                         });
 
@@ -254,37 +332,39 @@ public class Repository implements DataSource {
             }
         });
 
-
-
         return local;
     }
 
 
-
     @Override
-    public void getTargets(@NonNull final GetTargetsCallback callback, boolean staggeredLoad) {
+    public void getTargets(@NonNull final GetTargetsCallback callback) {
         checkNotNull(callback);
 
         // Respond immediately with cache if available
         if (mCachedTargets != null) {
             ArrayList<Target> targets =  new ArrayList<>(mCachedTargets.values());
-            if(staggeredLoad){
-                for(Target t : targets){
-                    callback.onTargetLoaded(t);
-                }
-            }else{
-                callback.onTargetsLoaded(targets);
-            }
-
+            if(targets.isEmpty()) callback.onDataNotAvailable();
+            else callback.onTargetsLoaded(targets);
         } else{
             // Query the local storage to fill the cache
-            refreshCachedTargets(callback, null, staggeredLoad);
+            mLocalDataSource.getTargets(new GetTargetsCallback() {
+                @Override
+                public void onTargetsLoaded(List<Target> targets) {
+                    refreshTargetsCache(targets);
+                    callback.onTargetsLoaded(targets);
+                }
+
+                @Override
+                public void onDataNotAvailable() {
+                    callback.onDataNotAvailable();
+                }
+            });
         }
     }
 
 
     @Override
-    public void getTarget(@NonNull final String targetId, @NonNull final GetTargetsCallback callback) {
+    public void getTarget(@NonNull final String targetId, @NonNull final GetTargetCallback callback) {
         checkNotNull(targetId);
         checkNotNull(callback);
 
@@ -295,9 +375,21 @@ public class Repository implements DataSource {
             callback.onTargetLoaded(cachedTarget);
         }else if(mCachedTargets == null){
             // Query the local storage to fill the cache
-            refreshCachedTargets(callback,targetId,false);
+            mLocalDataSource.getTargets(new GetTargetsCallback() {
+                @Override
+                public void onTargetsLoaded(List<Target> targets) {
+                    refreshTargetsCache(targets);
+                    //recurse
+                    getTarget(targetId, callback);
+                }
+
+                @Override
+                public void onDataNotAvailable() {
+                    callback.onDataNotAvailable();
+                }
+            });
         }else{
-            callback.onDataNotAvailable();
+            mLocalDataSource.getTarget(targetId, callback);
         }
     }
 
@@ -305,21 +397,29 @@ public class Repository implements DataSource {
     public boolean saveTarget(@NonNull final Target target) {
         checkNotNull(target);
 
-        boolean remote = mRemoteDataSource.saveTarget(target);
+        // Send to local database
         boolean local = mLocalDataSource.saveTarget(target);
 
-        mAppExecutors.diskIO().execute(new Runnable() {
+        mRemoteDataSource.saveTarget(target);
+
+        // Retrieve from the local database ready for cache/ui
+        mLocalDataSource.getTarget(target.getId(), new GetTargetCallback() {
             @Override
-            public void run() {
+            public void onTargetLoaded(Target target) {
                 // Do in memory cache update to keep the app UI up to date
-                if (mCachedTargets == null) {
-                    mCachedTargets = new ConcurrentHashMap<>();
-                }else{
-                    loadOrRefreshTarget(target);
-                }
+                mCachedTargets.put(target.getId(), target);
+                notifyTargetChangeListeners(target);
+            }
+
+            @Override
+            public void onDataNotAvailable() {
+                // Should not happen
+                Log.e(TAG, "onDataNotAvailable: retrieving target");
             }
         });
-        return true;
+
+        return local;
+        
     }
 
     @Override
@@ -346,8 +446,14 @@ public class Repository implements DataSource {
 
     @Override
     public void deleteAllTargets() {
-        // todo
         mLocalDataSource.deleteAllTargets();
+        mRemoteDataSource.deleteAllTargets();
+
+
+        if (mCachedTargets == null) {
+            mCachedTargets = new ConcurrentHashMap<>();
+        }
+        mCachedTargets.clear();
     }
 
     @Override
@@ -357,21 +463,31 @@ public class Repository implements DataSource {
     }
 
     @Override
-    public List<ScoreEntry> getEntries() {
-        // Shouldn't be used elsewhere.
-        return null;
+    public void getEntries(@NonNull GetEntriesCallback callback) {
+        // Shouldn't be used elsewhere in the app.
     }
 
     @Override
-    public void saveEntries(List<ScoreEntry> entries) {
+    public void saveEntries(@NonNull List<ScoreEntry> entries) {
         mLocalDataSource.saveEntries(entries);
-    }
+}
 
     @Override
-    public void getDaysTargetsMet(String targetId1, String targetId2, String targetId3, Calendar month, GetDaysTargetsMetCallback callback) {
-        mLocalDataSource.getDaysTargetsMet(targetId1, targetId2, targetId3, month, callback);
-    }
+    public void getDaysTargetMet(@NonNull String targetId, @NonNull Calendar month,
+                                 @NonNull GetDaysTargetMetCallback callback) {
 
+        mLocalDataSource.getDaysTargetMet(targetId, month, new GetDaysTargetMetCallback() {
+            @Override
+            public void onDaysLoaded(Set<Date> successfulDays) {
+                callback.onDaysLoaded(successfulDays);
+            }
+
+            @Override
+            public void onDataNotAvailable() {
+                callback.onDataNotAvailable();
+            }
+        });
+    }
 
     @Override
     public void deleteAllEntries() {
@@ -379,291 +495,36 @@ public class Repository implements DataSource {
     }
 
     @Override
-    public void incrementScore(@NonNull final String trackerId, int increment) {
-        mLocalDataSource.incrementScore(trackerId, increment);
+    public void setSetting(@NonNull UserSetting.Setting setting,@NonNull String value) {
+        mLocalDataSource.setSetting(setting, value);
+    }
 
-        mAppExecutors.diskIO().execute(new Runnable() {
-            @Override
-            public void run() {
-                for(Target target : mCachedTargets.values()){
-                    if(target.getTrackId().equals(trackerId)){
-                        loadOrRefreshTarget(target, new GetTargetsCallback() {
-                            @Override
-                            public void onTargetsLoaded(List<Target> targets) {
-                                // Not used
-                            }
+    @Override
+    public void getSettingValue(UserSetting.Setting setting, GetSettingCallback callback) {
+        mLocalDataSource.getSettingValue(setting, callback);
+    }
 
-                            @Override
-                            public void onTargetLoaded(final Target target) {
 
-                                // Update target in UI
-                                mAppExecutors.mainThread().execute(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        synchronized (mTargetChangeListeners){
-                                            for( int i = 0; i < mTargetChangeListeners.size() ; i++){
-                                                if(mTargetChangeListeners.get(i).isActive()){
-                                                    // Update target
-                                                    mTargetChangeListeners.get(i).targetUpdated(target);
-                                                }else{
-                                                    // Listener no longer active so remove it
-                                                    mTargetChangeListeners.remove(i);
-                                                    i--;
-                                                }
-                                            }
-                                        }
-                                    }
-                                });
-                            }
-
-                            @Override
-                            public void onDataNotAvailable() {
-                                // Not used
-                            }
-                        });
-                    }
-                }
-
-            }
-        });
-
-        if(mCachedTrackers != null){
-            if(mCachedTrackers.get(trackerId) != null){
-                Tracker t = mCachedTrackers.get(trackerId);
-                t.setCountSoFar(t.getCountSoFar() + increment);
-                t.setUiValues();
-            }
+    private void refreshTrackersCache(List<Tracker> trackers){
+        
+        if(mCachedTrackers == null){
+            mCachedTrackers = new ConcurrentHashMap<>();
         }
-        if(mSyncEnabled){
-            //todo
+        mCachedTrackers.clear();
+        
+        for(Tracker t : trackers) mCachedTrackers.put(t.getId(), t);
+        
+    }
+    
+    private void refreshTargetsCache(List<Target> targets){
+
+        if(mCachedTargets == null){
+            mCachedTargets = new ConcurrentHashMap<>();
         }
+        mCachedTargets.clear();
 
-
-
-
-    }
-
-    @Override
-    public void getTrackerTotalScore(@NonNull final String trackerId, @NonNull final GetNumberCallback callback) {
-        // Only local DataSource needs to implement this.
-        // Shouldn't be used elsewhere.
-        Log.e(TAG, "getTrackerTotalScore: called");
-    }
-
-    @Override
-    public void getTargetAverageCompletion(@NonNull final String targetId, @NonNull final GetNumberCallback callback) {
-        // Only local DataSource needs to implement this.
-        // Shouldn't be used elsewhere.
-        Log.e(TAG, "getTargetAverageCompletion: called");
-    }
-
-    @Override
-    public void getScoreOnDay(@NonNull String trackerId, Calendar day, @NonNull GetNumberCallback callback) {
-        mLocalDataSource.getScoreOnDay(trackerId, day, callback);
-    }
-
-    @Override
-    public void getScoreOnWeek(@NonNull String trackerId, Calendar week, @NonNull GetNumberCallback callback) {
-        mLocalDataSource.getScoreOnWeek(trackerId, week, callback);
-    }
-
-    @Override
-    public void getScoreOnMonth(@NonNull String trackerId, Calendar month, @NonNull GetNumberCallback callback) {
-        mLocalDataSource.getScoreOnMonth(trackerId, month, callback);
-    }
-
-    @Override
-    public void getScoreOnYear(@NonNull String trackerId, Calendar year, @NonNull GetNumberCallback callback) {
-        mLocalDataSource.getScoreOnYear(trackerId, year, callback);
-    }
-
-
-    private void refreshCachedTrackersAndTotals(@NonNull final GetTrackersCallback  trackerCallback,
-                                                @Nullable final String trackerId,
-                                                final boolean staggeredLoad) {
-
-        mLocalDataSource.getTrackers(new GetTrackersCallback() {
-            @Override
-            public void onTrackersLoaded(final List<Tracker> trackers) {
-                if (mCachedTrackers == null) {
-                    mCachedTrackers = new ConcurrentHashMap<>();
-                }
-                mCachedTrackers.clear();
-
-                for (final Tracker tracker : trackers) {
-                    mLocalDataSource.getTrackerTotalScore(tracker.getId(), new GetNumberCallback() {
-                        @Override
-                        public void onNumberLoaded(Integer number) {
-                            Log.d(TAG, "onNumberLoaded: tracker " + tracker.getTitle() + " total = " + number);
-                            tracker.setCountSoFar(number);
-                            tracker.setExpanded(false);
-                            tracker.setUiValues();
-                            mCachedTrackers.put(tracker.getId(), tracker);
-                        }
-
-                        @Override
-                        public void onDataNotAvailable() {
-                            // shouldn't happen
-                            Log.e(TAG, "SQL Error, tracker total not available");
-                        }
-                    });
-
-                    if(trackerId == null && staggeredLoad){
-                        // Callback wants all trackers but not loaded all at once
-                        trackerCallback.onTrackerLoaded(tracker);
-                    }
-
-                }
-                if(trackerId != null){
-                    // Callback wants a specific tracker
-                    Tracker toReturn = mCachedTrackers.get(trackerId);
-                    if(toReturn != null) trackerCallback.onTrackerLoaded(toReturn);
-                }else if(!staggeredLoad) trackerCallback.onTrackersLoaded(trackers);
-            }
-
-            @Override
-            public void onTrackerLoaded(Tracker t){
-                // Shouldn't be used by localDataSource
-                Log.e(TAG, "onTrackerLoaded called while refreshing cache");
-            }
-
-            @Override
-            public void onDataNotAvailable() {
-                Log.e(TAG, "Error, unable to retrieve Trackers");
-                if (mCachedTrackers == null) {
-                    mCachedTrackers = new ConcurrentHashMap<>();
-                }
-            }
-        }, false);
-    }
-
-    private void refreshCachedTargets(@NonNull final GetTargetsCallback targetCallback,
-                                      @Nullable final String targetId,
-                                      final boolean staggeredLoad) {
-
-        mLocalDataSource.getTargets(new GetTargetsCallback() {
-            @Override
-            public void onTargetsLoaded(List<Target> targets) {
-                if (mCachedTargets == null) {
-                    mCachedTargets = new ConcurrentHashMap<>();
-                }
-                mCachedTargets.clear();
-
-                for (final Target target : targets) {
-
-                    loadOrRefreshTarget(target);
-
-                    if(targetId == null && staggeredLoad){
-                        // Callback wants all the targets but not loaded all at once
-                        targetCallback.onTargetLoaded(target);
-                    }
-                }
-                if(targetId != null){
-                    // Callback wants a specific target
-                    Target t = mCachedTargets.get(targetId);
-                    if(t != null) targetCallback.onTargetLoaded(t);
-                }else if(!staggeredLoad)targetCallback.onTargetsLoaded(targets);
-            }
-
-            @Override
-            public void onTargetLoaded(Target target) {
-                // Shouldn't be used by localDataSource
-                Log.e(TAG, "onTargetLoaded called when refreshing cache ");
-            }
-
-            @Override
-            public void onDataNotAvailable() {
-                Log.e(TAG, "Error, unable to retrieve Targets");
-                if (mCachedTargets == null) {
-                    mCachedTargets = new ConcurrentHashMap<>();
-                }
-                targetCallback.onDataNotAvailable();
-            }
-        }, false);
-    }
-
-    private void loadOrRefreshTarget(final Target target) {
-        loadOrRefreshTarget(target, null);
-    }
-
-    private void loadOrRefreshTarget(final Target target, @Nullable GetTargetsCallback targetCallback){
-        // Never call on the main thread
-        mLocalDataSource.getTracker(target.getTrackId(), new GetTrackersCallback() {
-            @Override
-            public void onTrackersLoaded(List<Tracker> trackers) {
-                // Shouldn't be used
-                Log.e(TAG, "onTrackersLoaded called while refreshing Target cache");
-            }
-
-            @Override
-            public void onTrackerLoaded(Tracker tracker) {
-                target.setTrackerName(tracker.getTitle());
-            }
-
-            @Override
-            public void onDataNotAvailable() {
-
-            }
-        });
-
-        mLocalDataSource.getTargetAverageCompletion(target.getId(), new GetNumberCallback() {
-            @Override
-            public void onNumberLoaded(Integer number) {
-                Log.d(TAG, "onNumberLoaded: calculated average for '" + target.getId()  + "' = " + number);
-                target.setAverageOverTime(number);
-            }
-
-            @Override
-            public void onDataNotAvailable() {
-                // shouldn't happen
-                Log.e(TAG, "SQL Error, target average not available");
-            }
-        });
-
-        GetNumberCallback callback = new GetNumberCallback() {
-            @Override
-            public void onNumberLoaded(Integer number) {
-
-                int percentage = (number * 100) / target.getNumberToAchieve();
-                percentage = (percentage > 100) ? 100 : percentage;
-
-                target.setCurrentProgressPercentage(percentage);
-
-            }
-
-            @Override
-            public void onDataNotAvailable() {
-                Log.e(TAG, "onDataNotAvailable: could not load target progress");
-            }
-        };
-
-        if(target.isRollingTarget()){
-            // Get progress for this day/week/month
-            Calendar cal = Calendar.getInstance();
-            switch (target.getInterval()){
-                case "DAY":
-                    mLocalDataSource.getScoreOnDay(target.getTrackId(), cal, callback);
-                    break;
-                case "WEEK":
-                    mLocalDataSource.getScoreOnWeek(target.getTrackId(), cal, callback);
-                    break;
-                case "MONTH":
-                    mLocalDataSource.getScoreOnMonth(target.getTrackId(), cal, callback);
-                    break;
-                case "YEAR":
-                    mLocalDataSource.getScoreOnYear(target.getTrackId(), cal, callback);
-                    break;
-                default:
-                    mLocalDataSource.getScoreOnDay(target.getTrackId(), cal, callback);
-                    break;
-            }
-        }else{
-            // todo: progress when not a rolling target
-            target.setCurrentProgressPercentage(5);
-        }
-        mCachedTargets.put(target.getId(), target);
-
-        if(targetCallback != null) targetCallback.onTargetLoaded(target);
+        for(Target t : targets) mCachedTargets.put(t.getId(), t);
+        
     }
 
     private void refreshLocalDataSourceTrackers(List<Tracker> trackers) {
@@ -705,18 +566,70 @@ public class Repository implements DataSource {
         }
     }
 
+    private void notifyTargetChangeListeners(Target target) {
+        for(int i = 0; i < mUpdateOrAddTargetListeners.size() ; i++){
+            if(mUpdateOrAddTargetListeners.get(i).isActive()){
+                // Update target
+                mUpdateOrAddTargetListeners.get(i).targetUpdated(target);
+            }else{
+                // Listener no longer active so remove it
+                mUpdateOrAddTargetListeners.remove(i);
+                i--;
+            }
+        }
+    }
+
+    private void notifyDeleteTargetListeners(Target targetToDelete) {
+        for(int j = 0; j< mDeleteTargetListeners.size(); j++){
+            if(mDeleteTargetListeners.get(j).isActive()){
+                mDeleteTargetListeners.get(j).targetDeleted(targetToDelete);
+            }else{
+                mDeleteTargetListeners.remove(j);
+                j--;
+            }
+        }
+    }
+
+    private void notifyTrackerChangeListeners(Tracker tracker) {
+        for(int i = 0; i < mUpdateOrAddTrackerListeners.size() ; i++){
+            if(mUpdateOrAddTrackerListeners.get(i).isActive()){
+                // Update tracker
+                mUpdateOrAddTrackerListeners.get(i).trackerUpdated(tracker);
+            }else{
+                // Listener no longer active so remove it
+                mUpdateOrAddTrackerListeners.remove(i);
+                i--;
+            }
+        }
+    }
+
+    private void notifyDeleteTrackerListeners(Tracker trackerToDelete) {
+        for(int j = 0; j< mDeleteTrackerListeners.size(); j++){
+            if(mDeleteTrackerListeners.get(j).isActive()){
+                mDeleteTrackerListeners.get(j).trackerDeleted(trackerToDelete);
+            }else{
+                mDeleteTrackerListeners.remove(j);
+                j--;
+            }
+        }
+    }
+
 
     public void addDeleteTargetListener(DeleteTargetListener listener){
         mDeleteTargetListeners.add(listener);
     }
 
-    public void addTargetChangeListener(TargetChangeListener listener){
-        mTargetChangeListeners.add(listener);
+    public void addUpdateOrAddTargetListener(UpdateOrAddTargetListener listener){
+        mUpdateOrAddTargetListeners.add(listener);
     }
 
+    public void addDeleteTrackerListener(DeleteTrackerListener listener){
+        mDeleteTrackerListeners.add(listener);
+    }
 
-
-
+    public void addUpdateOrAddTrackerListener(UpdateOrAddTrackerListener listener){
+        mUpdateOrAddTrackerListeners.add(listener);
+    }
 
 
 }

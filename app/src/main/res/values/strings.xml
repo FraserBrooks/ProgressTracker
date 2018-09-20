@@ -73,10 +73,10 @@
     </integer-array>
 
     <string-array name="target_periods">
-        <item>"DAY"</item>
-        <item>"WEEK</item>
-        <item>"MONTH"</item>
-        <item>"YEAR"</item>
+        <item>"Day"</item>
+        <item>"Week</item>
+        <item>"Month"</item>
+        <item>"Year"</item>
     </string-array>
 
     <string name="calendar_saved_target_1">calendar_saved_target_1</string>
@@ -141,6 +141,7 @@
     <string name="Select_Progress_Rate">Select Progress Rate</string>
     <string name="difficulty_selector_desc">How long should it take to level up this tracker?</string>
     <string name="plus_symbol">+</string>
+    <string name="drag_and_drop_button">drag and drop button</string>
 
 
 </resources>

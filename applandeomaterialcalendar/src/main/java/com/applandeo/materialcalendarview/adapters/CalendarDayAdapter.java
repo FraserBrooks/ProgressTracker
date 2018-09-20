@@ -72,6 +72,10 @@ class CalendarDayAdapter extends ArrayAdapter<Date> {
         return view;
     }
 
+    public int getPageMonth(){
+        return mPageMonth;
+    }
+
     private void setLabelColors(TextView dayLabel, Calendar day) {
         // Setting not current month day color
         if (!isCurrentMonthDay(day)) {

@@ -1,4 +1,4 @@
-package com.fraserbrooks.progresstracker.mainActivity;
+package com.fraserbrooks.progresstracker.graphs;
 
 import android.content.Context;
 import android.support.annotation.NonNull;

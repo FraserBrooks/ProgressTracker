@@ -48,7 +48,12 @@ public class Target {
 
     //only used when Rolling Target = True
     @ColumnInfo(name = "interval")
-    private String mInterval;
+    private int mInterval;
+    public static final int EVERY_DAY = 1;
+    public static final int EVERY_WEEK = 2;
+    public static final int EVERY_MONTH = 3;
+    public static final int EVERY_YEAR = 4;
+    public static final int NON_RECURRING = -1;
 
     //only used when Rolling Target = False
     @ColumnInfo(name = "deadline")
@@ -84,7 +89,7 @@ public class Target {
      * @param interval             String: "DAY"/"WEEK"/"MONTH"/"YEAR"
      */
     @Ignore
-    public Target(@NonNull String trackId, int numberToAchieve, @NonNull String interval){
+    public Target(@NonNull String trackId, int numberToAchieve, int interval){
         this(UUID.randomUUID().toString(), trackId, numberToAchieve, true,
                 interval, Calendar.getInstance(), Calendar.getInstance(), false, false);
     }
@@ -99,7 +104,7 @@ public class Target {
     @Ignore
     public Target(@NonNull String trackId, int numberToAchieve, @NonNull Calendar deadline){
         this(UUID.randomUUID().toString(), trackId, numberToAchieve, true,
-                null, deadline, Calendar.getInstance(), false, false);
+                Target.NON_RECURRING, deadline, Calendar.getInstance(), false, false);
     }
 
 
@@ -117,7 +122,7 @@ public class Target {
      * @param archived           target has been archived
      */
     public Target(@NonNull String id, @NonNull String trackId, int numberToAchieve,
-                  boolean isRollingTarget, String interval, Calendar deadline,
+                  boolean isRollingTarget, int interval, Calendar deadline,
                   Calendar startDate, boolean achieved, boolean archived ) {
         mId = id;
         mTrackId = trackId;
@@ -161,11 +166,11 @@ public class Target {
         this.mIsRollingTarget = mIsRollingTarget;
     }
 
-    public String getInterval() {
+    public int getInterval() {
         return mInterval;
     }
 
-    public void setInterval(String mInterval) {
+    public void setInterval(int mInterval) {
         this.mInterval = mInterval;
     }
 
@@ -217,16 +222,17 @@ public class Target {
         }
         val += getTrackerName();
         switch (getInterval()){
-            case "DAY":
+            // TODO
+            case Target.EVERY_DAY:
                 val += " a day:";
                 break;
-            case "WEEK":
+            case Target.EVERY_WEEK:
                 val += " a week:";
                 break;
-            case "MONTH":
+            case Target.EVERY_MONTH:
                 val += " a month:";
                 break;
-            case "YEAR":
+            case Target.EVERY_YEAR:
                 val += " a year:";
                 break;
             default:
@@ -242,16 +248,16 @@ public class Target {
     public String getLowerLeftLabel(){
         String val = "";
         switch (getInterval()){
-            case "DAY":
+            case Target.EVERY_DAY:
                 val = "today:";
                 break;
-            case "WEEK":
+            case Target.EVERY_WEEK:
                 val = "this week:";
                 break;
-            case "MONTH":
+            case Target.EVERY_MONTH:
                 val = "this month:";
                 break;
-            case "YEAR":
+            case Target.EVERY_YEAR:
                 val = "this year:";
                 break;
             default:

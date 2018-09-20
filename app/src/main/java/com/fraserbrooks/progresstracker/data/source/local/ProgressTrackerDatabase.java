@@ -14,12 +14,13 @@ import android.content.Context;
 import com.fraserbrooks.progresstracker.data.ScoreEntry;
 import com.fraserbrooks.progresstracker.data.Target;
 import com.fraserbrooks.progresstracker.data.Tracker;
+import com.fraserbrooks.progresstracker.data.UserSetting;
 
 
 /**
  * The Room Database that contains the Task table.
  */
-@Database(entities = {Tracker.class, Target.class, ScoreEntry.class}, version = 4)
+@Database(entities = {Tracker.class, Target.class, ScoreEntry.class, UserSetting.class}, version = 6)
 @TypeConverters({Converters.class})
 public abstract class ProgressTrackerDatabase extends RoomDatabase {
 

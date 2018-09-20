@@ -7,11 +7,13 @@ package com.fraserbrooks.progresstracker.data.source.remote;
 
 import android.os.Handler;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 
 import com.fraserbrooks.progresstracker.data.ScoreEntry;
 import com.fraserbrooks.progresstracker.data.Target;
 import com.fraserbrooks.progresstracker.data.Tracker;
+import com.fraserbrooks.progresstracker.data.UserSetting;
 import com.fraserbrooks.progresstracker.data.source.DataSource;
 import com.google.common.collect.Lists;
 
@@ -66,7 +68,7 @@ public class RemoteDataSource implements DataSource{
      * returns an error.
      */
     @Override
-    public void getTrackers(@NonNull final GetTrackersCallback callback, boolean staggered) {
+    public void getTrackers(@NonNull final GetTrackersCallback callback) {
         // Simulate network by delaying the execution.
         Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
@@ -84,7 +86,7 @@ public class RemoteDataSource implements DataSource{
      * returns an error.
      */
     @Override
-    public void getTracker(@NonNull String trackerId, @NonNull final GetTrackersCallback callback) {
+    public void getTracker(@NonNull String trackerId, @NonNull final GetTrackerCallback callback) {
         final Tracker tracker = TRACKERS_SERVICE_DATA.get(trackerId);
 
         // Simulate network by delaying the execution.
@@ -131,16 +133,6 @@ public class RemoteDataSource implements DataSource{
     }
 
     @Override
-    public void getTargets(@NonNull GetTargetsCallback callback, boolean staggered) {
-
-    }
-
-    @Override
-    public void getTarget(@NonNull String targetId, @NonNull GetTargetsCallback callback) {
-
-    }
-
-    @Override
     public boolean saveTarget(@NonNull Target target) {
         return false;
     }
@@ -166,17 +158,18 @@ public class RemoteDataSource implements DataSource{
     }
 
     @Override
-    public List<ScoreEntry> getEntries() {
-        return null;
+    public void getDaysTargetMet(String targetId, @NonNull Calendar month, @NonNull GetDaysTargetMetCallback callback) {
+
+    }
+
+
+    @Override
+    public void getEntries(@NonNull GetEntriesCallback callback) {
+
     }
 
     @Override
     public void saveEntries(List<ScoreEntry> entries) {
-
-    }
-
-    @Override
-    public void getDaysTargetsMet(String targetId1, String targetId2, String targetId3, Calendar month, GetDaysTargetsMetCallback callback) {
 
     }
 
@@ -186,37 +179,28 @@ public class RemoteDataSource implements DataSource{
     }
 
     @Override
-    public void incrementScore(@NonNull String trackerId, int score) {
+    public void setSetting(@NonNull UserSetting.Setting setting, @NonNull String value) {
 
     }
 
     @Override
-    public void getTrackerTotalScore(@NonNull String trackerId, @NonNull GetNumberCallback callback) {
+    public void getSettingValue(UserSetting.Setting setting, GetSettingCallback callback) {
 
     }
 
     @Override
-    public void getScoreOnDay(@NonNull String trackerId, Calendar day, @NonNull GetNumberCallback callback) {
+    public void incrementTracker(@NonNull String trackerId, int score) {
 
     }
 
     @Override
-    public void getScoreOnWeek(@NonNull String trackerId, Calendar week, @NonNull GetNumberCallback callback) {
+    public void getTargets(@NonNull GetTargetsCallback callback) {
 
     }
 
     @Override
-    public void getScoreOnMonth(@NonNull String trackerId, Calendar month, @NonNull GetNumberCallback callback) {
+    public void getTarget(@NonNull String targetId, @NonNull GetTargetCallback callback) {
 
     }
 
-    @Override
-    public void getScoreOnYear(@NonNull String trackerId, Calendar year, @NonNull GetNumberCallback callback) {
-
-    }
-
-    @Override
-    public void getTargetAverageCompletion(@NonNull String targetId, @NonNull GetNumberCallback callback) {
-
-    }
 }

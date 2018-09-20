@@ -6,9 +6,12 @@ import android.support.annotation.Nullable;
 import com.fraserbrooks.progresstracker.data.ScoreEntry;
 import com.fraserbrooks.progresstracker.data.Target;
 import com.fraserbrooks.progresstracker.data.Tracker;
+import com.fraserbrooks.progresstracker.data.UserSetting;
 
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by Fraser on 07/04/2018.
@@ -17,11 +20,18 @@ import java.util.List;
 public interface DataSource {
 
 
-    interface GetTrackersCallback {
+    // --------------------------------------------------------
+    // Callbacks  ---------------------------------------------
+    interface GetTrackerCallback {
 
-        // Use one or the other but not both
-        void onTrackersLoaded(List<Tracker> trackers);
         void onTrackerLoaded(Tracker tracker);
+
+        void onDataNotAvailable();
+    }
+
+    interface GetTrackersCallback{
+
+        void onTrackersLoaded(List<Tracker> trackers);
 
         void onDataNotAvailable();
     }
@@ -29,37 +39,98 @@ public interface DataSource {
 
     interface GetTargetsCallback {
 
-        // Use one or the other but not both
         void onTargetsLoaded(List<Target> targets);
+
+        void onDataNotAvailable();
+    }
+
+    interface GetTargetCallback{
+
         void onTargetLoaded(Target target);
 
         void onDataNotAvailable();
+
+    }
+
+    interface GetEntriesCallback{
+
+        void onEntriesLoaded(List<ScoreEntry> entries);
+
+        void onDataNotAvailable();
+
+    }
+
+    interface GetDaysTargetMetCallback {
+
+        void onDaysLoaded(Set<Date> successfulDays);
+
+        void onDataNotAvailable();
+
     }
 
     interface GetNumberCallback {
 
         void onNumberLoaded(Integer number);
 
-        void onDataNotAvailable();
+    }
+
+    interface GetSettingCallback {
+
+        void onSettingLoaded(@Nullable String string);
+
+    }
+    //-----------------------------------------------------------------------------
+
+    // ----------------------------------------------------------------------------
+    // Listeners ------------------------------------------------------------------
+    interface DeleteTargetListener{
+
+        boolean isActive();
+
+        void targetDeleted(Target targetToDelete);
 
     }
 
-    class CalendarTriple{
-        public List<Calendar> list1;
-        public List<Calendar> list2;
-        public List<Calendar> list3;
+    interface DeleteTrackerListener{
+
+        boolean isActive();
+
+        void trackerDeleted(Tracker trackerToDelete);
+
     }
 
-    interface GetDaysTargetsMetCallback{
+    interface UpdateOrAddTargetListener {
+        boolean isActive();
 
-        void onDaysLoaded(CalendarTriple calendars);
-
-        void onDataNotAvailable();
+        void targetUpdated(Target targetToUpdate);
     }
 
-    void getTrackers(@NonNull GetTrackersCallback callback, boolean staggeredLoad);
+    interface UpdateOrAddTrackerListener {
 
-    void getTracker(@NonNull String trackerId, @NonNull GetTrackersCallback callback);
+        boolean isActive();
+
+        void trackerUpdated(Tracker tracker);
+
+    }
+
+    interface TargetDateUpdateListener {
+
+        boolean isActive();
+
+        void updateInCalendar(Date date);
+
+    }
+
+    // -----------------------------------------------------------------------------
+
+    void refreshAllCache();
+
+    // -------------------------------------------------------------------------------------------
+    // Trackers ----------------------------------------------------------------------------------
+
+    void getTrackers(@NonNull GetTrackersCallback callback);
+
+    void getTracker(@NonNull String trackerId, @NonNull GetTrackerCallback callback);
 
     boolean saveTracker(@NonNull Tracker tracker);
 
@@ -67,15 +138,21 @@ public interface DataSource {
 
     void updateTracker(@NonNull Tracker tracker);
 
-    void refreshAllCache();
-
     void deleteAllTrackers();
 
     boolean deleteTracker(@NonNull String trackerId);
 
-    void getTargets(@NonNull GetTargetsCallback callback, boolean staggeredLoad);
+    void incrementTracker(@NonNull String trackerId, int score);
+    //
+    // -------------------------------------------------------------------------------------------
 
-    void getTarget(@NonNull String targetId, @NonNull GetTargetsCallback callback);
+
+    // -------------------------------------------------------------------------------------------
+    // Targets -----------------------------------------------------------------------------------
+
+    void getTargets(@NonNull GetTargetsCallback callback);
+
+    void getTarget(@NonNull String targetId, @NonNull GetTargetCallback callback);
 
     boolean saveTarget(@NonNull Target target);
 
@@ -87,41 +164,29 @@ public interface DataSource {
 
     boolean deleteTarget(@NonNull String targetId);
 
-    List<ScoreEntry> getEntries();
+    void getDaysTargetMet(String targetId, @NonNull Calendar month, @NonNull GetDaysTargetMetCallback callback);
 
-    void saveEntries(List<ScoreEntry> entries);
+    // ------------------------------------------------------------------------------------------
 
-    void getDaysTargetsMet(@Nullable String targetId1, @Nullable String targetId2, @Nullable String targetId3, Calendar range,
-                           GetDaysTargetsMetCallback callback);
+
+    // -------------------------------------------------------------------------------------------
+    // Score entries -----------------------------------------------------------------------------
+
+    void getEntries(@NonNull GetEntriesCallback callback);
+
+    void saveEntries(@NonNull List<ScoreEntry> entries);
 
     void deleteAllEntries();
 
-    // Increment Score (int)
-    void incrementScore(@NonNull String trackerId, int score);
-    //
-    // Get total score
-    void getTrackerTotalScore(@NonNull String trackerId, @NonNull GetNumberCallback callback);
-    //
-    // Get a tracker score for a particular day
-    void getScoreOnDay(@NonNull String trackerId, Calendar day, @NonNull GetNumberCallback callback);
-    //
-    // Get a tracker score for a particular day
-    void getScoreOnWeek(@NonNull String trackerId, Calendar week, @NonNull GetNumberCallback callback);
-    //
-    // Get a tracker score for a particular day
-    void getScoreOnMonth(@NonNull String trackerId, Calendar month, @NonNull GetNumberCallback callback);
-    //
-    // Get a tracker score for a particular day
-    void getScoreOnYear(@NonNull String trackerId, Calendar year, @NonNull GetNumberCallback callback);
-    //
-    // Get average score
-    void getTargetAverageCompletion(@NonNull String targetId, @NonNull GetNumberCallback callback);
-    //
-
-//    void getTrackerScores(@NonNull GetTotalsCallback callback);
+    // -------------------------------------------------------------------------------------------
 
 
+    // -------------------------------------------------------------------------------------------
+    // User Settings
 
+    void setSetting(@NonNull UserSetting.Setting setting, @NonNull String value);
+
+    void getSettingValue(UserSetting.Setting setting, GetSettingCallback callback);
 
 
 }

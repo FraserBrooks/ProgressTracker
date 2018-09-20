@@ -4,80 +4,66 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="@dimen/normal_height"
-    android:background="@drawable/frag_trackers_tracker_item_background_selector"
-    android:paddingBottom="12dp"
-    android:paddingLeft="12dp"
-    android:paddingRight="12dp"
-    android:paddingTop="8dp"
+    android:layout_height="wrap_content"
+    android:animateLayoutChanges="true"
     tools:showIn="@layout/frag_trackers_tracker_item">
+
 
 
     <TextView
         android:id="@+id/name_tv"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="5dp"
         android:textSize="16sp"
         android:textStyle="bold"
-        app:layout_constraintStart_toStartOf="@id/progress_bar_frame"
+        android:maxLines="1"
         app:layout_constraintTop_toTopOf="parent"
-        tools:text="Guitar Practice"
-         />
+        app:layout_constraintBottom_toTopOf="@id/progress_bar_frame"
+        app:layout_constraintStart_toStartOf="@id/progress_bar_frame"
+        app:layout_constraintEnd_toStartOf="@id/quantifier_tv"
+        tools:text="Guitar Practice" />
+
 
     <TextView
         android:id="@+id/quantifier_tv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginEnd="4dp"
         android:gravity="end"
-        android:layout_marginEnd="10dp"
         android:textAlignment="viewEnd"
         android:textSize="14sp"
         app:layout_constraintBottom_toTopOf="@id/progress_bar_frame"
-        app:layout_constraintEnd_toStartOf="@id/gem_bitmap"
+        app:layout_constraintEnd_toEndOf="@id/progress_bar_frame"
+        app:layout_constraintStart_toEndOf="@id/name_tv"
         tools:text="45 - hours" />
 
+
+    <include
+        android:id="@+id/reorder_drag_button_layout"
+        layout="@layout/shared_ui_drag_and_drop_button"
+        android:layout_width="@dimen/drag_and_drop_button_size"
+        android:layout_height="@dimen/drag_and_drop_button_size"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/progress_bar_frame"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:visibility="gone">
+
+    </include>
 
     <!--  progress bar -->
     <include
         android:id="@+id/progress_bar_frame"
+        layout="@layout/frag_trackers_progress_bar"
         android:layout_width="0dp"
-        android:layout_height="20dp"
+        android:layout_height="wrap_content"
         android:layout_marginEnd="6dp"
         android:layout_marginStart="6dp"
         android:layout_marginTop="4dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="@id/gem_bitmap"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/name_tv"
-        layout="@layout/frag_trackers_progress_bar" />
-
-    <!-- Level indicator icon -->
-    <ImageView
-        android:id="@+id/gem_bitmap"
-        android:layout_width="50dp"
-        android:layout_height="0dp"
-        android:layout_marginStart="4dp"
-        android:padding="2dp"
-        android:src="@drawable/frag_trackers_gem_black"
-        app:layout_constraintBottom_toBottomOf="@id/progress_bar_frame"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:contentDescription="@string/level_icon" />
-
-    <!-- Level Text Box -->
-    <TextView
-        android:id="@+id/text_level_tv"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:textColor="@color/textLevelOverlay"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="@id/gem_bitmap"
-        app:layout_constraintEnd_toEndOf="@id/gem_bitmap"
-        app:layout_constraintStart_toStartOf="@id/gem_bitmap"
-        app:layout_constraintTop_toTopOf="@id/gem_bitmap"
-        tools:text="32" />
+        app:layout_constraintStart_toEndOf="@id/reorder_drag_button_layout"
+        app:layout_constraintTop_toBottomOf="@id/name_tv" />
 
 
 </android.support.constraint.ConstraintLayout>

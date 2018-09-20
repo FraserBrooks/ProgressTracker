@@ -17,7 +17,7 @@ public interface AddTargetContract {
 
         String getMinutesInput();
 
-        String getPeriodInput();
+        int getIntervalInput();
 
         String getTrackerName();
 

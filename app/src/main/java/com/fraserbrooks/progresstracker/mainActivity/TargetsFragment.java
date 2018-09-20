@@ -50,18 +50,12 @@ public class TargetsFragment extends Fragment implements TargetsContract.View{
 
         assert (getContext() != null);
         new TargetsPresenter(Injection.provideRepository(getContext()),
-                this, AppExecutors.getInstance());
+                this);
 
         mListAdapter = new TargetAdapter(getContext(),R.layout.frag_targets_target_item, mPresenter);
 
     }
 
-    @Override
-    public void onResume(){
-        Log.d(TAG, "onResume: called");
-        super.onResume();
-        mPresenter.start();
-    }
 
     @Override
     public void setPresenter(TargetsContract.Presenter presenter) {
@@ -101,36 +95,15 @@ public class TargetsFragment extends Fragment implements TargetsContract.View{
 
                 mPresenter.changeTargetOrder(from, to);
 
-//                ArrayList<Target> ls = mListAdapter.getItems();
-//                Log.d(TAG, "drop: ls size = " + ls.size());
-//                //Assuming that item is moved up the list
-//                int direction = -1;
-//                //For instance where the item is dragged down the list
-//                if (from < to) {
-//                    direction = 1;
-//                }
-//                if (from == (ls.size()) || to == (ls.size())) {
-//                    Log.d(TAG, "drop: can't move footer");
-//                    return;
-//                }
-//                Log.d(TAG, "drop: " + " from " + from + " to " + to);
-//
-//                if (from == to) {
-//                    return;
-//                }
-//                Object target = ls.get(from);
-//                for (int i = from; i != to; i += direction) {
-//                    Log.d(TAG, "drop: loop");
-//                    ls.set(i, ls.get(i + direction));
-//                }
-//                ls.set(to, (Target) target);
-//                mListAdapter.replaceData(ls);
             }
 
         };
 
         targetListView.setDropListener(mDropListener);
         registerForContextMenu(targetListView);
+
+        mPresenter.start();
+
         return root;
     }
 
@@ -169,11 +142,6 @@ public class TargetsFragment extends Fragment implements TargetsContract.View{
 
     @Override
     public void showNoTargets() {
-        // todo
-    }
-
-    @Override
-    public void showNoDataAvailable() {
         // todo
     }
 

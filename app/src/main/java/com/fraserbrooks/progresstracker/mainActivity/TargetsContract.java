@@ -22,8 +22,6 @@ public interface TargetsContract {
 
         void showNoTargets();
 
-        void showNoDataAvailable();
-
         void showTargetDetailsScreen(String targetId);
 
         void showAddTargetScreen();

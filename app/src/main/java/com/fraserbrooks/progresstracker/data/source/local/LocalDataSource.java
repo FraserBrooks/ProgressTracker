@@ -7,11 +7,15 @@ import android.util.Log;
 import com.fraserbrooks.progresstracker.data.ScoreEntry;
 import com.fraserbrooks.progresstracker.data.Target;
 import com.fraserbrooks.progresstracker.data.Tracker;
+import com.fraserbrooks.progresstracker.data.UserSetting;
 import com.fraserbrooks.progresstracker.data.source.DataSource;
 import com.fraserbrooks.progresstracker.util.AppExecutors;
 
 import java.util.Calendar;
+import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -55,85 +59,134 @@ public class LocalDataSource implements DataSource{
      * or the table is empty.
      */
     @Override
-    public void getTrackers(@NonNull final GetTrackersCallback callback, boolean staggered) {
-        List<Tracker> trackers = mTrackersDao.getTrackers();
-        callback.onTrackersLoaded(trackers);
+    public void getTrackers(@NonNull final GetTrackersCallback callback) {
+
+        Runnable runnable = () -> {
+            final List<Tracker> trackers = mTrackersDao.getTrackers();
+
+            if(trackers != null){
+                for(Tracker tracker : trackers){
+                    prepareTrackerForCache(tracker);
+                }
+            }
+
+            mAppExecutors.mainThread().execute(() -> {
+                if(trackers == null || trackers.isEmpty()) callback.onDataNotAvailable();
+                else callback.onTrackersLoaded(trackers);
+            });
+        };
+        mAppExecutors.diskIO().execute(runnable);
     }
 
+
     /**
-     * Note: {@link GetTrackersCallback#onDataNotAvailable()} is fired if the {@link Tracker} isn't
+     * Note: {@link GetTrackerCallback#onDataNotAvailable()} is fired if the {@link Tracker} isn't
      * found.
      */
     @Override
-    public void getTracker(@NonNull final String trackerId, @NonNull final GetTrackersCallback callback) {
+    public void getTracker(@NonNull final String trackerId, @NonNull final GetTrackerCallback callback) {
 
-        Tracker tracker = mTrackersDao.getTrackerById(trackerId);
+        Runnable runnable = () -> {
 
-        if (tracker != null) {
-            callback.onTrackerLoaded(tracker);
-        } else {
-            callback.onDataNotAvailable();
-        }
+            final Tracker tracker = mTrackersDao.getTrackerById(trackerId);
+            if(tracker != null) prepareTrackerForCache(tracker);
+
+            mAppExecutors.mainThread().execute(() -> {
+                if (tracker != null) {
+                    callback.onTrackerLoaded(tracker);
+                } else {
+                    callback.onDataNotAvailable();
+                }
+            });
+        };
+        mAppExecutors.diskIO().execute(runnable);
+
     }
 
+    private void prepareTrackerForCache(Tracker tracker) {
+        int total = mTrackersDao.getTotalScore(tracker.getId());
+        tracker.setScoreSoFar(total);
+        tracker.setUiValues();
+
+        int[] pastEightDays = new int[8];
+        int[] pastEightWeeks = new int[8];
+        int[] pastEightMonths = new int[8];
+
+        Calendar calendar = Calendar.getInstance();
+
+        for(int i = 0; i < 8; i++){
+
+            // Get recent day values for cache
+            calendar.add(Calendar.DAY_OF_YEAR, -(7-i));
+            pastEightDays[i] = mTrackersDao.getScoreOnSpecificDay(tracker.getId(),
+                    calendar);
+            calendar.add(Calendar.DAY_OF_YEAR, (7-i));
+
+            // Get recent week values for cache
+            calendar.add(Calendar.WEEK_OF_YEAR, -(7-i));
+            pastEightWeeks[i] = mTrackersDao.getScoreOnSpecificWeek(tracker.getId(),
+                    calendar);
+            calendar.add(Calendar.WEEK_OF_YEAR, (7-i));
+
+            // Get recent month values for cache
+            calendar.add(Calendar.MONTH, -(7-i));
+            pastEightMonths[i] = mTrackersDao.getScoreOnSpecificMonth(tracker.getId(),
+                    calendar);
+            calendar.add(Calendar.MONTH, (7-i));
+        }
+
+        tracker.setPastEightDaysCounts(pastEightDays);
+        tracker.setPastEightWeekCounts(pastEightWeeks);
+        tracker.setPastEightMonthCounts(pastEightMonths);
+    }
 
     @Override
     public boolean saveTracker(@NonNull final Tracker tracker) {
         checkNotNull(tracker);
 
-        Runnable saveRunnable = new Runnable() {
-            @Override
-            public void run() {
-                mTrackersDao.insertTracker(tracker);
-            }
-        };
+        Runnable saveRunnable = () -> mTrackersDao.insertTracker(tracker);
         mAppExecutors.diskIO().execute(saveRunnable);
         return true;
     }
 
     @Override
     public void saveTrackers(@NonNull final List<Tracker> trackers) {
-        Runnable saveRunnable = new Runnable() {
-            @Override
-            public void run() {
-                for(Tracker t : trackers) mTrackersDao.insertTracker(t);
+        checkNotNull(trackers);
+
+        Runnable saveRunnable = () -> {
+            for(Tracker t : trackers){
+                mTrackersDao.insertTracker(t);
             }
         };
         mAppExecutors.diskIO().execute(saveRunnable);
+
     }
 
     @Override
     public void updateTracker(@NonNull final Tracker tracker) {
-
-        Runnable updateRunnable = new Runnable() {
-            @Override
-            public void run() {
-                mTrackersDao.updateTracker(tracker);
-            }
-        };
+        Runnable updateRunnable = () -> mTrackersDao.updateTracker(tracker);
         mAppExecutors.diskIO().execute(updateRunnable);
     }
 
+
+    /** Not required because the repository handles the logic of refreshing the
+     / cache from all the available data sources.
+     **/
     @Override
     public void refreshAllCache() {
-        /** Not required because the {@link Repository} handles the logic of refreshing the
-        / cache from all the available data sources.
-        **/
+
     }
 
     @Override
     public void deleteAllTrackers() {
-        mTrackersDao.deleteTrackers();
+        Runnable deleteRunnable = mTrackersDao::deleteTrackers;
+        mAppExecutors.diskIO().execute(deleteRunnable);
     }
 
     @Override
     public boolean deleteTracker(@NonNull final String trackerId) {
-        Runnable runnable = new Runnable() {
-            @Override
-            public void run() {
-                mTrackersDao.deleteTrackerById(trackerId);
-            }
-        };
+        checkNotNull(trackerId);
+        Runnable runnable = () -> mTrackersDao.deleteTrackerById(trackerId);
         mAppExecutors.diskIO().execute(runnable);
         return true;
     }
@@ -143,177 +196,233 @@ public class LocalDataSource implements DataSource{
      * or the table is empty.
      */
     @Override
-    public void getTargets(@NonNull final GetTargetsCallback callback, boolean staggered) {
-        List<Target> targets = mTrackersDao.getTargets();
-        callback.onTargetsLoaded(targets);
-    }
+    public void getTargets(@NonNull final GetTargetsCallback callback) {
 
+        Runnable runnable = () -> {
+            final List<Target> targets = mTrackersDao.getTargets();
+
+            if(targets != null){
+                for(Target target : targets) prepareTargetForCache(target);
+            }
+
+            mAppExecutors.mainThread().execute(() -> {
+                if (targets == null || targets.isEmpty()) callback.onDataNotAvailable();
+                else callback.onTargetsLoaded(targets);
+            });
+        };
+        mAppExecutors.diskIO().execute(runnable);
+    }
 
     /**
      * Note: {@link GetTargetsCallback#onDataNotAvailable()} is fired if the {@link Tracker} isn't
      * found.
      */
     @Override
-    public void getTarget(@NonNull final String targetId, @NonNull final GetTargetsCallback callback) {
-        Target target = mTrackersDao.getTargetById(targetId);
+    public void getTarget(@NonNull final String targetId, @NonNull final GetTargetCallback callback) {
 
-        if (target != null) {
-            callback.onTargetLoaded(target);
-        } else {
-            callback.onDataNotAvailable();
+        Runnable runnable = () -> {
+
+            final Target target = mTrackersDao.getTargetById(targetId);
+            if(target != null) prepareTargetForCache(target);
+
+            mAppExecutors.mainThread().execute(() -> {
+                if (target != null) {
+                    callback.onTargetLoaded(target);
+                } else {
+                    callback.onDataNotAvailable();
+                }
+            });
+        };
+        mAppExecutors.diskIO().execute(runnable);
+
+    }
+
+
+    private void prepareTargetForCache(Target target){
+
+        Tracker tracker = mTrackersDao.getTrackerById(target.getTrackId());
+
+        if(tracker != null) target.setTrackerName(tracker.getTitle());
+        else target.setTrackerName("ERROR");
+
+        int average = getTargetAverage(target);
+        target.setAverageOverTime(average);
+
+        int score = 0;
+
+        Calendar calendar = Calendar.getInstance();
+
+        if (target.isRollingTarget()) {
+            switch (target.getInterval()) {
+                case Target.EVERY_DAY:
+                    score = mTrackersDao.getScoreOnSpecificDay(target.getTrackId(), calendar);
+                    break;
+                case Target.EVERY_WEEK:
+                    score = mTrackersDao.getScoreOnSpecificWeek(target.getTrackId(), calendar);
+                    break;
+                case Target.EVERY_MONTH:
+                    score = mTrackersDao.getScoreOnSpecificMonth(target.getTrackId(), calendar);
+                    break;
+                case Target.EVERY_YEAR:
+                    score = mTrackersDao.getScoreOnSpecificYear(target.getTrackId(), calendar);
+                    break;
+                default:
+                    // Should never happen
+                    break;
+            }
         }
+
+        int percentage = (score * 100) /target.getNumberToAchieve();
+        percentage = (percentage > 100) ? 100 : percentage;
+
+        target.setCurrentProgressPercentage(percentage);
+
     }
 
     @Override
     public boolean saveTarget(@NonNull final Target target) {
         checkNotNull(target);
-        Runnable saveRunnable = new Runnable() {
-            @Override
-            public void run() {
-                mTrackersDao.insertTarget(target);
-            }
-        };
+        Runnable saveRunnable = () -> mTrackersDao.insertTarget(target);
         mAppExecutors.diskIO().execute(saveRunnable);
         return true;
     }
 
     @Override
-    public void saveTargets(@NonNull List<Target> targets) {
-        for(Target t : targets) mTrackersDao.insertTarget(t);
+    public void saveTargets(@NonNull final List<Target> targets) {
+        checkNotNull(targets);
+
+        Runnable saveRunnable = () -> {
+            for(Target t : targets) mTrackersDao.insertTarget(t);
+        };
+        mAppExecutors.diskIO().execute(saveRunnable);
     }
 
     @Override
     public void updateTarget(@NonNull final Target target) {
-        mTrackersDao.updateTarget(target);
+        checkNotNull(target);
+
+        Runnable updateRunnable = () -> mTrackersDao.updateTarget(target);
+        mAppExecutors.diskIO().execute(updateRunnable);
     }
 
 
     @Override
     public void deleteAllTargets() {
-        mTrackersDao.deleteTargets();
+        Runnable deleteRunnable = mTrackersDao::deleteTargets;
+        mAppExecutors.diskIO().execute(deleteRunnable);
     }
 
     @Override
     public boolean deleteTarget(@NonNull final String targetId) {
-        Runnable runnable = new Runnable() {
-            @Override
-            public void run() {
-                mTrackersDao.deleteTargetById(targetId);
-            }
-        };
+        Runnable runnable = () -> mTrackersDao.deleteTargetById(targetId);
         mAppExecutors.diskIO().execute(runnable);
         return true;
     }
 
+
     @Override
-    public List<ScoreEntry> getEntries() {
-        //todo (implement callback)
-        return mTrackersDao.getEntries();
+    public void getEntries(@NonNull final GetEntriesCallback callback) {
+
+        Runnable runnable = () -> {
+            final List<ScoreEntry> entries = mTrackersDao.getEntries();
+            mAppExecutors.mainThread().execute(() -> {
+                if(entries == null || entries.isEmpty()) callback.onDataNotAvailable();
+                else callback.onEntriesLoaded(entries);
+            });
+        };
+        mAppExecutors.diskIO().execute(runnable);
+
     }
 
     @Override
-    public void saveEntries(List<ScoreEntry> entries) {
-        for(ScoreEntry e :  entries) mTrackersDao.insertEntry(e);
-    }
+    public void saveEntries(@NonNull final List<ScoreEntry> entries) {
 
-    @Override
-    public void getDaysTargetsMet(final String targetId1, final String targetId2, final String targetId3, Calendar month, final GetDaysTargetsMetCallback callback) {
-        CalendarTriple calendars = new CalendarTriple();
-
-        Calendar previousMonth = Calendar.getInstance();
-        Calendar nextMonth = Calendar.getInstance();
-
-        previousMonth.setTime(month.getTime());
-        previousMonth.add(Calendar.MONTH, -1);
-        previousMonth.set(Calendar.DAY_OF_MONTH, previousMonth.getActualMinimum(Calendar.DAY_OF_MONTH));
-
-        nextMonth.setTime(month.getTime());
-        nextMonth.add(Calendar.MONTH, 1);
-        nextMonth.set(Calendar.DAY_OF_MONTH, nextMonth.getActualMaximum(Calendar.DAY_OF_MONTH));
-
-        if (targetId1 != null) calendars.list1 = mTrackersDao.getDaysTargetCompleted(targetId1, previousMonth, nextMonth);
-        if (targetId2 != null) calendars.list2 = mTrackersDao.getDaysTargetCompleted(targetId2, previousMonth, nextMonth);
-        if (targetId3 != null) calendars.list3 = mTrackersDao.getDaysTargetCompleted(targetId3, previousMonth, nextMonth);
-
-        if (targetId1 != null) Log.d(TAG, "getDaysTargetsMet: list1: found " + calendars.list1.size() + " days where target was met");
-        if (targetId1 != null) Log.d(TAG, "getDaysTargetsMet: list2: found " + calendars.list2.size() + " days where target was met");
-        if (targetId1 != null) Log.d(TAG, "getDaysTargetsMet: list3: found " + calendars.list3.size() + " days where target was met");
-
-        callback.onDaysLoaded(calendars);
+        Runnable saveRunnable = () -> {
+            for(ScoreEntry e :  entries) mTrackersDao.insertEntry(e);
+        };
+        mAppExecutors.diskIO().execute(saveRunnable);
     }
 
     @Override
     public void deleteAllEntries() {
-        mTrackersDao.deleteEntries();
+        Runnable deleteRunnable = mTrackersDao::deleteEntries;
+        mAppExecutors.diskIO().execute(deleteRunnable);
     }
 
     @Override
-    public void incrementScore(@NonNull final String trackerId, final int score) {
-        Runnable runnable = new Runnable() {
-            @Override
-            public void run() {
-                mTrackersDao.upsertScore(trackerId, score);
-            }
+    public void setSetting(@NonNull UserSetting.Setting setting,@NonNull String value) {
+        Runnable runnable = () -> mTrackersDao.insertUserSetting(new UserSetting(setting, value));
+        mAppExecutors.diskIO().execute(runnable);
+    }
+
+    @Override
+    public void getSettingValue(UserSetting.Setting setting, GetSettingCallback callback) {
+        Runnable runnable = () -> {
+            String settingValue = mTrackersDao.getSettingValue(setting);
+            mAppExecutors.mainThread().execute(() -> callback.onSettingLoaded(settingValue));
         };
         mAppExecutors.diskIO().execute(runnable);
     }
 
     @Override
-    public void getTrackerTotalScore(@NonNull final String trackerId, @NonNull final GetNumberCallback callback) {
-        int num = mTrackersDao.getTotalScore(trackerId);
-        callback.onNumberLoaded(num);
+    public void getDaysTargetMet(@NonNull String targetId, @NonNull final Calendar month, @NonNull final GetDaysTargetMetCallback callback) {
+
+         Runnable runnable = () -> {
+             Calendar twoAndAHalfMonthsAgo = Calendar.getInstance();
+             Calendar twoAndAHalfMonthsAhead = Calendar.getInstance();
+
+             twoAndAHalfMonthsAgo.setTime(month.getTime());
+             twoAndAHalfMonthsAgo.add(Calendar.MONTH, -2);
+             twoAndAHalfMonthsAgo.add(Calendar.WEEK_OF_YEAR, -2);
+             twoAndAHalfMonthsAgo.set(Calendar.DAY_OF_MONTH, twoAndAHalfMonthsAgo.getActualMinimum(Calendar.DAY_OF_MONTH));
+
+             twoAndAHalfMonthsAhead.setTime(month.getTime());
+             twoAndAHalfMonthsAhead.add(Calendar.MONTH, 2);
+             twoAndAHalfMonthsAhead.add(Calendar.WEEK_OF_YEAR, 2);
+             twoAndAHalfMonthsAhead.set(Calendar.DAY_OF_MONTH, twoAndAHalfMonthsAhead.getActualMaximum(Calendar.DAY_OF_MONTH));
+
+             Set<Date> dates = new HashSet<>(mTrackersDao.getDaysTargetCompleted(targetId, twoAndAHalfMonthsAgo, twoAndAHalfMonthsAhead));
+
+             mAppExecutors.mainThread().execute(() -> {
+                 if(dates.isEmpty()) callback.onDataNotAvailable();
+                 else callback.onDaysLoaded(dates);
+             });
+         };
+         mAppExecutors.diskIO().execute(runnable);
+
     }
 
+
     @Override
-    public void getScoreOnDay(@NonNull final String trackerId, final Calendar day, @NonNull final GetNumberCallback callback) {
-        int num = mTrackersDao.getScoreOnSpecificDay(trackerId, day);
-        callback.onNumberLoaded(num);
+    public void incrementTracker(@NonNull final String trackerId, final int score) {
+        Runnable runnable = () -> mTrackersDao.upsertScore(trackerId, score);
+        mAppExecutors.diskIO().execute(runnable);
     }
 
-    @Override
-    public void getScoreOnWeek(@NonNull final String trackerId, final Calendar week, @NonNull final GetNumberCallback callback) {
-        int num = mTrackersDao.getScoreOnSpecificWeek(trackerId, week);
-        callback.onNumberLoaded(num);
-    }
 
-    @Override
-    public void getScoreOnMonth(@NonNull final String trackerId, final Calendar month, @NonNull final GetNumberCallback callback) {
-        int num = mTrackersDao.getScoreOnSpecificMonth(trackerId, month);
-        callback.onNumberLoaded(num);
-    }
+    private int getTargetAverage(Target target) {
 
-    @Override
-    public void getScoreOnYear(@NonNull final String trackerId, final Calendar year, @NonNull final GetNumberCallback callback) {
-        int num = mTrackersDao.getScoreOnSpecificYear(trackerId, year);
-        Log.d(TAG, "getScoreOnYear: for " + trackerId + " = " + num);
-        callback.onNumberLoaded(num);
-    }
-
-    @Override
-    public void getTargetAverageCompletion(@NonNull final String targetId, @NonNull final GetNumberCallback callback) {
-
-        Target t = mTrackersDao.getTargetById(targetId);
-        if (!t.isRollingTarget()){
-            callback.onNumberLoaded(-1);
+        if (target == null || !target.isRollingTarget()){
+            return -1;
         }
 
         int intervalPeriod;
-        switch (t.getInterval()){
-            case "DAY": intervalPeriod = Calendar.DAY_OF_YEAR;
+        switch (target.getInterval()){
+            case Target.EVERY_DAY: intervalPeriod = Calendar.DAY_OF_YEAR;
                 break;
-            case "WEEK": intervalPeriod = Calendar.WEEK_OF_YEAR;
+            case Target.EVERY_WEEK: intervalPeriod = Calendar.WEEK_OF_YEAR;
                 break;
-            case "MONTH": intervalPeriod = Calendar.MONTH;
+            case Target.EVERY_MONTH: intervalPeriod = Calendar.MONTH;
                 break;
-            case "YEAR": intervalPeriod = Calendar.YEAR;
+            case Target.EVERY_YEAR: intervalPeriod = Calendar.YEAR;
                 break;
             default:
-                Log.e(TAG, "getTargetAverageCompletion: couldn't find match for interval: " + t.getInterval());
+                Log.e(TAG, "getTargetAverageCompletion: couldn't find match for interval: " + target.getInterval());
                 intervalPeriod = Calendar.DAY_OF_YEAR;
         }
 
         Calendar now = Calendar.getInstance();
-        Calendar startDate = t.getStartDate();
+        Calendar startDate = target.getStartDate();
 
         now.setTimeZone(startDate.getTimeZone());
 
@@ -322,27 +431,23 @@ public class LocalDataSource implements DataSource{
             maxPossible += 1;
             now.add(intervalPeriod, -1);
         }
-        Log.d(TAG, "getTargetAverageCompletion: " + targetId + " maxPoss calculated as " + maxPossible );
 
         int achieved = 0;
         now = Calendar.getInstance();
 
-        switch (t.getInterval()){
-            case "DAY": achieved = mTrackersDao.getCountScoresOverDayTarget(targetId, t.getNumberToAchieve(), startDate, now);
+        switch (target.getInterval()){
+            case Target.EVERY_DAY: achieved = mTrackersDao.getCountScoresOverDayTarget(target.getId(), target.getNumberToAchieve(), startDate, now);
                 break;
-            case "WEEK": achieved = mTrackersDao.getCountScoresOverWeekTarget(targetId, t.getNumberToAchieve(), startDate, now);
+            case Target.EVERY_WEEK: achieved = mTrackersDao.getCountScoresOverWeekTarget(target.getId(), target.getNumberToAchieve(), startDate, now);
                 break;
-            case "MONTH": achieved = mTrackersDao.getCountScoresOverMonthTarget(targetId, t.getNumberToAchieve(), startDate, now);
+            case Target.EVERY_MONTH: achieved = mTrackersDao.getCountScoresOverMonthTarget(target.getId(), target.getNumberToAchieve(), startDate, now);
                 break;
-            case "YEAR": achieved = mTrackersDao.getCountScoresOverYearTarget(targetId, t.getNumberToAchieve(), startDate, now);
+            case Target.EVERY_YEAR: achieved = mTrackersDao.getCountScoresOverYearTarget(target.getId(), target.getNumberToAchieve(), startDate, now);
                 break;
         }
-
-        Log.d(TAG, "getTargetAverageCompletion: " + targetId + " achieved calculated as " + achieved);
-
         int avg = (int) (achieved/maxPossible * 100f);
         avg = (avg > 100) ? 100 : avg;
-        callback.onNumberLoaded(avg);
+        return avg;
     }
 
 

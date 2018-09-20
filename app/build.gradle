@@ -73,6 +73,12 @@ android {
         main.res.srcDirs += 'src/main/res/res_add_tracker'
         main.res.srcDirs += 'src/main/res/res_add_target'
         main.res.srcDirs += 'src/main/res/res_details_screens'
+        main.res.srcDirs += 'src/main/res/res_calendar_view'
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
 
 }

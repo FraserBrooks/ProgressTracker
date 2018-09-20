@@ -17,7 +17,7 @@ import com.fraserbrooks.progresstracker.R;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public class AddTrackerActivity_ extends AppCompatActivity implements AddTrackerContract.View{
+public class AddTrackerActivity extends AppCompatActivity implements AddTrackerContract.View{
 
     private final String TAG = "AddTrackerActivity";
 

@@ -1,20 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.constraint.ConstraintLayout
+    android:id="@+id/expanded_tracker_layout"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/frag_trackers_tracker_item_background_selector"
-    android:paddingBottom="12dp"
-    android:paddingLeft="12dp"
-    android:paddingRight="12dp"
-    android:paddingTop="8dp"
     tools:showIn="@layout/frag_trackers_tracker_item">
 
     <!-- Name, progress text views, progress bar, and level icon. onClick = collapse tracker -->
     <android.support.constraint.ConstraintLayout
-        android:id="@+id/tracker_layout_top"
+        android:id="@+id/expanded_tracker_layout_top"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingBottom="12dp"
@@ -22,7 +18,7 @@
 
         <TextView
             android:id="@+id/name_tv"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginLeft="16dp"
             tools:ignore="RtlHardcoded"
@@ -31,6 +27,7 @@
             android:textSize="16sp"
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/gem_bitmap"
             app:layout_constraintTop_toTopOf="parent"
              />
 
@@ -67,16 +64,29 @@
             app:layout_constraintTop_toBottomOf="@id/quantifier_two_tv"
             tools:ignore="RtlHardcoded,RtlSymmetry" />
 
-        <!-- Level indicator icon -->
+        <!-- Level indicator icons -->
         <ImageView
             android:id="@+id/gem_bitmap"
             android:layout_width="50dp"
             android:layout_height="0dp"
-            android:padding="2dp"
-            android:src="@drawable/frag_trackers_gem_black"
+            android:paddingTop="4dp"
+            android:paddingStart="2dp"
+            android:paddingEnd="2dp"
+            tools:src="@drawable/frag_trackers_gem_green"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toTopOf="@id/progress_bar_frame"
+            android:contentDescription="@string/level_icon" />
+
+        <ImageView
+            android:id="@+id/next_level_gem_bitmap"
+            android:layout_width="25dp"
+            android:layout_height="0dp"
+            tools:src="@drawable/frag_trackers_gem_purple"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/progress_bar_frame"
+            app:layout_constraintBottom_toBottomOf="@id/progress_bar_frame"
+            app:layout_constraintStart_toStartOf="@id/gem_bitmap"
             android:contentDescription="@string/level_icon" />
 
         <!-- Level Text Box -->
@@ -98,12 +108,12 @@
         <include
             android:id="@+id/progress_bar_frame"
             android:layout_width="0dp"
-            android:layout_height="20dp"
+            android:layout_height="wrap_content"
             android:layout_marginEnd="6dp"
             android:layout_marginStart="6dp"
             android:layout_marginTop="12dp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="@id/gem_bitmap"
+            app:layout_constraintEnd_toStartOf="@id/gem_bitmap"
             app:layout_constraintTop_toBottomOf="@id/quantifier_tv"
             layout="@layout/frag_trackers_progress_bar" />
 
@@ -123,9 +133,9 @@
         android:textColor="@color/default_text_color"
         android:textAllCaps="false"
 
-        app:layout_constraintTop_toBottomOf="@id/tracker_layout_top"
+        app:layout_constraintTop_toBottomOf="@id/expanded_tracker_layout_top"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="@id/tracker_layout_top"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toStartOf="@id/top_button_2"
         />
 
@@ -141,7 +151,7 @@
         android:textColor="@color/default_text_color"
         android:textAllCaps="false"
 
-        app:layout_constraintTop_toBottomOf="@id/tracker_layout_top"
+        app:layout_constraintTop_toBottomOf="@id/expanded_tracker_layout_top"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@id/top_button_1"
         app:layout_constraintEnd_toStartOf="@id/top_button_3"/>
@@ -158,7 +168,7 @@
         android:textColor="@color/default_text_color"
         android:textAllCaps="false"
 
-        app:layout_constraintTop_toBottomOf="@id/tracker_layout_top"
+        app:layout_constraintTop_toBottomOf="@id/expanded_tracker_layout_top"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@id/top_button_2"
         app:layout_constraintEnd_toStartOf="@id/top_button_4"/>
@@ -178,7 +188,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/top_button_3"
-        app:layout_constraintTop_toBottomOf="@id/tracker_layout_top"/>
+        app:layout_constraintTop_toBottomOf="@id/expanded_tracker_layout_top"/>
 
 
 

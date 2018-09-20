@@ -12,13 +12,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.TextView;
 
 import com.fraserbrooks.progresstracker.Injection;
 import com.fraserbrooks.progresstracker.R;
 import com.fraserbrooks.progresstracker.TouchInterceptor;
-import com.fraserbrooks.progresstracker.addTrackerActivity.AddTrackerActivity_;
+import com.fraserbrooks.progresstracker.addTrackerActivity.AddTrackerActivity;
 import com.fraserbrooks.progresstracker.data.Tracker;
+import com.fraserbrooks.progresstracker.graphs.BarGraph;
 import com.fraserbrooks.progresstracker.trackerDetailsActivity.TrackerDetailsActivity;
 import com.fraserbrooks.progresstracker.util.AppExecutors;
 import com.fraserbrooks.progresstracker.util.TrackerViewInflater;
@@ -37,9 +37,10 @@ public class TrackersFragment extends Fragment implements TrackersContract.View 
     private TrackersContract.Presenter mPresenter;
 
     private TrackersAdapter mListAdapter;
-    private TouchInterceptor.DropListener mDropListener;
     private TouchInterceptor mTrackerListView;
     private BarGraph mBarGraph;
+
+    private String rememberExpanded;
 
     public TrackersFragment(){
         // Required empty public constructor
@@ -88,7 +89,7 @@ public class TrackersFragment extends Fragment implements TrackersContract.View 
         View listFooterView = inflater.inflate(R.layout.shared_ui_list_footer_add_and_reorder_button,
                 mTrackerListView, false);
 
-        final View reorderButton = listFooterView.findViewById(R.id.list_footer_reorder_button_layout);
+        final View reorderButton = listFooterView.findViewById(R.id.list_footer_drag_and_drop_button_layout);
         View addButton = listFooterView.findViewById(R.id.list_footer_add_button_layout);
 
         reorderButton.setOnClickListener(new View.OnClickListener() {
@@ -102,13 +103,12 @@ public class TrackersFragment extends Fragment implements TrackersContract.View 
             @Override
             public void onClick(View view) {
                 //TODO: find a better way of adding test data
-                mPresenter.addTrackerButtonClicked();
-//                if(mListAdapter.getCount() == 0){
-//                    Log.d(TAG, "onItemClick: adding dummy test data");
-//                    mPresenter.addTestData();
-//                }else{
-//                    mPresenter.addTrackerButtonClicked();
-//                }
+                if(mListAdapter.getCount() == 0){
+                    Log.d(TAG, "onItemClick: adding dummy test data");
+                    mPresenter.addTestData();
+                }else{
+                    mPresenter.addTrackerButtonClicked();
+                }
             }
         });
 
@@ -143,55 +143,8 @@ public class TrackersFragment extends Fragment implements TrackersContract.View 
 
         });
 
-        mDropListener = new TouchInterceptor.DropListener() {
-            public void drop(int from, int to) {
 
-                Log.d(TAG, "drop: from = " + from + " to = " + to);
-
-                to+= 1;
-
-                // Convert from ListView index to Adapter index
-                // (ListView includes the header and footer views while the adapter doesn't)
-                from -= mTrackerListView.getHeaderViewsCount();
-                to -= mTrackerListView.getHeaderViewsCount();
-                int lastTrackerIndex = mTrackerListView.getCount() - 1
-                        - mTrackerListView.getHeaderViewsCount()
-                        - mTrackerListView.getFooterViewsCount();
-                if(from < 0) from = 0;
-                if(to < 0) to = 0;
-                if(from > lastTrackerIndex) from = lastTrackerIndex;
-                if(to > lastTrackerIndex) to = lastTrackerIndex;
-
-
-                if (from == to){
-                    Log.d(TAG, "drop: item is not moving anywhere");
-                    return;
-                }
-
-                Tracker tracker =  mListAdapter.getItem(from);
-
-                Log.d(TAG, "dropListener: moving Tracker from pos=" + from + " to pos=" + to);
-
-                // Remove and insert at new position
-                mListAdapter.remove(tracker);
-                if(from < to){
-                    mListAdapter.insert(tracker, to - 1);
-                }else{
-                    mListAdapter.insert(tracker, to);
-                }
-
-                // Persist ordering
-                for(int i = 0; i < mListAdapter.getCount(); i++){
-                    Tracker t = mListAdapter.getItem(i);
-                    if(t == null) continue;
-                    t.setIndex(i);
-                    mPresenter.updateTracker(t);
-                }
-
-            }
-
-        };
-        mTrackerListView.setDropListener(mDropListener);
+        mTrackerListView.setDropListener(this.mDropListener);
         mTrackerListView.setDragEnabled(false);
 
         registerForContextMenu(mTrackerListView);
@@ -208,6 +161,17 @@ public class TrackersFragment extends Fragment implements TrackersContract.View 
             mListAdapter.setShowDragButton(false);
             showDragAndDrop(false);
         }else{
+
+            // un-expand views
+            for(int i = 0; i < mListAdapter.getCount(); i++){
+                Tracker t =  mListAdapter.getItem(i);
+                if(t != null && t.isExpanded()){
+                    //enableDrag = false;
+                    mPresenter.setTrackerExpandCollapse(t);
+                    updateOrAddTracker(t);
+                }
+            }
+
             mTrackerListView.setDragEnabled(true);
             mListAdapter.setShowDragButton(true);
             showDragAndDrop(true);
@@ -227,8 +191,12 @@ public class TrackersFragment extends Fragment implements TrackersContract.View 
 
             View dragButtonView = listItemView.findViewById(R.id.reorder_drag_button_layout);
             if(dragButtonView != null){
-                if(show) dragButtonView.setVisibility(View.VISIBLE);
-                else dragButtonView.setVisibility(View.GONE);
+
+                if(show){
+                    dragButtonView.setVisibility(View.VISIBLE);
+                } else {
+                    dragButtonView.setVisibility(View.GONE);
+                }
             }else{
                 Log.d(TAG, "showDragAndDrop: could not find drag button at i = " + i);
             }
@@ -246,6 +214,8 @@ public class TrackersFragment extends Fragment implements TrackersContract.View 
     @Override
     public void updateOrAddTracker(Tracker tracker) {
 
+        if(tracker.getId().equals(rememberExpanded)) tracker.setExpanded(true);
+
         int i = mListAdapter.getPosition(tracker);
         mListAdapter.remove(tracker);
 
@@ -253,6 +223,15 @@ public class TrackersFragment extends Fragment implements TrackersContract.View 
         i = (i == -1) ? mListAdapter.getCount() : i;
 
         mListAdapter.insert(tracker, i);
+    }
+
+    @Override
+    public void rememberExpanded(Tracker trackerAboutToRefresh) {
+        if(trackerAboutToRefresh.isExpanded()){
+            rememberExpanded = trackerAboutToRefresh.getId();
+        }else{
+            rememberExpanded = "";
+        }
     }
 
     @Override
@@ -265,12 +244,7 @@ public class TrackersFragment extends Fragment implements TrackersContract.View 
 
     @Override
     public void showNoTrackers() {
-        //eupdateOrAddTracker(new Tracker("NO_TRACKERS", 0));
-    }
-
-    @Override
-    public void showNoDataAvailable() {
-        // Todo
+        // TODO
     }
 
     @Override
@@ -288,7 +262,7 @@ public class TrackersFragment extends Fragment implements TrackersContract.View 
         Log.d(TAG, "moving to new AddTrackerActivity");
 
         Intent intent = new Intent(this.getActivity(),
-                AddTrackerActivity_.class);
+                AddTrackerActivity.class);
         startActivity(intent);
     }
 
@@ -362,7 +336,7 @@ public class TrackersFragment extends Fragment implements TrackersContract.View 
 
 
             //Top ConstraintLayout of expanded view used as button to de-expand the view
-            ViewGroup expandedLayout = convertView.findViewById(R.id.tracker_layout_top);
+            ViewGroup expandedLayout = convertView.findViewById(R.id.expanded_tracker_layout_top);
             expandedLayout.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -380,5 +354,53 @@ public class TrackersFragment extends Fragment implements TrackersContract.View 
             this.mShowDragButton = showDragButton;
         }
     }
+
+    TouchInterceptor.DropListener mDropListener = new TouchInterceptor.DropListener() {
+        public void drop(int from, int to) {
+
+            Log.d(TAG, "drop: from = " + from + " to = " + to);
+            to += 1;
+
+            // Convert from ListView index to Adapter index
+            // (ListView includes the header and footer views while the adapter doesn't)
+            from -= mTrackerListView.getHeaderViewsCount();
+            to -= mTrackerListView.getHeaderViewsCount();
+            int lastTrackerIndex = mTrackerListView.getCount() - 1
+                    - mTrackerListView.getHeaderViewsCount()
+                    - mTrackerListView.getFooterViewsCount();
+            if (from < 0) from = 0;
+            if (to < 0) to = 0;
+            if (from > lastTrackerIndex) from = lastTrackerIndex;
+            if (to > lastTrackerIndex) to = lastTrackerIndex;
+
+
+            if (from == to) {
+                Log.d(TAG, "drop: item is not moving anywhere");
+                return;
+            }
+
+            Tracker tracker = mListAdapter.getItem(from);
+
+            Log.d(TAG, "dropListener: moving Tracker from pos=" + from + " to pos=" + to);
+
+            // Remove and insert at new position
+            mListAdapter.remove(tracker);
+            if (from < to) {
+                mListAdapter.insert(tracker, to - 1);
+            } else {
+                mListAdapter.insert(tracker, to);
+            }
+
+            // Persist ordering
+            for (int i = 0; i < mListAdapter.getCount(); i++) {
+                Tracker t = mListAdapter.getItem(i);
+                if (t == null) continue;
+                t.setIndex(i);
+                mPresenter.updateTracker(t);
+            }
+
+        }
+
+    };
 
 }

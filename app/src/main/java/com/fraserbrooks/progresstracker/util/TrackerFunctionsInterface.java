@@ -2,6 +2,8 @@ package com.fraserbrooks.progresstracker.util;
 
 import com.fraserbrooks.progresstracker.data.Tracker;
 
+import java.util.Calendar;
+
 public interface TrackerFunctionsInterface {
 
     void addToTrackerScore(Tracker tracker, int amount);
@@ -16,4 +18,5 @@ public interface TrackerFunctionsInterface {
 
     void deleteTracker(Tracker tracker);
 
+//    int getCountOnDay(Tracker tracker, Calendar day);
 }

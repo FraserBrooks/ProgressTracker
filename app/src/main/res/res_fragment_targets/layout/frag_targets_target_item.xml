@@ -32,11 +32,9 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:paddingLeft="16dp"
                 android:paddingTop="0dp"
                 android:paddingStart="16dp"
-                android:paddingEnd="0dp"
-                android:paddingRight="0dp">
+                android:paddingEnd="0dp">
 
                 <TextView
                     android:id="@+id/title_tv"
@@ -54,7 +52,6 @@
                     android:layout_width="80dp"
                     android:layout_height="wrap_content"
                     android:gravity="end"
-                    android:layout_alignLeft="@id/title_tv"
                     android:layout_alignStart="@id/title_tv"
                     app:layout_constraintTop_toBottomOf="@id/title_tv"
                     tools:text="this week:"/>
@@ -68,10 +65,8 @@
                     app:layout_constraintStart_toEndOf="@id/this_period_tv"
                     app:layout_constraintEnd_toEndOf="parent"
                     android:paddingBottom="2dp"
-                    android:paddingLeft="8dp"
                     android:paddingStart="8dp"
                     android:paddingEnd="0dp"
-                    android:paddingRight="0dp"
                     android:orientation="horizontal">
 
                     <TextView
@@ -84,7 +79,7 @@
                         android:id="@+id/not_filled_rect"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        tools:background="@drawable/shared_ui_grey_rectangle"
+                        android:background="@drawable/shared_ui_grey_rectangle"
                         android:layout_weight="0.4"/>
                 </LinearLayout>
 
@@ -98,10 +93,8 @@
                     android:scaleType="fitXY"
                     android:src="@drawable/shared_ui_progress_bar_t3"
                     android:paddingBottom="2dp"
-                    android:paddingLeft="8dp"
                     android:paddingStart="8dp"
-                    android:paddingEnd="0dp"
-                    android:paddingRight="0dp"/>
+                    android:paddingEnd="0dp"/>
 
             </android.support.constraint.ConstraintLayout>
 

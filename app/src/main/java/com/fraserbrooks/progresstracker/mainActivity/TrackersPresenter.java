@@ -3,7 +3,6 @@ package com.fraserbrooks.progresstracker.mainActivity;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
-import com.fraserbrooks.progresstracker.asyncTasks.LoadTrackersTask;
 import com.fraserbrooks.progresstracker.data.ScoreEntry;
 import com.fraserbrooks.progresstracker.data.Target;
 import com.fraserbrooks.progresstracker.data.Tracker;
@@ -42,6 +41,31 @@ public class TrackersPresenter implements TrackersContract.Presenter {
         mAppExecutors = appExecutors;
         mTrackersView = checkNotNull(trackersView);
 
+        // Add listeners
+        mTrackersRepository.addUpdateOrAddTrackerListener(new DataSource.UpdateOrAddTrackerListener() {
+            @Override
+            public boolean isActive() {
+                return mTrackersView.isActive();
+            }
+
+            @Override
+            public void trackerUpdated(Tracker tracker) {
+                mTrackersView.updateOrAddTracker(tracker);
+                mTrackersView.updateInGraph(tracker);
+            }
+        });
+        mTrackersRepository.addDeleteTrackerListener(new DataSource.DeleteTrackerListener() {
+            @Override
+            public boolean isActive() {
+                return mTrackersView.isActive();
+            }
+
+            @Override
+            public void trackerDeleted(Tracker trackerToDelete) {
+                mTrackersView.removeTracker(trackerToDelete);
+            }
+        });
+
         mTrackersView.setPresenter(this);
     }
 
@@ -61,11 +85,11 @@ public class TrackersPresenter implements TrackersContract.Presenter {
                 Tracker tracker1 = new Tracker("Guitar Practice", "hours",5000*60,
                         true, true, false);
                 Tracker tracker2 = new Tracker("Java", "hours", 10000*60,
-                        true, true, false);
+                        true, false, false);
                 Tracker tracker3 = new Tracker("Haskell", "hours",  100 * 60,
-                        true, true, false);
+                        true, false, false);
                 Tracker tracker4 = new Tracker("Exercise", "hours", 10000*60,
-                        true, true, false);
+                        true, false, false);
                 Tracker tracker5 = new Tracker("Reading", "books read", 1000,
                         false, true, false);
                 Tracker tracker6 = new Tracker("Jiu-Jitsu", "sessions", 500,
@@ -73,14 +97,14 @@ public class TrackersPresenter implements TrackersContract.Presenter {
                 Tracker tracker7 = new Tracker("Maths Revision", "lectures", 20,
                         false, true, false);
 
-                Target target1 = new Target(tracker1.getId(), 2*60, "DAY");
-                Target target2 = new Target(tracker2.getId(), 200*60, "YEAR");
-                Target target3 = new Target(tracker3.getId(), 60, "DAY");
-                Target target4 = new Target(tracker4.getId(), 60, "DAY");
-                Target target5 = new Target(tracker5.getId(), 1, "WEEK");
-                Target target6 = new Target(tracker1.getId(), 1000*60, "YEAR");
-                Target target7 = new Target(tracker6.getId(), 2, "WEEK");
-                Target target8 = new Target(tracker7.getId(), 1, "DAY");
+                Target target1 = new Target(tracker1.getId(), 2*60, Target.EVERY_DAY);
+                Target target2 = new Target(tracker2.getId(), 200*60, Target.EVERY_YEAR);
+                Target target3 = new Target(tracker3.getId(), 60, Target.EVERY_DAY);
+                Target target4 = new Target(tracker4.getId(), 60, Target.EVERY_DAY);
+                Target target5 = new Target(tracker5.getId(), 1, Target.EVERY_WEEK);
+                Target target6 = new Target(tracker1.getId(), 1000*60, Target.EVERY_YEAR);
+                Target target7 = new Target(tracker6.getId(), 2, Target.EVERY_WEEK);
+                Target target8 = new Target(tracker7.getId(), 1, Target.EVERY_DAY);
 
                 Calendar startDate = Calendar.getInstance();
                 startDate.add(Calendar.YEAR, -3);
@@ -177,84 +201,57 @@ public class TrackersPresenter implements TrackersContract.Presenter {
 
         mTrackersView.showLoading();
 
-        // The network request might be handled in a different thread so make sure Espresso knows
-        // that the app is busy until the response is handled.
-        EspressoIdlingResource.increment(); // App is busy until further notice
+        // app is busy until the response is handled.
+        setWorking();
 
-        mAppExecutors.diskIO().execute(new Runnable() {
+        mTrackersRepository.getTrackers(new DataSource.GetTrackersCallback() {
             @Override
-            public void run() {
-                mTrackersRepository.getTrackers(new DataSource.GetTrackersCallback() {
-                    @Override
-                    public void onTrackersLoaded(final List<Tracker> trackers) {
-                        mAppExecutors.mainThread().execute(new Runnable() {
-                            @Override
-                            public void run() {
+            public void onTrackersLoaded(List<Tracker> trackers) {
 
-                                // The view may not be able to handle UI updates anymore
-                                if (!mTrackersView.isActive()) {
-                                    Log.d(TAG, "onTrackersLoaded: mTackersView not active. exiting from callback");
-                                    return;
-                                }
+                // The view may not be able to handle UI updates anymore
+                if (!mTrackersView.isActive()) {
+                    Log.d(TAG, "onTrackersLoaded: trackersView not active. exiting from callback");
+                    return;
+                }
 
-                                mTrackersView.hideLoading();
-                                if(trackers.isEmpty()){
-                                    Log.d(TAG, "onTrackersLoaded: trackers.isEmpty");
-                                    mTrackersView.showNoTrackers();
-                                }else{
-                                    // Create AsyncTask to spread out the redrawing of trackers
-                                    // otherwise the whole listView will be redrawn at once
-                                    Log.d(TAG, "onTrackersLoaded: creating new LoadTrackersTask");
-                                    new LoadTrackersTask(new DataSource.GetTrackersCallback() {
-                                        @Override
-                                        public void onTrackersLoaded(List<Tracker> trackers) {
-                                            // Should not be called
-                                            Log.e(TAG, "onTrackersLoaded: called" );
-                                        }
+                for (Tracker tracker : trackers) {
+                    mTrackersView.updateOrAddTracker(tracker);
+                    mTrackersView.updateInGraph(tracker);
+                }
 
-                                        @Override
-                                        public void onTrackerLoaded(Tracker tracker) {
-                                            // The view may not be able to handle UI updates anymore
-                                            if (!mTrackersView.isActive()) {
-                                                Log.d(TAG, "onTrackersLoaded: mTrackersView not active. exiting from callback");
-                                                return;
-                                            }
-                                            mTrackersView.updateOrAddTracker(tracker);
-                                            mTrackersView.updateInGraph(tracker);
-                                        }
+                mTrackersView.hideLoading();
+                setIdle();
+            }
 
-                                        @Override
-                                        public void onDataNotAvailable() {
-                                            Log.e(TAG, "onDataNotAvailable from async task");
-                                        }
-                                    }).execute(trackers.toArray(new Tracker[trackers.size()]));
-                                }
-                            }
-                        });
+            @Override
+            public void onDataNotAvailable() {
 
+                // The view may not be able to handle UI updates anymore
+                if (!mTrackersView.isActive()) {
+                    Log.d(TAG, "onDataNotAvailable: trackersView not active. exiting from callback");
+                    return;
+                }
 
-                    }
-
-                    @Override
-                    public void onTrackerLoaded(final Tracker tracker) {
-                        Log.e(TAG, "onTrackerLoaded: called");
-                        // should never be called when staggeredLoad = false
-                    }
-
-                    @Override
-                    public void onDataNotAvailable() {
-                        mAppExecutors.mainThread().execute(new Runnable() {
-                            @Override
-                            public void run() {
-                                mTrackersView.showNoDataAvailable();
-                            }
-                        });
-                    }
-                }, false);
+                mTrackersView.hideLoading();
+                mTrackersView.showNoTrackers();
+                setIdle();
             }
         });
+
     }
 
+    private void setWorking(){
+        EspressoIdlingResource.increment(); // App is busy until further notice
+    }
+
+    private void setIdle(){
+        // This callback may be called twice, once for the cache and once for loading
+        // the data from the server API, so we check before decrementing, otherwise
+        // it throws "Counter has been corrupted!" exception.
+        if (!EspressoIdlingResource.getIdlingResource().isIdleNow()) {
+            EspressoIdlingResource.decrement(); // Set app as idle.
+        }
+    }
 
     @Override
     public void addTrackerButtonClicked() {
@@ -268,7 +265,10 @@ public class TrackersPresenter implements TrackersContract.Presenter {
 
     @Override
     public void setTrackerExpandCollapse(Tracker tracker) {
+        // Don't need to send this change to the repository as
+        // expand/collapse is only relevant in the ui
         tracker.setExpanded(!tracker.isExpanded());
+        mTrackersView.rememberExpanded(tracker);
         mTrackersView.updateOrAddTracker(tracker);
     }
 
@@ -276,9 +276,12 @@ public class TrackersPresenter implements TrackersContract.Presenter {
 
     @Override
     public void addToTrackerScore(Tracker tracker, final int increment) {
-        mTrackersRepository.incrementScore(tracker.getId(), increment);
-        mTrackersView.updateOrAddTracker(tracker);
-        mTrackersView.updateInGraph(tracker);
+
+        // Remember that this tracker is expanded/unexpanded
+        mTrackersView.rememberExpanded(tracker);
+
+        // Send change to repository which will notify ui of change through listeners
+        mTrackersRepository.incrementTracker(tracker.getId(), increment);
     }
 
     @Override
@@ -304,6 +307,7 @@ public class TrackersPresenter implements TrackersContract.Presenter {
 
     @Override
     public void deleteTracker(Tracker tracker) {
-
+        mTrackersRepository.deleteTracker(tracker.getId());
     }
+
 }
