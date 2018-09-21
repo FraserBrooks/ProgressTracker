@@ -80,6 +80,7 @@ public class TouchInterceptor extends ListView {
     private final int mTouchSlop;
     private int mItemHeightNormal;
     private int mItemHeightExpanded;
+    private int mDragAndDropButtonWidth;
     private Drawable mTrashcan;
 
     private boolean mDragEnabled = true;
@@ -90,6 +91,7 @@ public class TouchInterceptor extends ListView {
         Resources res = getResources();
         mItemHeightNormal = res.getDimensionPixelSize(R.dimen.normal_height);
         mItemHeightExpanded = res.getDimensionPixelSize(R.dimen.expanded_height);
+        mDragAndDropButtonWidth = res.getDimensionPixelSize(R.dimen.drag_and_drop_width);
     }
 
     public void setDragEnabled(boolean enabled){
@@ -156,7 +158,7 @@ public class TouchInterceptor extends ListView {
                     mXOffset = ((int) ev.getRawX()) - x;
                     mYOffset = ((int) ev.getRawY()) - y;
                     // The left side of the item is the grabber for dragging the item
-                    if (x < mItemHeightNormal) {
+                    if (x < mDragAndDropButtonWidth) {
                         item.setDrawingCacheEnabled(true);
                         // Create a copy of the drawing cache so that it does not get recycled
                         // by the framework when the list tries to clean up memory
@@ -245,10 +247,10 @@ public class TouchInterceptor extends ListView {
     }
 
     /*
-     * Restore size and visibility for all listitems
+     * Restore size and visibility for all list items
      */
     private void unExpandViews(boolean deletion) {
-        for (int i = 1;; i++) {
+        for (int i = 0;; i++) {
             View v = getChildAt(i);
             if (v == null) {
                 if (deletion) {
@@ -271,10 +273,13 @@ public class TouchInterceptor extends ListView {
                     return;
                 }
             }
-            ViewGroup.LayoutParams params = v.getLayoutParams();
-            params.height = ViewGroup.LayoutParams.WRAP_CONTENT;
-            v.setLayoutParams(params);
-            v.setVisibility(View.VISIBLE);
+            if(v.getId() == R.id.tracker_item_root){
+                ViewGroup.LayoutParams params = v.getLayoutParams();
+                params.height = ViewGroup.LayoutParams.WRAP_CONTENT;
+                v.setLayoutParams(params);
+                v.setVisibility(View.VISIBLE);
+            }
+            
         }
     }
 
@@ -311,7 +316,7 @@ public class TouchInterceptor extends ListView {
                 Log.d(TAG, "doExpansion: i = " + i);
             }
 
-            int height = mItemHeightNormal;
+            int height = ViewGroup.LayoutParams.WRAP_CONTENT;
             int visibility = View.VISIBLE;
             if (mDragPos < numheaders && i - getFirstVisiblePosition() == numheaders) {
                 // dragging on top of the header item, so no need to expand anything

@@ -34,6 +34,8 @@ public class TrackerLinePlotGraph extends LinearLayout{
 
 
     private int mGraphItemMargin;
+
+    @SuppressWarnings("FieldCanBeLocal")
     private final float GRAPH_TEXT_SIZE_SP = 12f;
 
 

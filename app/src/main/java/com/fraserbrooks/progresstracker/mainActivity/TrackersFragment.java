@@ -92,23 +92,15 @@ public class TrackersFragment extends Fragment implements TrackersContract.View 
         final View reorderButton = listFooterView.findViewById(R.id.list_footer_drag_and_drop_button_layout);
         View addButton = listFooterView.findViewById(R.id.list_footer_add_button_layout);
 
-        reorderButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                reorderButtonClicked();
-            }
-        });
+        reorderButton.setOnClickListener(view -> reorderButtonClicked());
 
-        addButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //TODO: find a better way of adding test data
-                if(mListAdapter.getCount() == 0){
-                    Log.d(TAG, "onItemClick: adding dummy test data");
-                    mPresenter.addTestData();
-                }else{
-                    mPresenter.addTrackerButtonClicked();
-                }
+        addButton.setOnClickListener(view -> {
+            //TODO: find a better way of adding test data
+            if(mListAdapter.getCount() == 0){
+                Log.d(TAG, "onItemClick: adding dummy test data");
+                mPresenter.addTestData();
+            }else{
+                mPresenter.addTrackerButtonClicked();
             }
         });
 
@@ -117,30 +109,24 @@ public class TrackersFragment extends Fragment implements TrackersContract.View 
 
         mTrackerListView.addFooterView(listFooterView);
 
-        mTrackerListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-
-
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Log.d(TAG, "onItemClick: " + id + " position: " + position);
-                if(position == 0){
-                    Log.d(TAG, "onItemClick: graph clicked");
-                    mPresenter.graphClicked();
-                }else if (position == parent.getCount() - 1 ){
-                    Log.d(TAG, "onItemClick: footer clicked");
-                }else {
-                    Tracker tracker = (Tracker) parent.getItemAtPosition(position);
-                    if(!tracker.isExpanded()){
-                        // Disable drag and drop if needed and show expanded view
-                        if(mTrackerListView.dragEnabled()){
-                            reorderButtonClicked();
-                        }else{
-                            mPresenter.setTrackerExpandCollapse(tracker);
-                        }
+        mTrackerListView.setOnItemClickListener((parent, view, position, id) -> {
+            Log.d(TAG, "onItemClick: " + id + " position: " + position);
+            if(position == 0){
+                Log.d(TAG, "onItemClick: graph clicked");
+                mPresenter.graphClicked();
+            }else if (position == parent.getCount() - 1 ){
+                Log.d(TAG, "onItemClick: footer clicked");
+            }else {
+                Tracker tracker = (Tracker) parent.getItemAtPosition(position);
+                if(!tracker.isExpanded()){
+                    // Disable drag and drop if needed and show expanded view
+                    if(mTrackerListView.dragEnabled()){
+                        reorderButtonClicked();
+                    }else{
+                        mPresenter.setTrackerExpandCollapse(tracker);
                     }
                 }
             }
-
         });
 
 
@@ -366,13 +352,14 @@ public class TrackersFragment extends Fragment implements TrackersContract.View 
             from -= mTrackerListView.getHeaderViewsCount();
             to -= mTrackerListView.getHeaderViewsCount();
             int lastTrackerIndex = mTrackerListView.getCount() - 1
-                    - mTrackerListView.getHeaderViewsCount()
                     - mTrackerListView.getFooterViewsCount();
             if (from < 0) from = 0;
             if (to < 0) to = 0;
             if (from > lastTrackerIndex) from = lastTrackerIndex;
             if (to > lastTrackerIndex) to = lastTrackerIndex;
 
+            Log.d(TAG, "drop: listCount = " + mTrackerListView.getCount());
+            Log.d(TAG, "drop: lastTrackerIndex = " + lastTrackerIndex);
 
             if (from == to) {
                 Log.d(TAG, "drop: item is not moving anywhere");

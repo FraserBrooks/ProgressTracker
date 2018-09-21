@@ -5,6 +5,7 @@
 
     <dimen name="normal_height">65dp</dimen>
     <dimen name="expanded_height">180dp</dimen>
+    <dimen name="drag_and_drop_width">70dp</dimen>
     <dimen name="progress_bar_height">20dp</dimen>
     <dimen name="tracker_list_graph_height">20dp</dimen>
 

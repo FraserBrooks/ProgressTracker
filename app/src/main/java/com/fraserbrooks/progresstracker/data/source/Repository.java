@@ -86,6 +86,7 @@ public class Repository implements DataSource {
      * Used to force {@link #getInstance(DataSource, DataSource, AppExecutors)} to create a new instance
      * next time it's called.
      */
+    @SuppressWarnings("unused")
     public static void destroyInstance() {
         INSTANCE = null;
     }
@@ -109,7 +110,7 @@ public class Repository implements DataSource {
 
         // Respond immediately with cache if available and not dirty
         if (mCachedTrackers != null ) {
-            ArrayList trackers = new ArrayList<>(mCachedTrackers.values());
+            ArrayList<Tracker> trackers = new ArrayList<>(mCachedTrackers.values());
             if(trackers.isEmpty()) callback.onDataNotAvailable();
             else  callback.onTrackersLoaded(trackers);
         } else{
@@ -224,39 +225,31 @@ public class Repository implements DataSource {
         refreshTracker(trackerId);
 
         // Update targets and trackers in cache and in the UI via any active listeners
-        mAppExecutors.diskIO().execute(new Runnable() {
-            @Override
-            public void run() {
-                if(mCachedTargets != null){
-                    for(final Target target : mCachedTargets.values()){
-                        if(target.getTrackId().equals(trackerId)){
-                            mLocalDataSource.getTarget(target.getId(), new GetTargetCallback() {
-                                @Override
-                                public void onTargetLoaded(Target updatedTarget) {
-                                    mCachedTargets.put(updatedTarget.getId(), updatedTarget);
-                                    // Update target in UI
-                                    mAppExecutors.mainThread().execute(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            notifyTargetChangeListeners(target);
-                                        }
-                                    });
-                                }
+        mAppExecutors.diskIO().execute(() -> {
+            if(mCachedTargets != null){
+                for(final Target target : mCachedTargets.values()){
+                    if(target.getTrackId().equals(trackerId)){
+                        mLocalDataSource.getTarget(target.getId(), new GetTargetCallback() {
+                            @Override
+                            public void onTargetLoaded(Target updatedTarget) {
+                                mCachedTargets.put(updatedTarget.getId(), updatedTarget);
+                                // Update target in UI
+                                mAppExecutors.mainThread().execute(() -> notifyTargetChangeListeners(target));
+                            }
 
-                                @Override
-                                public void onDataNotAvailable() {
-                                    Log.d(TAG, "onDataNotAvailable: target not found in local DB");
-                                    mCachedTargets.remove(target.getId());
-                                }
-                            });
+                            @Override
+                            public void onDataNotAvailable() {
+                                Log.d(TAG, "onDataNotAvailable: target not found in local DB");
+                                mCachedTargets.remove(target.getId());
+                            }
+                        });
 
-                        }
                     }
                 }
-
-
-
             }
+
+
+
         });
 
     }
@@ -304,30 +297,23 @@ public class Repository implements DataSource {
 
 
         // delete/remove targets with that tracker id
-        mAppExecutors.diskIO().execute(new Runnable() {
-            @Override
-            public void run() {
+        mAppExecutors.diskIO().execute(() -> {
+            // Get all targets
+            ArrayList<Target> ts = new ArrayList<>(mCachedTargets.values());
 
-                // Get all targets
-                ArrayList<Target> ts = new ArrayList<>(mCachedTargets.values());
+            // Search all targets for any that pertain to the deleted tracker
+            for(int i = 0;  i < ts.size() ; i++){
+                if(ts.get(i).getTrackId().equals(trackerId)){
+                    final String idOfTargetToDelete = ts.get(i).getId();
+                    final Target targetToDelete = mCachedTargets.get(idOfTargetToDelete);
+                    mCachedTargets.remove(idOfTargetToDelete);
+                    ts.remove(i);
+                    i--;
+                    mAppExecutors.mainThread().execute(() -> {
+                        // Update UI through subscribed listeners
+                        notifyDeleteTargetListeners(targetToDelete);
+                    });
 
-                // Search all targets for any that pertain to the deleted tracker
-                for(int i = 0;  i < ts.size() ; i++){
-                    if(ts.get(i).getTrackId().equals(trackerId)){
-                        final String idOfTargetToDelete = ts.get(i).getId();
-                        final Target targetToDelete = mCachedTargets.get(idOfTargetToDelete);
-                        mCachedTargets.remove(idOfTargetToDelete);
-                        ts.remove(i);
-                        i--;
-                        mAppExecutors.mainThread().execute(new Runnable() {
-                            @Override
-                            public void run() {
-                                // Update UI through subscribed listeners
-                                notifyDeleteTargetListeners(targetToDelete);
-                            }
-                        });
-
-                    }
                 }
             }
         });
