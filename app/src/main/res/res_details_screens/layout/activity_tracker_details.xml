@@ -6,22 +6,42 @@
     android:id="@+id/tracker_details_root_view"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.fraserbrooks.progresstracker.trackerDetailsActivity.TrackerDetailsActivity">
+    android:background="@color/menuItemWhite"
+    tools:context="com.fraserbrooks.progresstracker.trackerdetailsactivity.TrackerDetailsActivity">
 
 
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <FrameLayout
-            android:id="@+id/graph_view"
-            android:layout_width="0dp"
-            android:layout_height="100dp"
-            android:background="@drawable/shared_ui_button_background_pressed"
+        <com.fraserbrooks.progresstracker.customviews.TimeGraphView
+            android:id="@+id/tracker_details_graph_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingStart="5dp"
+            android:paddingEnd="5dp"
+            android:paddingTop="15dp"
+
+
+            app:graph_window_height="150dp"
+            app:pointer_resource="@drawable/shared_ui_top_border_grey"
+            app:bars_per_interval="one"
+
+            app:graph_window_background_color="@color/appBG"
+            app:graph_axis_background_color="@color/appBG"
+
+            app:axis_text_color="@color/default_text_color"
+            app:time_label_text_color="@color/default_text_color"
+
+            app:show_graph_axis="true"
+            app:show_highest_value_label="false"
+            app:show_time_labels="true"
+            app:show_interval_label="true"
+
             app:layout_constraintBottom_toTopOf="@id/small_tracker_layout"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"></FrameLayout>
+            app:layout_constraintTop_toTopOf="parent"/>
 
         <include
             android:id="@+id/small_tracker_layout"
@@ -33,7 +53,7 @@
             app:layout_constraintBottom_toTopOf="@+id/top_buttons_layout"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/graph_view">
+            app:layout_constraintTop_toBottomOf="@id/tracker_details_graph_view">
         </include>
 
         <LinearLayout

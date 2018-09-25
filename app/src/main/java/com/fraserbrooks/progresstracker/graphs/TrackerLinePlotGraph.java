@@ -51,6 +51,7 @@ public class TrackerLinePlotGraph extends LinearLayout{
         mGraphHeight = graphHeight;
         mGraphBarResourceId = resourceId;
 
+
         this.setOrientation(LinearLayout.VERTICAL);
         this.setBackgroundResource(R.drawable.shared_ui_top_border_grey);
 

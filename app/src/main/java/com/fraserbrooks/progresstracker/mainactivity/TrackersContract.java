@@ -1,4 +1,4 @@
-package com.fraserbrooks.progresstracker.mainActivity;
+package com.fraserbrooks.progresstracker.mainactivity;
 
 import com.fraserbrooks.progresstracker.BasePresenter;
 import com.fraserbrooks.progresstracker.BaseView;

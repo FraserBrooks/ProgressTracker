@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.fraserbrooks.progresstracker.addTrackerActivity.AddTrackerActivity">
+    tools:context="com.fraserbrooks.progresstracker.addtrackeractivity.AddTrackerActivity">
 
 
     <android.support.constraint.ConstraintLayout
@@ -55,7 +55,7 @@
                 android:src="@drawable/frag_trackers_gem_black" />
         </LinearLayout>
 
-        <com.fraserbrooks.progresstracker.addTrackerActivity.RadioButtonTableLayout
+        <com.fraserbrooks.progresstracker.addtrackeractivity.RadioButtonTableLayout
             android:id="@+id/radio_button_table"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -158,7 +158,7 @@
                     android:textAlignment="center"
                     android:textSize="16sp" />
             </TableRow>
-        </com.fraserbrooks.progresstracker.addTrackerActivity.RadioButtonTableLayout>
+        </com.fraserbrooks.progresstracker.addtrackeractivity.RadioButtonTableLayout>
 
         <LinearLayout
             android:id="@+id/custom_max_count_layout"

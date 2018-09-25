@@ -137,47 +137,47 @@ public class CalendarView extends LinearLayout {
 
     private void initCalendarSettings(TypedArray typedArray){
         
-        int headerColor = typedArray.getColor(R.styleable.CalendarView_headerColor, 0);
+        int headerColor = typedArray.getColor(R.styleable.CalendarView_header_color, 0);
         mCalendarSettings.setHeaderColor(headerColor);
 
-        int headerLabelColor = typedArray.getColor(R.styleable.CalendarView_headerLabelColor, 0);
+        int headerLabelColor = typedArray.getColor(R.styleable.CalendarView_header_label_color, 0);
         mCalendarSettings.setHeaderLabelColor(headerLabelColor);
 
-        int abbreviationsBarColor = typedArray.getColor(R.styleable.CalendarView_abbreviationsBarColor, 0);
+        int abbreviationsBarColor = typedArray.getColor(R.styleable.CalendarView_abbreviations_bar_color, 0);
         mCalendarSettings.setAbbreviationsBarColor(abbreviationsBarColor);
 
-        int abbreviationsLabelsColor = typedArray.getColor(R.styleable.CalendarView_abbreviationsLabelsColor, 0);
+        int abbreviationsLabelsColor = typedArray.getColor(R.styleable.CalendarView_abbreviations_labels_color, 0);
         mCalendarSettings.setAbbreviationsLabelsColor(abbreviationsLabelsColor);
 
-        int pagesColor = typedArray.getColor(R.styleable.CalendarView_pagesColor, 0);
+        int pagesColor = typedArray.getColor(R.styleable.CalendarView_pages_color, 0);
         mCalendarSettings.setPagesColor(pagesColor);
 
-        int daysLabelsColor = typedArray.getColor(R.styleable.CalendarView_daysLabelColor, 0);
+        int daysLabelsColor = typedArray.getColor(R.styleable.CalendarView_days_label_color, 0);
         mCalendarSettings.setDaysLabelsColor(daysLabelsColor);
 
-        int anotherMonthsDaysLabelsColor = typedArray.getColor(R.styleable.CalendarView_anotherMonthsDayLabelsColor, 0);
+        int anotherMonthsDaysLabelsColor = typedArray.getColor(R.styleable.CalendarView_another_months_day_labels_color, 0);
         mCalendarSettings.setAnotherMonthsDaysLabelsColor(anotherMonthsDaysLabelsColor);
 
-        int todayLabelColor = typedArray.getColor(R.styleable.CalendarView_todayLabelColor, 0);
+        int todayLabelColor = typedArray.getColor(R.styleable.CalendarView_today_label_color, 0);
         mCalendarSettings.setTodayLabelColor(todayLabelColor);
 
-        int dayBackgroundColor = typedArray.getColor(R.styleable.CalendarView_dayBackgroundColor,
+        int dayBackgroundColor = typedArray.getColor(R.styleable.CalendarView_day_background_color,
                 mContext.getResources().getColor(R.color.transparent));
         mCalendarSettings.setDayBackgroundColor(dayBackgroundColor);
 
-        Drawable previousButtonSrc = typedArray.getDrawable(R.styleable.CalendarView_previousButtonSrc);
+        Drawable previousButtonSrc = typedArray.getDrawable(R.styleable.CalendarView_previous_button_src);
         mCalendarSettings.setPreviousButtonSrc(previousButtonSrc);
 
-        Drawable forwardButtonSrc = typedArray.getDrawable(R.styleable.CalendarView_forwardButtonSrc);
+        Drawable forwardButtonSrc = typedArray.getDrawable(R.styleable.CalendarView_forward_button_src);
         mCalendarSettings.setForwardButtonSrc(forwardButtonSrc);
 
-        Drawable targetOneSrc = typedArray.getDrawable(R.styleable.CalendarView_targetOneIconSrc);
+        Drawable targetOneSrc = typedArray.getDrawable(R.styleable.CalendarView_target_one_icon_src);
         mCalendarSettings.setTarget1Resource(targetOneSrc);
 
-        Drawable targetTwoSrc = typedArray.getDrawable(R.styleable.CalendarView_targetTwoIconSrc);
+        Drawable targetTwoSrc = typedArray.getDrawable(R.styleable.CalendarView_target_two_icon_src);
         mCalendarSettings.setTarget2Resource(targetTwoSrc);
 
-        Drawable targetThreeSrc = typedArray.getDrawable(R.styleable.CalendarView_targetThreeIconSrc);
+        Drawable targetThreeSrc = typedArray.getDrawable(R.styleable.CalendarView_target_three_icon_src);
         mCalendarSettings.setTarget3Resource(targetThreeSrc);
 
 

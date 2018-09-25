@@ -1,13 +1,11 @@
-package com.fraserbrooks.progresstracker.addTargetActivity;
+package com.fraserbrooks.progresstracker.addtargetactivity;
 
 import android.support.annotation.NonNull;
-import android.util.Log;
 
 import com.fraserbrooks.progresstracker.data.Target;
 import com.fraserbrooks.progresstracker.data.Tracker;
 import com.fraserbrooks.progresstracker.data.source.DataSource;
 import com.fraserbrooks.progresstracker.data.source.Repository;
-import com.fraserbrooks.progresstracker.util.AppExecutors;
 import com.fraserbrooks.progresstracker.util.EspressoIdlingResource;
 
 import java.util.ArrayList;

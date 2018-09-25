@@ -39,8 +39,8 @@ import static com.applandeo.materialcalendarview.adapters.CalendarPageAdapter.CA
  * <p>
  * XML attributes:
  * - Set calendar type: type="classic or one_day_picker or many_days_picker or range_picker"
- * - Set calendar header color: headerColor="@color/[color]"
- * - Set calendar header label color: headerLabelColor="@color/[color]"
+ * - Set calendar header color: header_color="@color/[color]"
+ * - Set calendar header label color: header_label_color="@color/[color]"
  * - Set previous button resource: previousButtonSrc="@drawable/[drawable]"
  * - Ser forward button resource: forwardButtonSrc="@drawable/[drawable]"
  * - Set today label color: todayLabelColor="@color/[color]"

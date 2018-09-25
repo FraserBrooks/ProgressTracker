@@ -137,7 +137,7 @@ public class Converters {
     public static class WeekConverters{
         @TypeConverter
         public static Calendar fromTimeString(String timeString){
-            SimpleDateFormat format1 = new SimpleDateFormat("yyyy-ww", Locale.ENGLISH);
+            SimpleDateFormat format1 = new SimpleDateFormat("YYYY-ww", Locale.ENGLISH);
             Calendar cal = Calendar.getInstance();
             if(timeString == null){ cal = null; }else{
                 try {
@@ -157,7 +157,7 @@ public class Converters {
             if(cal == null)return null;
 
             //we want to store by day, so we shave off the time information
-            SimpleDateFormat format1 = new SimpleDateFormat("yyyy-ww", Locale.ENGLISH);
+            SimpleDateFormat format1 = new SimpleDateFormat("YYYY-ww", Locale.ENGLISH);
 
             return format1.format(cal.getTime());
         }

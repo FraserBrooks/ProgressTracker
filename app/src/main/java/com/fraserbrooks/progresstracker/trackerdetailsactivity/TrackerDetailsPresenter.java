@@ -1,13 +1,10 @@
-package com.fraserbrooks.progresstracker.trackerDetailsActivity;
+package com.fraserbrooks.progresstracker.trackerdetailsactivity;
 
 import android.support.annotation.NonNull;
 
 import com.fraserbrooks.progresstracker.data.Tracker;
 import com.fraserbrooks.progresstracker.data.source.DataSource;
 import com.fraserbrooks.progresstracker.data.source.Repository;
-
-import java.util.Calendar;
-import java.util.List;
 
 public class TrackerDetailsPresenter implements TrackerDetailsContract.Presenter {
 

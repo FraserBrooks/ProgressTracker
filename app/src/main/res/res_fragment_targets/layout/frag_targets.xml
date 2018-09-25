@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/target_screen_container"
-    tools:context="com.fraserbrooks.progresstracker.mainActivity.MainActivity">
+    tools:context="com.fraserbrooks.progresstracker.mainactivity.MainActivity">
 
 
 

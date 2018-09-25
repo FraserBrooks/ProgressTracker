@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.fraserbrooks.progresstracker.addTargetActivity.AddTargetActivity">
+    tools:context="com.fraserbrooks.progresstracker.addtargetactivity.AddTargetActivity">
 
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"

@@ -1,4 +1,4 @@
-package com.fraserbrooks.progresstracker.mainActivity;
+package com.fraserbrooks.progresstracker.mainactivity;
 
 import android.content.Context;
 import android.content.Intent;
@@ -19,9 +19,8 @@ import android.widget.TextView;
 import com.fraserbrooks.progresstracker.Injection;
 import com.fraserbrooks.progresstracker.R;
 import com.fraserbrooks.progresstracker.TouchInterceptor;
-import com.fraserbrooks.progresstracker.addTargetActivity.AddTargetActivity;
+import com.fraserbrooks.progresstracker.addtargetactivity.AddTargetActivity;
 import com.fraserbrooks.progresstracker.data.Target;
-import com.fraserbrooks.progresstracker.util.AppExecutors;
 
 import java.util.List;
 

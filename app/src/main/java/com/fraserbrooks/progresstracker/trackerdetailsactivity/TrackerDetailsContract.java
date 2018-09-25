@@ -1,9 +1,8 @@
-package com.fraserbrooks.progresstracker.trackerDetailsActivity;
+package com.fraserbrooks.progresstracker.trackerdetailsactivity;
 
 import com.fraserbrooks.progresstracker.BasePresenter;
 import com.fraserbrooks.progresstracker.BaseView;
 import com.fraserbrooks.progresstracker.data.Tracker;
-import com.fraserbrooks.progresstracker.mainActivity.TrackersContract;
 import com.fraserbrooks.progresstracker.util.TrackerFunctionsInterface;
 
 public interface TrackerDetailsContract {
@@ -23,6 +22,7 @@ public interface TrackerDetailsContract {
         void showTrackerLoadError();
 
         void trackerChanged();
+
 
     }
 

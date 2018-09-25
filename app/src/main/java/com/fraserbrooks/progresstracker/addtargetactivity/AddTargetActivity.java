@@ -1,4 +1,4 @@
-package com.fraserbrooks.progresstracker.addTargetActivity;
+package com.fraserbrooks.progresstracker.addtargetactivity;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -12,7 +12,6 @@ import android.widget.Toast;
 import com.fraserbrooks.progresstracker.Injection;
 import com.fraserbrooks.progresstracker.R;
 import com.fraserbrooks.progresstracker.data.Target;
-import com.fraserbrooks.progresstracker.util.AppExecutors;
 
 import java.util.List;
 

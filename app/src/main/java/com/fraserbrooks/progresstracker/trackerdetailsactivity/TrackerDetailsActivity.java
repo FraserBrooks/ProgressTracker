@@ -1,4 +1,4 @@
-package com.fraserbrooks.progresstracker.trackerDetailsActivity;
+package com.fraserbrooks.progresstracker.trackerdetailsactivity;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -12,6 +12,7 @@ import android.widget.Toast;
 
 import com.fraserbrooks.progresstracker.Injection;
 import com.fraserbrooks.progresstracker.R;
+import com.fraserbrooks.progresstracker.customviews.TimeGraphView;
 import com.fraserbrooks.progresstracker.data.Tracker;
 import com.fraserbrooks.progresstracker.dialogs.AddSubCustomInputDialog;
 import com.fraserbrooks.progresstracker.dialogs.DialogCallerContract;
@@ -55,8 +56,6 @@ public class TrackerDetailsActivity extends AppCompatActivity
 
         mPresenter.getTracker(mTrackerId);
 
-
-
     }
 
     @Override
@@ -68,6 +67,20 @@ public class TrackerDetailsActivity extends AppCompatActivity
         initClickListeners();
 
         mTrackerInflater.inflateTracker(findViewById(R.id.tracker_details_root_view), mTracker, false);
+
+        initGraph();
+    }
+
+
+    private void initGraph(){
+
+        TimeGraphView graph = findViewById(R.id.tracker_details_graph_view);
+
+        graph.setGraphType(TimeGraphView.DAY);
+
+        graph.setGraphBarResource(getResources().getDrawable(R.drawable.frag_trackers_heart_colour_rect));
+
+        graph.initGraph(mTracker.getPastEightDaysCounts());
 
     }
 
@@ -254,7 +267,7 @@ public class TrackerDetailsActivity extends AppCompatActivity
             public void onPositiveClicked(String difficulty) {
                 if(difficulty.isEmpty()) showNoNumberError();
                 else{
-                    int i = 0;
+                    int i;
                     try{
                         i = Integer.parseInt(difficulty);
                     } catch (NumberFormatException e){
@@ -512,12 +525,7 @@ public class TrackerDetailsActivity extends AppCompatActivity
             topButton1.setText(R.string.start_timer);
             topButton1.setTextColor(getResources().getColor(R.color.default_text_color));
         }
-        topButton1.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mPresenter.timerButtonClicked(mTracker);
-            }
-        });
+        topButton1.setOnClickListener(view -> mPresenter.timerButtonClicked(mTracker));
 
         final int button2AddAmount;
         final int button3AddAmount;
@@ -549,71 +557,31 @@ public class TrackerDetailsActivity extends AppCompatActivity
 
         }
 
-        topButton2.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mPresenter.addToTrackerScore(mTracker, button2AddAmount);
-            }
-        });
+        topButton2.setOnClickListener(view -> mPresenter.addToTrackerScore(mTracker, button2AddAmount));
 
-        topButton3.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mPresenter.addToTrackerScore(mTracker, button3AddAmount);
-            }
-        });
+        topButton3.setOnClickListener(view -> mPresenter.addToTrackerScore(mTracker, button3AddAmount));
 
 
-        topButton4.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showAddSubCustomDialog();
-            }
-        });
+        topButton4.setOnClickListener(v -> showAddSubCustomDialog());
 
     }
 
     private void initClickListeners(){
 
         View newNameLayout = findViewById(R.id.new_name_layout);
-        newNameLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                showNewNameDialog();
-            }
-        });
+        newNameLayout.setOnClickListener(view -> showNewNameDialog());
 
         View newDifficultyLayout = findViewById(R.id.new_difficulty_layout);
-        newDifficultyLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                showNewDifficultyDialog();
-            }
-        });
+        newDifficultyLayout.setOnClickListener(view -> showNewDifficultyDialog());
 
         View newLabelLayout = findViewById(R.id.new_counter_label_layout);
-        newLabelLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                showNewLabelDialog();
-            }
-        });
+        newLabelLayout.setOnClickListener(view -> showNewLabelDialog());
 
         View deleteTrackerLayout = findViewById(R.id.tracker_details_delete_button_layout);
-        deleteTrackerLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                showDeleteTrackerDialog();
-            }
-        });
+        deleteTrackerLayout.setOnClickListener(view -> showDeleteTrackerDialog());
 
         View archiveTrackerLayout = findViewById(R.id.tracker_details_archive_button_layout);
-        archiveTrackerLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                showArchiveTrackerDialog();
-            }
-        });
+        archiveTrackerLayout.setOnClickListener(view -> showArchiveTrackerDialog());
 
     }
 

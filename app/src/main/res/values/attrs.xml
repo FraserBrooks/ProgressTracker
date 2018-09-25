@@ -1,20 +1,55 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <resources>
     <declare-styleable name="CalendarView">
-        <attr name="headerColor" format="color" />
-        <attr name="headerLabelColor" format="color" />
-        <attr name="previousButtonSrc" format="integer" />
-        <attr name="forwardButtonSrc" format="integer" />
-        <attr name="targetOneIconSrc" format="integer" />
-        <attr name="targetTwoIconSrc" format="integer" />
-        <attr name="targetThreeIconSrc" format="integer" />
-        <attr name="todayLabelColor" format="color" />
-        <attr name="pagesColor" format="color" />
-        <attr name="dayBackgroundColor" format="color"/>
-        <attr name="abbreviationsBarColor" format="color" />
-        <attr name="abbreviationsLabelsColor" format="color" />
-        <attr name="daysLabelColor" format="color" />
-        <attr name="anotherMonthsDayLabelsColor" format="color" />
+        <attr name="header_color" format="color" />
+        <attr name="header_label_color" format="color" />
+        <attr name="previous_button_src" format="integer" />
+        <attr name="forward_button_src" format="integer" />
+        <attr name="target_one_icon_src" format="integer" />
+        <attr name="target_two_icon_src" format="integer" />
+        <attr name="target_three_icon_src" format="integer" />
+        <attr name="today_label_color" format="color" />
+        <attr name="pages_color" format="color" />
+        <attr name="day_background_color" format="color"/>
+        <attr name="abbreviations_bar_color" format="color" />
+        <attr name="abbreviations_labels_color" format="color" />
+        <attr name="days_label_color" format="color" />
+        <attr name="another_months_day_labels_color" format="color" />
+    </declare-styleable>
+
+
+    <declare-styleable name="TimeGraphView">
+
+        <attr name="graph_window_height" format="dimension"/>
+        <attr name="graph_bar_margin" format="dimension"/>
+
+        <attr name="time_label_text_color" format="color" />
+        <attr name="axis_text_color" format="color"/>
+        <attr name="graph_window_background_color" format="color"/>
+        <attr name="graph_footer_background_color" format="color"/>
+        <attr name="graph_axis_background_color" format="color"/>
+
+        <attr name="show_interval_label" format="boolean"/>
+        <attr name="show_time_labels" format="boolean"/>
+        <attr name="show_graph_axis" format="boolean"/>
+        <attr name="show_highest_value_label" format="boolean"/>
+
+
+        <attr name="pointer_resource" format="integer"/>
+        <attr name="graph_bar_resource" format="integer"/>
+        <attr name="graph_type" format="enum">
+            <enum name="day" value="0"/>
+            <enum name="week" value="1"/>
+            <enum name="month" value="2"/>
+        </attr>
+        <attr name="bars_per_interval" format="enum">
+            <enum name="one" value="0"/>
+            <enum name="three" value="1"/>
+            <enum name="five" value="2"/>
+            <enum name="nine" value="3"/>
+        </attr>
+
+
     </declare-styleable>
 
 </resources>

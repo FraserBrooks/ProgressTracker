@@ -1,4 +1,4 @@
-package com.fraserbrooks.progresstracker.mainActivity;
+package com.fraserbrooks.progresstracker.mainactivity;
 
 import android.content.Context;
 import android.content.Intent;
@@ -10,16 +10,15 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 
 import com.fraserbrooks.progresstracker.Injection;
 import com.fraserbrooks.progresstracker.R;
 import com.fraserbrooks.progresstracker.TouchInterceptor;
-import com.fraserbrooks.progresstracker.addTrackerActivity.AddTrackerActivity;
+import com.fraserbrooks.progresstracker.addtrackeractivity.AddTrackerActivity;
 import com.fraserbrooks.progresstracker.data.Tracker;
 import com.fraserbrooks.progresstracker.graphs.BarGraph;
-import com.fraserbrooks.progresstracker.trackerDetailsActivity.TrackerDetailsActivity;
+import com.fraserbrooks.progresstracker.trackerdetailsactivity.TrackerDetailsActivity;
 import com.fraserbrooks.progresstracker.util.AppExecutors;
 import com.fraserbrooks.progresstracker.util.TrackerViewInflater;
 

@@ -1,4 +1,4 @@
-package com.fraserbrooks.progresstracker.addTrackerActivity;
+package com.fraserbrooks.progresstracker.addtrackeractivity;
 
 import android.content.Context;
 import android.os.Bundle;
