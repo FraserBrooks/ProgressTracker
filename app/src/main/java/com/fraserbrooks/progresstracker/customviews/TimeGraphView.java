@@ -2,6 +2,7 @@ package com.fraserbrooks.progresstracker.customviews;
 
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.util.AttributeSet;
@@ -76,6 +77,7 @@ public class TimeGraphView extends FrameLayout {
 
         for (int i : counts)  max = (max > i) ? max : i;
 
+        initAttributes();
         initGraphWindow(counts, max, mGraphWindowHeight);
         initGraphAxis(max);
         initHighestValueTextView(max);
@@ -155,11 +157,17 @@ public class TimeGraphView extends FrameLayout {
 
     private void initAttributes() {
 
+        if (mGraphWindowColor != 0){
+            mGraphWindow.setBackgroundColor(mGraphWindowColor);
+        }else{
+            mGraphWindow.setBackgroundColor(Color.TRANSPARENT);
+        }
 
-        if (mGraphWindowColor != 0) mGraphWindow.setBackgroundColor(mGraphWindowColor);
-
-        if (mGraphFooterColor != 0) {
-            getRootView().setBackgroundColor(mGraphFooterColor);
+        View graphFooter = getRootView().findViewById(R.id.time_graph_footer_row);
+        if(mGraphFooterColor != 0){
+            graphFooter.setBackgroundColor(mGraphFooterColor);
+        }else{
+            graphFooter.setBackgroundColor(Color.TRANSPARENT);
         }
 
         initTimeLabelsLayout();
@@ -414,7 +422,6 @@ public class TimeGraphView extends FrameLayout {
         if (mTimeLabelTextColor != 0) {
             intervalLabel.setTextColor(mTimeLabelTextColor);
         }
-
 
         switch (mGraphType) {
             case DAY:
