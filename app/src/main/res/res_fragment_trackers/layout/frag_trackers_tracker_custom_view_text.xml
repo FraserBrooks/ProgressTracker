@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:padding="@dimen/default_item_padding">
+
+
+    <TextView
+        android:id="@+id/tracker_view_title"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+
+
+        android:textAppearance="@style/large_text_appearance"
+        android:maxLines="1"
+
+        tools:text="Jiu-Jitsu"
+
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/tracker_view_right_hand_text"
+        />
+
+    <TextView
+        android:id="@+id/tracker_view_right_hand_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/activity_half_margin"
+
+        android:gravity="end"
+        android:maxLines="1"
+
+        android:textAppearance="@style/small_text_appearance"
+
+        tools:text="288 sessions"
+
+        app:layout_constraintBottom_toBottomOf="@id/tracker_view_difficulty_text_view"
+        app:layout_constraintStart_toEndOf="@id/tracker_view_title"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <TextView
+        android:id="@+id/tracker_view_text_view_2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/activity_half_margin"
+        android:textAppearance="@style/small_text_appearance"
+
+        tools:text="4/5 targets met"
+
+        app:layout_constraintTop_toBottomOf="@id/tracker_view_title"
+        app:layout_constraintStart_toStartOf="parent"
+
+        tools:visibility="gone"/>
+
+    <TextView
+        android:id="@+id/tracker_view_text_view_3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+
+        android:layout_marginStart="@dimen/activity_half_margin"
+        android:textAppearance="@style/small_text_appearance"
+
+        tools:text="43 sessions"
+
+        app:layout_constraintTop_toBottomOf="@id/tracker_view_text_view_2"
+        app:layout_constraintStart_toStartOf="parent"
+
+        tools:visibility="gone"/>
+
+
+    <ImageView
+        android:id="@+id/tracker_view_max_level_ico"
+        android:layout_width="20dp"
+        android:layout_height="0dp"
+        android:layout_margin="2dp"
+
+        app:layout_constraintBottom_toBottomOf="@id/tracker_view_difficulty_text_view"
+        app:layout_constraintEnd_toStartOf="@id/tracker_view_difficulty_text_view"
+        app:layout_constraintStart_toStartOf="@id/tracker_view_text_view_3"
+        app:layout_constraintTop_toTopOf="@id/tracker_view_difficulty_text_view"
+
+        tools:visibility="gone"/>
+
+    <TextView
+        android:id="@+id/tracker_view_difficulty_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="@style/small_text_appearance"
+
+        tools:text="500 sessions"
+
+        app:layout_constraintStart_toEndOf="@id/tracker_view_max_level_ico"
+        app:layout_constraintTop_toBottomOf="@id/tracker_view_text_view_3"
+        tools:visibility="gone"/>
+
+</android.support.constraint.ConstraintLayout>

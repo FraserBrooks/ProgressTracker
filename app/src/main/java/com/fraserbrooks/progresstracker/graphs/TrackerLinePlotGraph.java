@@ -53,7 +53,6 @@ public class TrackerLinePlotGraph extends LinearLayout{
 
 
         this.setOrientation(LinearLayout.VERTICAL);
-        this.setBackgroundResource(R.drawable.shared_ui_top_border_grey);
 
         initViews();
 
@@ -68,7 +67,6 @@ public class TrackerLinePlotGraph extends LinearLayout{
         mGraphView = new LinearLayout(getContext());
         this.addView(mGraphView);
         mGraphView.setLayoutParams(graphLayoutParams);
-        mGraphView.setBackgroundResource(R.drawable.shared_ui_bottom_border_grey);
         mGraphView.setOrientation(LinearLayout.HORIZONTAL);
         mGraphView.setBackgroundResource(R.color.appBG);
 
@@ -90,7 +88,6 @@ public class TrackerLinePlotGraph extends LinearLayout{
         textLP.gravity = Gravity.TOP;
         mGraphTopTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, GRAPH_TEXT_SIZE_SP);
         mGraphTopTextView.setLayoutParams(textLP);
-        mGraphTopTextView.setBackgroundResource(R.drawable.shared_ui_top_border_grey);
 
 
         mDaysLayout = new LinearLayout(getContext());

@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/tracker_view_top_half_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <include
+            android:id="@+id/tracker_view_text_layout"
+            layout="@layout/frag_trackers_tracker_custom_view_text"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+
+            app:layout_constraintEnd_toStartOf="@id/tracker_view_ico_frame"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+
+        <FrameLayout
+            android:id="@+id/tracker_view_ico_frame"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            android:padding="@dimen/activity_half_margin"
+
+            app:layout_constraintStart_toEndOf="@id/tracker_view_text_layout"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageView
+                android:id="@+id/tracker_view_ico"
+                android:layout_width="@dimen/tracker_ico_size"
+                android:layout_height="@dimen/tracker_ico_size"
+
+                android:layout_gravity="center"/>
+
+        </FrameLayout>
+
+
+        <FrameLayout
+            android:id="@+id/tracker_view_progress_bar_layout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+
+            app:layout_constraintEnd_toStartOf="@id/tracker_view_ico_frame"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tracker_view_text_layout">
+
+            <include layout="@layout/frag_trackers_progress_bar" />
+
+        </FrameLayout>
+
+        <FrameLayout
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+
+            app:layout_constraintBottom_toBottomOf="@id/tracker_view_progress_bar_layout"
+            app:layout_constraintEnd_toEndOf="@id/tracker_view_ico_frame"
+            app:layout_constraintStart_toStartOf="@id/tracker_view_ico_frame"
+            app:layout_constraintTop_toTopOf="@id/tracker_view_progress_bar_layout">
+
+            <ImageView
+                android:id="@+id/tracker_view_next_level_ico"
+                android:layout_width="@dimen/tracker_next_level_ico_size"
+                android:layout_height="match_parent"
+
+                android:layout_gravity="center" />
+
+        </FrameLayout>
+
+        <FrameLayout
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+
+            app:layout_constraintStart_toStartOf="@id/tracker_view_ico_frame"
+            app:layout_constraintEnd_toEndOf="@id/tracker_view_ico_frame"
+            app:layout_constraintTop_toTopOf="@id/tracker_view_ico_frame"
+            app:layout_constraintBottom_toBottomOf="@id/tracker_view_ico_frame">
+
+            <TextView
+                android:id="@+id/tracker_view_level_text"
+
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+
+                android:layout_gravity="center"
+
+                android:textSize="@dimen/large_text_size"
+                android:textColor="?theme_icon_text_color"
+                android:textStyle="bold"
+
+                tools:text="34"
+                />
+        </FrameLayout>
+
+        <com.fraserbrooks.progresstracker.customviews.graphs.TimeGraphView
+            android:id="@+id/tracker_view_graph"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+
+            app:graph_window_height="@dimen/progress_bar_height"
+            app:bars_per_interval="one"
+
+            app:graph_window_background_color="?page_background_color"
+            app:graph_axis_background_color="?page_background_color"
+
+            app:axis_text_color="?theme_text_color"
+            app:time_label_text_color="?theme_text_color"
+
+            app:show_graph_axis="false"
+            app:show_highest_value_label="false"
+            app:show_time_labels="true"
+            app:show_interval_label="false"
+
+            app:layout_constraintTop_toBottomOf="@id/tracker_view_progress_bar_layout"
+            app:layout_constraintEnd_toStartOf="@id/tracker_view_ico_frame"
+            app:layout_constraintStart_toStartOf="parent"
+
+            android:visibility="gone"/>
+
+        <FrameLayout
+            android:id="@+id/tracker_view_check_list"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/progress_bar_height"
+            android:background="?color_accent"
+
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/tracker_view_ico_frame"
+            app:layout_constraintTop_toBottomOf="@id/tracker_view_graph"
+
+            android:visibility="gone"/>
+
+    </android.support.constraint.ConstraintLayout>
+
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/tracker_view_buttons_layout"
+
+        style="@style/button_linear_layout"
+
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/button_bar_height"
+        android:layout_marginTop="@dimen/activity_vertical_margin"
+
+        app:layout_constraintTop_toBottomOf="@id/tracker_view_top_half_layout"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+
+        tools:visibility="gone">
+
+        <Button
+            android:id="@+id/tracker_view_button_1"
+            style="@style/default_button"
+            app:layout_constraintEnd_toStartOf="@+id/tracker_view_button_2"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <Button
+            android:id="@+id/tracker_view_button_2"
+            style="@style/default_button"
+            app:layout_constraintEnd_toStartOf="@+id/tracker_view_button_3"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/tracker_view_button_1" />
+
+        <Button
+            android:id="@+id/tracker_view_button_3"
+            style="@style/default_button"
+            app:layout_constraintEnd_toStartOf="@+id/tracker_view_button_4"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/tracker_view_button_2" />
+
+        <Button
+            android:id="@+id/tracker_view_button_4"
+            style="@style/default_button"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/tracker_view_button_3" />
+
+    </android.support.constraint.ConstraintLayout>
+
+
+</android.support.constraint.ConstraintLayout>

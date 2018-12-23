@@ -45,7 +45,13 @@ public class AddTrackerPresenter implements AddTrackerContract.Presenter {
             return;
         }
 
-        Tracker newTracker = new Tracker(trackerName, "hours", trackerProgressionRate, true, true, false);
+        //todo
+        String iconText = "AA";
+        int color = 10;
+
+        Tracker newTracker = new Tracker(trackerName, trackerProgressionRate, Tracker.TRACKER_TYPE.LEVEL_UP,
+                Tracker.GRAPH_TYPE.DAY, Tracker.TRACKER_ICON.LEVEL_UP, iconText, color);
+
 
         if(mTrackersRepository.saveTracker(newTracker)){
             mAddTrackerView.longToast("New Tracker added.");

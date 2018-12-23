@@ -12,7 +12,7 @@ import android.widget.Toast;
 
 import com.fraserbrooks.progresstracker.Injection;
 import com.fraserbrooks.progresstracker.R;
-import com.fraserbrooks.progresstracker.customviews.TimeGraphView;
+import com.fraserbrooks.progresstracker.customviews.graphs.TimeGraphView;
 import com.fraserbrooks.progresstracker.data.Tracker;
 import com.fraserbrooks.progresstracker.dialogs.AddSubCustomInputDialog;
 import com.fraserbrooks.progresstracker.dialogs.DialogCallerContract;
@@ -52,7 +52,8 @@ public class TrackerDetailsActivity extends AppCompatActivity
 
         String mTrackerId = intent.getStringExtra("id");
 
-        mTrackerInflater = new TrackerViewInflater(this, mPresenter);
+        // todo
+        //mTrackerInflater = new TrackerViewInflater(this, mPresenter);
 
         mPresenter.getTracker(mTrackerId);
 
@@ -66,7 +67,8 @@ public class TrackerDetailsActivity extends AppCompatActivity
 
         initClickListeners();
 
-        mTrackerInflater.inflateTracker(findViewById(R.id.tracker_details_root_view), mTracker, false);
+        // todo
+        //mTrackerInflater.inflateTracker(findViewById(R.id.tracker_details_root_view), mTracker, false);
 
         initGraph();
     }

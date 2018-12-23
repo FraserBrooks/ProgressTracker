@@ -1,5 +1,48 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <resources>
+
+    <!-- Theme colors -->
+    <attr name="page_background_color" format="color"/>
+    <attr name="menu_item_color" format="color"/>
+    <attr name="theme_text_color" format="color"/>
+    <attr name="theme_icon_text_color" format="color"/>
+    <attr name="color_accent" format="color"/>
+    <attr name="color_border" format="color"/>
+    <attr name="color_error" format="color"/>
+
+    <attr name="level1_color" format="color"/>
+    <attr name="level2_color" format="color"/>
+    <attr name="level3_color" format="color"/>
+    <attr name="level4_color" format="color"/>
+    <attr name="level5_color" format="color"/>
+    <attr name="level6_color" format="color"/>
+    <attr name="level7_color" format="color"/>
+    <attr name="level8_color" format="color"/>
+
+    <attr name="button_color_dark" format="color"/>
+    <attr name="button_color_mid" format="color"/>
+    <attr name="button_color_light" format="color"/>
+
+    <!-- Theme values -->
+    <attr name="base_saturation" format="float"/>
+    <attr name="base_light_value" format="float"/>
+    <attr name="gradient_spread_value" format="float"/>
+    <attr name="gradient_spread_type" format="reference"/>
+
+    <!-- Theme styles -->
+    <attr name="text_large" format="reference"/>
+    <attr name="text_regular" format="reference"/>
+    <attr name="text_title" format="reference"/>
+    <attr name="button" format="reference"/>
+    <attr name="spinner" format="reference"/>
+
+    <!-- Theme Drawables -->
+    <attr name="theme_tick_drawable" format="reference"/>
+    <attr name="theme_drag_and_drop_drawable" format="reference"/>
+    <attr name="theme_level_drawable" format="reference"/>
+    <attr name="theme_max_level_drawable" format="reference"/>
+
+
     <declare-styleable name="CalendarView">
         <attr name="header_color" format="color" />
         <attr name="header_label_color" format="color" />
@@ -33,7 +76,6 @@
         <attr name="show_time_labels" format="boolean"/>
         <attr name="show_graph_axis" format="boolean"/>
         <attr name="show_highest_value_label" format="boolean"/>
-
 
         <attr name="pointer_resource" format="integer"/>
         <attr name="graph_bar_resource" format="integer"/>

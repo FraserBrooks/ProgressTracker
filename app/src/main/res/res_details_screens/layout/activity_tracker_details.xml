@@ -6,32 +6,32 @@
     android:id="@+id/tracker_details_root_view"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/menuItemWhite"
+    android:background="?menu_item_color"
     tools:context="com.fraserbrooks.progresstracker.trackerdetailsactivity.TrackerDetailsActivity">
 
 
-    <android.support.constraint.ConstraintLayout
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
 
-        <com.fraserbrooks.progresstracker.customviews.TimeGraphView
+        <com.fraserbrooks.progresstracker.customviews.graphs.TimeGraphView
             android:id="@+id/tracker_details_graph_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingStart="5dp"
-            android:paddingEnd="5dp"
-            android:paddingTop="15dp"
+            android:paddingStart="@dimen/default_item_padding"
+            android:paddingEnd="@dimen/default_item_padding"
+            android:paddingTop="@dimen/activity_vertical_margin"
 
 
             app:graph_window_height="150dp"
-            app:pointer_resource="@drawable/shared_ui_top_border_grey"
             app:bars_per_interval="one"
 
-            app:graph_window_background_color="@color/appBG"
-            app:graph_axis_background_color="@color/appBG"
+            app:graph_window_background_color="?page_background_color"
+            app:graph_axis_background_color="?page_background_color"
 
-            app:axis_text_color="@color/default_text_color"
-            app:time_label_text_color="@color/default_text_color"
+            app:axis_text_color="?theme_text_color"
+            app:time_label_text_color="?theme_text_color"
 
             app:show_graph_axis="true"
             app:show_highest_value_label="false"
@@ -49,38 +49,21 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
-            android:layout_marginTop="8dp"
-            app:layout_constraintBottom_toTopOf="@+id/top_buttons_layout"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tracker_details_graph_view">
+            android:layout_marginTop="8dp">
         </include>
 
         <LinearLayout
             android:id="@+id/top_buttons_layout"
-            android:layout_width="0dp"
-            android:layout_height="80dp"
-            android:layout_marginBottom="16dp"
-            android:layout_marginEnd="25dp"
-            android:layout_marginStart="25dp"
-            android:baselineAligned="false"
-            android:orientation="horizontal"
-            app:layout_constraintBottom_toTopOf="@id/new_name_layout"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/small_tracker_layout">
+
+            style="@style/button_layout_horizontal_margin"
+
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/button_bar_height">
 
             <Button
                 android:id="@+id/top_button_1"
-                style="?android:attr/buttonBarButtonStyle"
-                android:layout_width="75dp"
-                android:layout_height="75dp"
-                android:background="@drawable/shared_ui_button_background_selector"
                 android:text="@string/start_timer"
-                android:textAllCaps="false"
-                android:textSize="14sp"
-                android:textColor="@color/default_text_color"
-                android:padding="8dp"/>
+                style="@style/default_button"/>
 
             <Space
                 android:layout_width="0dp"
@@ -89,15 +72,8 @@
 
             <Button
                 android:id="@+id/top_button_2"
-                style="?android:attr/buttonBarButtonStyle"
-                android:layout_width="75dp"
-                android:layout_height="75dp"
-                android:background="@drawable/shared_ui_button_background_selector"
                 android:text="@string/plus_15_minutes"
-                android:textAllCaps="false"
-                android:textSize="14sp"
-                android:textColor="@color/default_text_color"
-                android:padding="8dp"/>
+                style="@style/default_button"/>
 
             <Space
                 android:layout_width="0dp"
@@ -106,15 +82,8 @@
 
             <Button
                 android:id="@+id/top_button_3"
-                style="?android:attr/buttonBarButtonStyle"
-                android:layout_width="75dp"
-                android:layout_height="75dp"
-                android:background="@drawable/shared_ui_button_background_selector"
                 android:text="@string/plus_1_hour"
-                android:textAllCaps="false"
-                android:textSize="14sp"
-                android:textColor="@color/default_text_color"
-                android:padding="8dp"/>
+                style="@style/default_button"/>
 
             <Space
                 android:layout_width="0dp"
@@ -123,60 +92,44 @@
 
             <Button
                 android:id="@+id/top_button_4"
-                style="?android:attr/buttonBarButtonStyle"
-                android:layout_width="75dp"
-                android:layout_height="75dp"
-                android:background="@drawable/shared_ui_button_background_selector"
                 android:text="@string/plus_other"
-                android:textAllCaps="false"
-                android:textSize="14sp"
-                android:textColor="@color/default_text_color"
-                android:padding="8dp"/>
+                style="@style/default_button"/>
 
         </LinearLayout>
 
 
         <LinearLayout
             android:id="@+id/new_name_layout"
-            android:layout_width="0dp"
-            android:layout_height="75dp"
-            android:layout_marginEnd="25dp"
-            android:layout_marginStart="25dp"
-            android:background="@drawable/shared_ui_top_border_grey"
-            android:baselineAligned="false"
             android:orientation="horizontal"
-            android:paddingBottom="20dp"
-            android:paddingTop="20dp"
-            app:layout_constraintBottom_toTopOf="@id/new_difficulty_layout"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/top_buttons_layout">
+
+            style="@style/button_layout_horizontal_margin"
+
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/linear_layout_as_button_height">
 
             <TextView
                 android:id="@+id/edit_name_tv"
+
+                android:textAppearance="@style/title_text_appearance"
+                style="@style/details_screens_text_view"
+
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
                 android:layout_weight="1"
                 android:text="@string/edit_name"
-                android:textColor="@color/default_text_color"
-                android:textSize="16sp" />
+                />
 
 
             <TextView
                 android:id="@+id/current_name_tv"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
+
+                android:textAppearance="@style/title_text_appearance"
+                style="@style/details_screens_text_view"
+
                 android:layout_marginEnd="8dp"
                 android:layout_marginStart="8dp"
+                android:layout_width="0dp"
                 android:layout_weight="2"
-                android:gravity="bottom"
-                android:maxLength="32"
-                android:maxLines="1"
-                android:textColor="@color/default_text_color"
-                android:textSize="16sp"
-                android:background="@drawable/shared_ui_bottom_border_grey"
+
                 tools:text="@string/guitar_practice"/>
 
 
@@ -184,54 +137,44 @@
 
         <LinearLayout
             android:id="@+id/new_difficulty_layout"
-            android:layout_width="0dp"
-            android:layout_height="75dp"
-            android:layout_marginEnd="25dp"
-            android:layout_marginStart="25dp"
-            android:background="@drawable/shared_ui_top_border_grey"
-            android:baselineAligned="false"
-            android:orientation="horizontal"
-            android:paddingBottom="20dp"
-            android:paddingTop="20dp"
-            app:layout_constraintBottom_toTopOf="@id/new_counter_label_layout"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/new_name_layout">
+
+            style="@style/button_layout_horizontal_margin"
+
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/linear_layout_as_button_height">
 
             <TextView
                 android:id="@+id/edit_difficulty_tv"
+
+                android:textAppearance="@style/title_text_appearance"
+                style="@style/details_screens_text_view"
+
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:textColor="@color/default_text_color"
-                android:textSize="16sp"
                 tools:text="Paintings to:" />
 
-            <ImageView
+            <com.sdsmdg.harjot.vectormaster.VectorMasterView
                 android:layout_width="50dp"
                 android:layout_height="match_parent"
                 android:layout_gravity="center_vertical"
                 android:contentDescription="@string/level_icon"
                 android:paddingEnd="8dp"
                 android:paddingStart="0dp"
-                android:paddingBottom="8dp"
-                android:paddingTop="8dp"
-                android:scaleType="fitCenter"
-                android:src="@drawable/frag_trackers_gem_black" />
+                android:paddingBottom="28dp"
+                android:paddingTop="28dp"
+                app:vector_src="?theme_max_level_drawable" />
 
             <TextView
                 android:id="@+id/max_count_tv"
+
+                android:textAppearance="@style/title_text_appearance"
+                style="@style/details_screens_text_view"
+
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
                 android:layout_weight="1"
-                android:background="@drawable/shared_ui_bottom_border_grey"
                 android:paddingEnd="4dp"
                 android:paddingStart="4dp"
                 android:layout_marginStart="8dp"
                 android:layout_marginEnd="8dp"
-                android:textSize="16sp"
-                android:textColor="@color/default_text_color"
                 tools:text="@string/_1000_hours">
             </TextView>
 
@@ -240,92 +183,71 @@
 
         <LinearLayout
             android:id="@+id/new_counter_label_layout"
-            android:layout_width="0dp"
-            android:layout_height="75dp"
-            android:layout_marginEnd="25dp"
-            android:layout_marginStart="25dp"
-            android:background="@drawable/shared_ui_top_border_grey"
-            android:baselineAligned="false"
-            android:orientation="horizontal"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/new_difficulty_layout"
-            app:layout_constraintBottom_toTopOf="@id/tracker_details_archive_button_layout">
+
+            style="@style/button_layout_horizontal_margin"
+
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/linear_layout_as_button_height">
 
             <TextView
                 android:id="@+id/edit_label_tv"
+
+                android:textAppearance="@style/title_text_appearance"
+                style="@style/details_screens_text_view"
+
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:text="@string/edit_counter_label_colon"
-                android:textColor="@color/default_text_color"
-                android:textSize="16sp" />
+                android:text="@string/edit_counter_label_colon"/>
 
             <TextView
                 android:id="@+id/label_tv"
+
+                android:textAppearance="@style/title_text_appearance"
+                style="@style/details_screens_text_view"
+
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
                 android:layout_weight="3"
                 android:layout_marginEnd="8dp"
                 android:layout_marginStart="8dp"
-                android:gravity="bottom"
-                android:maxLength="32"
-                android:maxLines="1"
-                android:textColor="@color/default_text_color"
-                android:textSize="16sp"
-                android:background="@drawable/shared_ui_bottom_border_grey"
                 tools:text="@string/paintings"/>
 
         </LinearLayout>
 
         <LinearLayout
             android:id="@+id/tracker_details_archive_button_layout"
-            android:layout_width="0dp"
-            android:layout_height="75dp"
-            android:layout_marginEnd="25dp"
-            android:layout_marginStart="25dp"
-            android:background="@drawable/shared_ui_top_border_grey"
-            android:baselineAligned="false"
-            android:orientation="horizontal"
-            app:layout_constraintTop_toBottomOf="@id/new_counter_label_layout"
-            app:layout_constraintBottom_toTopOf="@id/tracker_details_delete_button_layout"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent">
+
+            style="@style/button_layout_horizontal_margin"
+
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/linear_layout_as_button_height">
+
             <TextView
                 android:id="@+id/archive_tracker_button_text_view"
+
+                android:textAppearance="@style/title_text_appearance"
+                style="@style/details_screens_text_view"
+
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                tools:text="Archive Tracker"
-                android:textColor="@color/default_text_color"
-                android:textSize="16sp"/>
+                tools:text="Archive Tracker"/>
         </LinearLayout>
 
         <LinearLayout
             android:id="@+id/tracker_details_delete_button_layout"
-            android:layout_width="0dp"
-            android:layout_height="75dp"
-            android:layout_marginEnd="25dp"
-            android:layout_marginStart="25dp"
-            android:background="@drawable/shared_ui_top_border_grey"
-            android:baselineAligned="false"
-            android:orientation="horizontal"
-            app:layout_constraintTop_toBottomOf="@id/tracker_details_archive_button_layout"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent">
+
+            style="@style/button_layout_horizontal_margin"
+
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/linear_layout_as_button_height">
 
             <TextView
+                android:textAppearance="@style/title_text_appearance"
+                style="@style/details_screens_text_view"
+
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:textColor="@color/default_text_color"
-                android:textSize="16sp"
                 android:text="@string/delete_tracker"/>
 
         </LinearLayout>
 
 
-    </android.support.constraint.ConstraintLayout>
+    </LinearLayout>
 
 </ScrollView>

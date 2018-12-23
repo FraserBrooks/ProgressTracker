@@ -13,6 +13,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.fraserbrooks.progresstracker.R;
+import com.fraserbrooks.progresstracker.customviews.ColorUtils;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -172,12 +173,25 @@ public class CalendarView extends LinearLayout {
         mCalendarSettings.setForwardButtonSrc(forwardButtonSrc);
 
         Drawable targetOneSrc = typedArray.getDrawable(R.styleable.CalendarView_target_one_icon_src);
+        if(targetOneSrc == null){
+            targetOneSrc = ColorUtils.getGradientDrawable(getContext(),
+                    ColorUtils.getLevelDefinedColor(getContext(), 3));
+        }
         mCalendarSettings.setTarget1Resource(targetOneSrc);
 
+
         Drawable targetTwoSrc = typedArray.getDrawable(R.styleable.CalendarView_target_two_icon_src);
+        if(targetTwoSrc == null){
+            targetTwoSrc = ColorUtils.getGradientDrawable(getContext(),
+                    ColorUtils.getLevelDefinedColor(getContext(), 4));
+        }
         mCalendarSettings.setTarget2Resource(targetTwoSrc);
 
         Drawable targetThreeSrc = typedArray.getDrawable(R.styleable.CalendarView_target_three_icon_src);
+        if(targetThreeSrc == null){
+            targetThreeSrc = ColorUtils.getGradientDrawable(getContext(),
+                    ColorUtils.getLevelDefinedColor(getContext(), 6));
+        }
         mCalendarSettings.setTarget3Resource(targetThreeSrc);
 
 

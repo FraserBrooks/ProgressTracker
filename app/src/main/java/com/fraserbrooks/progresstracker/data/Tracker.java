@@ -8,13 +8,21 @@ import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.PrimaryKey;
+import android.arch.persistence.room.TypeConverters;
 import android.support.annotation.NonNull;
 
+
+import com.fraserbrooks.progresstracker.data.source.local.Converters;
 
 import java.util.UUID;
 
 @Entity(tableName = "trackers")
 public class Tracker {
+
+    public enum GRAPH_TYPE {DAY, WEEK, MONTH, YEAR}
+    public enum TRACKER_ICON{LEVEL_UP, TEXT, HEART, STUDY,
+        COMPUTER, BOOK, PENCIL, APPLE, PHONE, PEOPLE}
+    public enum TRACKER_TYPE {LEVEL_UP, GRAPH, YES_NO}
 
     @PrimaryKey
     @NonNull
@@ -50,11 +58,26 @@ public class Tracker {
     @ColumnInfo(name = "trackerindex")
     private int mIndex;
 
-    @ColumnInfo(name = "leveluptracker")
-    private boolean mLevelUpTracker;
+    @NonNull
+    @ColumnInfo(name = "trakertype")
+    @TypeConverters({Converters.TrackerConverters.class})
+    private TRACKER_TYPE mType;
 
-    @ColumnInfo(name = "ticklisttracker")
-    private boolean  mTickListTracker;
+    @NonNull
+    @ColumnInfo(name = "defaultgraph")
+    @TypeConverters({Converters.TrackerConverters.class})
+    private GRAPH_TYPE mDefaultGraph;
+
+    @NonNull
+    @ColumnInfo(name = "icon")
+    @TypeConverters({Converters.TrackerConverters.class})
+    private TRACKER_ICON mIcon;
+
+    @ColumnInfo(name = "icontext")
+    private String mIconText;
+
+    @ColumnInfo(name = "trackercolor")
+    private int mColor;
 
 
     // Values used by the UI -----------------------
@@ -80,57 +103,62 @@ public class Tracker {
     private int[] mPastEightMonthsCounts;
 
 
-
     @Ignore
-    private static final int DEFAULT_INDEX = 99;
+    private static final int DEFAULT_INDEX = 999;
+
+
+
+
 
     /**
      * Use this constructor to create a new Tracker that tracks time (eg. minutes/hours).
      *
      * @param title           title of the tracker
-     * @param counterLabel    thing counted if not time (eg. 'projects done', 'miles ran', etc.)
      * @param progressionRate number of 'counterLabel's (minutes if time tracker) to get to level 8
-     * @param timeTracker     this tracker will track time (i.e hours/minutes spent on an activity)
-     * @param levelUpTracker  this tracker will 'level up' as it is incremented
-     * @param tickListTracker this tracker will be a yes/no tracker rather than a numerical one
+     * @param type            display type of this tracker (level_up/graph/yes_no)
+     * @param defaultGraph    default graph for this tracker in the ui
+     * @param icon            tracker icon enum
+     * @param iconText        two letter string to display if this tracker's icon is TEXT
+     * @param color           int that is combined with theme values to create this icons color
      */
     @Ignore
-    public Tracker(@NonNull String title, @NonNull String counterLabel, int progressionRate,
-                   boolean timeTracker, boolean levelUpTracker, boolean tickListTracker) {
-        this(title, UUID.randomUUID().toString(), counterLabel, DEFAULT_INDEX, progressionRate, 0,
-                0,false,false, timeTracker,levelUpTracker,tickListTracker);
+    public Tracker(@NonNull String title, int progressionRate, @NonNull TRACKER_TYPE type,
+                   @NonNull GRAPH_TYPE defaultGraph, @NonNull TRACKER_ICON icon,
+                   @NonNull String iconText, int color){
+
+        this(UUID.randomUUID().toString(), title, progressionRate, 0, 0,
+                false,true, "hours", false,
+                DEFAULT_INDEX, type, defaultGraph, icon, iconText,color);
+
     }
 
 
     /**
      * This constructor should only ever be used by room
      *
-     * @param title               title of the tracker
      * @param id                  id of the tracker
-     * @param counterLabel        thing counted if not time (eg. 'projects done', 'miles ran', etc.)
-     * @param index               index used for user defined ordering in the UI
-     * @param progressionRate     number of 'counterLabel's (minutes if time tracker) to get to level 8
+     * @param title               title of the tracker
+     * @param progressionRate     number of 'counterLabel's (minutes if time tracker) to get to level 7
      * @param countSoFar          count of minutes/'counterName' so far
      * @param timerStartTime      time that the user started timing. Used only if 'isTimeTracker' = true
-     * @param currentlyTiming     currently timing. When set to false, minutes will be added to
-     *                            countSoFar based on minutes since 'timerStartTime'
+     * @param currentlyTiming     is this tracker currently being timed
+     * @param timeTracker         this tracker will track time (i.e hours/minutes spent on an activity)
+     * @param counterLabel        thing counted if not time (eg. 'projects done', 'miles ran', etc.)
      * @param archived            boolean: whether or not the tracker has been archived
-     * @param timeTracker     this tracker will track time (i.e hours/minutes spent on an activity)
-     * @param levelUpTracker  this tracker will 'level up' as it is incremented
-     * @param tickListTracker this tracker will be a yes/no tracker rather than a numerical one
+     * @param index               index used for user defined ordering in the UI
+     * @param type                enum representing the type of tracker (LEVEL_UP, GRAPH, or YES_NO)
+     * @param defaultGraph        enum representing the graph to show (DAY, WEEK, MONTH, or YEAR)
+     * @param icon                enum representing the icon for this particular tracker
+     * @param iconText            String containing only once character/emoji for use as icon
      */
-    public Tracker(@NonNull String title, @NonNull String id, @NonNull String counterLabel,
-                   int index, int progressionRate,  int countSoFar,
-                   long timerStartTime, boolean currentlyTiming,
-                   boolean archived, boolean timeTracker,
-                   boolean levelUpTracker, boolean tickListTracker){
-
-        // A tracker cannot be both a levelUpTracker and a tickListTracker
-        if(levelUpTracker && tickListTracker) throw new IllegalArgumentException();
+    public Tracker(@NonNull String id, @NonNull String title, int progressionRate, int countSoFar,
+                    long timerStartTime, boolean currentlyTiming, boolean timeTracker,
+                   @NonNull String counterLabel, boolean archived, int index,
+                   @NonNull TRACKER_TYPE type, @NonNull GRAPH_TYPE defaultGraph,
+                   @NonNull TRACKER_ICON icon, String iconText, int color){
 
         this.mId = id;
         this.mTitle = title;
-        this.mIndex = index;
         this.mProgressionRate = progressionRate;
         this.mCountSoFar = countSoFar;
         this.mTimerStartTime = timerStartTime;
@@ -138,8 +166,13 @@ public class Tracker {
         this.mTimeTracker = timeTracker;
         this.mCounterLabel = counterLabel;
         this.mArchived = archived;
-        this.mLevelUpTracker = levelUpTracker;
-        this.mTickListTracker = tickListTracker;
+        this.mIndex = index;
+        this.mType = type;
+        this.mDefaultGraph = defaultGraph;
+        this.mIcon = icon;
+        this.mIconText = iconText;
+        this.mColor = color;
+
         mExpanded = false;
     }
 
@@ -238,12 +271,12 @@ public class Tracker {
 
 
     public void setUiValues(){
-        int level = 0;
-        float score = getCountSoFar();
+        int level = 1;
+        float x = getCountSoFar();
         int countToMax = getProgressionRate();
-        while((score / (float) countToMax) > (1/8f)){
+        while((x / (float) countToMax) > (1/8f)){
             level += 1;
-            score -= (float) countToMax / 8;
+            x -= (float) countToMax / 8;
         }
         mLevel = level;
 
@@ -259,11 +292,9 @@ public class Tracker {
 
         String levelToDisplay;
 
-        // Only display level if past max level or if no difficulty is set
-        if (getLevel() > 8 ||
-                (getProgressionRate() == 0 && getLevel() > 0)){
+        // Only display level if past max level and if level up tracker
+        if (getLevel() > 8 && getType() == TRACKER_TYPE.LEVEL_UP){
             int l = getLevel();
-            l = (getProgressionRate() == 0) ? l : l-8; //subtract 8 if no difficulty
             levelToDisplay = "" + l;
         } else{
             levelToDisplay = ""; // Don't display level
@@ -307,18 +338,6 @@ public class Tracker {
         this.mIndex = index;
     }
 
-    public boolean isLevelUpTracker() {
-        return mLevelUpTracker;
-    }
-
-    public void setLevelUpTracker(boolean levelUpTracker) {
-        this.mLevelUpTracker = levelUpTracker;
-    }
-
-    public boolean isTickListTracker() {
-        return mTickListTracker;
-    }
-
     public int[] getPastEightDaysCounts() {
         return mPastEightDaysCounts;
     }
@@ -351,4 +370,48 @@ public class Tracker {
 
         this.mPastEightMonthsCounts = pastEightMonthCounts;
     }
+
+    @NonNull
+    public TRACKER_TYPE getType() {
+        return mType;
+    }
+
+    public void setType(@NonNull TRACKER_TYPE mType) {
+        this.mType = mType;
+    }
+
+    @NonNull
+    public GRAPH_TYPE getDefaultGraph() {
+        return mDefaultGraph;
+    }
+
+    public void setDefaultGraph(@NonNull GRAPH_TYPE mDefaultGraph) {
+        this.mDefaultGraph = mDefaultGraph;
+    }
+
+    @NonNull
+    public TRACKER_ICON getIcon() {
+        return mIcon;
+    }
+
+    public void setIcon(@NonNull TRACKER_ICON mIcon) {
+        this.mIcon = mIcon;
+    }
+
+    public String getIconText() {
+        return mIconText;
+    }
+
+    public void setIconText(String mIconText) {
+        this.mIconText = mIconText;
+    }
+
+    public int getColor() {
+        return mColor;
+    }
+
+    public void setColor(int mColor) {
+        this.mColor = mColor;
+    }
+
 }

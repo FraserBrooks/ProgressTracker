@@ -1,48 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-<FrameLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:showIn="@layout/frag_trackers_level_tracker_item_expanded"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="@dimen/progress_bar_height">
 
     <LinearLayout
-        android:layout_height="@dimen/progress_bar_height"
-        android:layout_width="match_parent"
         android:id="@+id/progress_bar_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:orientation="horizontal"
-        >
+        android:layout_margin="1dp">
 
-        <TextView
+        <View
             android:id="@+id/progress_bar_filled_part"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="0.6"
-            tools:background="@drawable/frag_trackers_level3_colour_rect" />
+            tools:background="?level3_color_mid" />
 
-        <TextView
+        <View
             android:id="@+id/progress_bar_not_filled_part"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="0.4"
-            android:background="@color/appBG" />
+            android:background="?page_background_color" />
     </LinearLayout>
 
     <ImageView
         android:id="@+id/progress_bar_image"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/progress_bar_height"
+        android:layout_height="match_parent"
         android:contentDescription="@string/progress_bar"
         android:scaleType="fitXY"
-        android:src="@drawable/shared_ui_progress_bar_t3"/>
-
-    <FrameLayout
-        android:id="@+id/progress_bar_graph_view"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        >
-
-    </FrameLayout>
+        android:src="@drawable/shared_ui_progress_bar_t3" />
 
 </FrameLayout>

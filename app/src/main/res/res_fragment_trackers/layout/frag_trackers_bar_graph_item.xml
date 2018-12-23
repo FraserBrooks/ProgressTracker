@@ -1,49 +1,52 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/shared_ui_top_border_grey"
+    xmlns:tools="http://schemas.android.com/tools"
+
     android:orientation="horizontal"
-    android:layout_marginHorizontal="16dp"
-    >
+    android:layout_marginStart="@dimen/activity_horizontal_margin"
+    android:layout_marginEnd="@dimen/activity_horizontal_margin">
+
+    <!-- TODO: add border -->
+    <!-- TODO: make bar graph compatible with themes -->
 
     <TextView
         android:id="@+id/bar_graph_text"
-        android:layout_width="0dp"
+        android:layout_width="@dimen/bar_graph_text_width"
         android:layout_height="wrap_content"
-        android:text="Programming"
-        android:textSize="12sp"
+        tools:text="Programming"
+
+        android:textAppearance="@style/small_text_appearance"
+
+        android:padding="4sp"
         android:maxLines="1"
-        android:textColor="#000000"
-        android:gravity="right|center"
-        android:layout_weight="25"
+        android:gravity="end|center"
         />
-    <TextView
+    <View
         android:layout_width="1dp"
-        android:layout_height="21sp"
-        android:layout_marginLeft="8sp"
-        android:layout_marginRight="2sp"
-        android:background="@color/graph_line"
-        android:layout_weight="0"
+        android:layout_height="match_parent"
+        android:background="?color_border"
         />
     <LinearLayout
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_weight="75"
+
+        android:padding="4dp"
+        android:layout_weight="1"
         android:layout_gravity="center">
-        <TextView
+        <View
             android:id="@+id/bar_graph_colour_rect"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:background="@drawable/frag_trackers_level4_colour_rect"
+            android:background="@color/colorAccent"
             android:layout_weight="6"
             />
-        <TextView
+        <View
             android:id="@+id/bar_graph_blank_rect"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
+            android:layout_weight="2"
             />
     </LinearLayout>
 

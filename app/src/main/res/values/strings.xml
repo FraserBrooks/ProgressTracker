@@ -170,6 +170,10 @@
     <string name="enter_new_name">Enter New Name</string>
     <string name="x_minutes">%1$d minutes</string>
     <string name="x_hours">%1$f hours</string>
+    <string name="plus_x_minutes">+ %1$d minutes</string>
+    <string name="plus_x_hours">+ %1$f hours</string>
+    <string name="minus_x_minutes">- %1$d minutes</string>
+    <string name="minus_x_hours">- %1$f hours</string>
     <string name="x_ys">%1$d %2$s</string>
     <string name="archive_tracker">Archive Tracker</string>
     <string name="archive_tracker_desc">Hide this tracker from the trackers screen and add to archived trackers?</string>

@@ -18,8 +18,7 @@
         android:layout_width="16dp"
         android:layout_height="8dp"
         android:layout_gravity="center_horizontal"
-        android:src="@drawable/shared_ui_tick_symbol_black"
-        tools:background="@drawable/frag_trackers_level2_colour_rect" />
+        android:src="@drawable/shared_ui_tick_symbol_black" />
 
     <ImageView
         android:id="@+id/calendar_day_target_icon_2"
@@ -28,16 +27,14 @@
         android:layout_marginBottom="2dp"
         android:layout_marginTop="2dp"
         android:layout_gravity="center_horizontal"
-        android:src="@drawable/shared_ui_tick_symbol_black"
-        tools:background="@drawable/frag_trackers_level4_colour_rect" />
+        android:src="@drawable/shared_ui_tick_symbol_black"/>
 
     <ImageView
         android:id="@+id/calendar_day_target_icon_3"
         android:layout_width="16dp"
         android:layout_height="8dp"
         android:layout_gravity="center_horizontal"
-        android:src="@drawable/shared_ui_tick_symbol_black"
-        tools:background="@drawable/frag_trackers_level3_colour_rect" />
+        android:src="@drawable/shared_ui_tick_symbol_black" />
 
     <View
         android:id="@+id/divider"

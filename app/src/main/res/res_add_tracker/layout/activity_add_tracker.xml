@@ -1,16 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="?menu_item_color"
     tools:context="com.fraserbrooks.progresstracker.addtrackeractivity.AddTrackerActivity">
 
 
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/activity_main_tab_item_background">
+        android:background="@drawable/activity_main_tab_item_selector">
 
         <LinearLayout
             android:id="@+id/add_tracker_name_etv_layout"
@@ -52,7 +54,7 @@
                 android:layout_marginStart="8dp"
                 android:paddingTop="14dp"
                 android:scaleType="fitStart"
-                android:src="@drawable/frag_trackers_gem_black" />
+                android:src="?theme_max_level_drawable" />
         </LinearLayout>
 
         <com.fraserbrooks.progresstracker.addtrackeractivity.RadioButtonTableLayout

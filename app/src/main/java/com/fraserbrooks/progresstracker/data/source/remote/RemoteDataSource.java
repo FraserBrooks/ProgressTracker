@@ -21,6 +21,7 @@ import java.util.Calendar;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 
 /**
@@ -53,12 +54,18 @@ public class RemoteDataSource implements DataSource{
     private RemoteDataSource(){};
 
     private static void addTracker(String title, int progressionRate){
-        Tracker newTracker = new Tracker(title,"hours", progressionRate, true, true, false);
+        Tracker newTracker = new Tracker(UUID.randomUUID().toString(), title, progressionRate,
+                0, 0, false,true, "hours",
+                false, 99, Tracker.TRACKER_TYPE.LEVEL_UP, Tracker.GRAPH_TYPE.DAY,
+                Tracker.TRACKER_ICON.LEVEL_UP, "AA", 0);
         TRACKERS_SERVICE_DATA.put(newTracker.getId(), newTracker);
     }
 
     private static void addTracker(String title, int progressionRate, String counterName){
-        Tracker newTracker = new Tracker(title,  counterName, progressionRate, false, true, false);
+        Tracker newTracker = new Tracker(UUID.randomUUID().toString(), title, progressionRate,
+                0, 0, false,false, counterName,
+                false, 99, Tracker.TRACKER_TYPE.LEVEL_UP, Tracker.GRAPH_TYPE.DAY,
+                Tracker.TRACKER_ICON.LEVEL_UP, "AA", 0);
         TRACKERS_SERVICE_DATA.put(newTracker.getId(), newTracker);
     }
 

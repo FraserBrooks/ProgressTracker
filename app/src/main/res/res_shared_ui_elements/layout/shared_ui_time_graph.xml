@@ -35,7 +35,6 @@
                     android:layout_gravity="end"
                     android:maxLines="1"
                     android:textSize="14sp"
-                    tools:background="@drawable/shared_ui_top_border_grey"
                     tools:text="1" />
 
 
@@ -52,7 +51,6 @@
                     android:layout_gravity="end"
                     android:maxLines="1"
                     android:textSize="14sp"
-                    tools:background="@drawable/shared_ui_top_border_grey"
                     tools:text="7" />
 
                 <View
@@ -68,7 +66,6 @@
                     android:layout_gravity="end"
                     android:maxLines="1"
                     android:textSize="14sp"
-                    tools:background="@drawable/shared_ui_top_border_grey"
                     tools:text="5" />
 
                 <View
@@ -83,7 +80,6 @@
                     android:layout_gravity="end"
                     android:maxLines="1"
                     android:textSize="14sp"
-                    tools:background="@drawable/shared_ui_top_border_grey"
                     tools:text="2" />
 
                 <View
@@ -254,7 +250,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="14sp"
-            tools:background="@drawable/shared_ui_top_border_grey"
             tools:text="100" />
 
         <View

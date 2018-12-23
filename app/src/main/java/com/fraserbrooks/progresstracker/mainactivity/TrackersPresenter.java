@@ -82,29 +82,49 @@ public class TrackersPresenter implements TrackersContract.Presenter {
             public void run() {
                 ArrayList<Tracker> trackers = new ArrayList<>();
 
-                Tracker tracker1 = new Tracker("Guitar Practice", "hours",5000*60,
-                        true, true, false);
-                Tracker tracker2 = new Tracker("Java", "hours", 10000*60,
-                        true, false, false);
-                Tracker tracker3 = new Tracker("Haskell", "hours",  100 * 60,
-                        true, false, false);
-                Tracker tracker4 = new Tracker("Exercise", "hours", 10000*60,
-                        true, false, false);
-                Tracker tracker5 = new Tracker("Reading", "books read", 1000,
-                        false, true, false);
-                Tracker tracker6 = new Tracker("Jiu-Jitsu", "sessions", 500,
-                        false, true, false);
-                Tracker tracker7 = new Tracker("Maths Revision", "lectures", 20,
-                        false, true, false);
+                Tracker tracker1 = new Tracker("guitar", "Guitar Practice", 500*60,
+                        0, 0, false,true, "hours",
+                        false, 99, Tracker.TRACKER_TYPE.LEVEL_UP, Tracker.GRAPH_TYPE.DAY,
+                        Tracker.TRACKER_ICON.LEVEL_UP, "GP", 0);
+
+                Tracker tracker2 = new Tracker("jiujitsu", "Jiu Jitsu", 1000*60,
+                        0, 0, false,true, "hours",
+                        false, 123, Tracker.TRACKER_TYPE.LEVEL_UP, Tracker.GRAPH_TYPE.DAY,
+                        Tracker.TRACKER_ICON.LEVEL_UP, "JJ", 20);
+
+                Tracker tracker3 = new Tracker("math3423", "Maths Revision", 500,
+                        0, 0, false,false, "papers",
+                        false, 199, Tracker.TRACKER_TYPE.LEVEL_UP, Tracker.GRAPH_TYPE.DAY,
+                        Tracker.TRACKER_ICON.STUDY, "MR", 40);
+
+                Tracker tracker4 = new Tracker("javaaaa", "Java", 7500*60,
+                        0, 0, false,true, "hours",
+                        false, 1199, Tracker.TRACKER_TYPE.GRAPH, Tracker.GRAPH_TYPE.WEEK,
+                        Tracker.TRACKER_ICON.BOOK, "JV", 60);
+
+                Tracker tracker5 = new Tracker("ocamlcaml", "OCaml", 2500*60,
+                        0, 0, false,true, "hours",
+                        false, 11199, Tracker.TRACKER_TYPE.LEVEL_UP, Tracker.GRAPH_TYPE.DAY,
+                        Tracker.TRACKER_ICON.HEART, "OC", 80);
+
+                Tracker tracker6 = new Tracker("Android App", "Android App", 500*60,
+                        0, 0, false,true, "hours",
+                        false, 111199, Tracker.TRACKER_TYPE.LEVEL_UP, Tracker.GRAPH_TYPE.DAY,
+                        Tracker.TRACKER_ICON.LEVEL_UP, "AA", 100);
+
+                Tracker tracker7 = new Tracker("exxxxxxx", "Exercise", 2000*60,
+                        0, 0, false,true, "hours",
+                        false, 1111199, Tracker.TRACKER_TYPE.LEVEL_UP, Tracker.GRAPH_TYPE.DAY,
+                        Tracker.TRACKER_ICON.LEVEL_UP, "EX", 120);
 
                 Target target1 = new Target(tracker1.getId(), 2*60, Target.EVERY_DAY);
                 Target target2 = new Target(tracker2.getId(), 200*60, Target.EVERY_YEAR);
-                Target target3 = new Target(tracker3.getId(), 60, Target.EVERY_DAY);
+                Target target3 = new Target(tracker3.getId(), 2, Target.EVERY_WEEK);
                 Target target4 = new Target(tracker4.getId(), 60, Target.EVERY_DAY);
-                Target target5 = new Target(tracker5.getId(), 1, Target.EVERY_WEEK);
+                Target target5 = new Target(tracker5.getId(), 10*60, Target.EVERY_WEEK);
                 Target target6 = new Target(tracker1.getId(), 1000*60, Target.EVERY_YEAR);
-                Target target7 = new Target(tracker6.getId(), 2, Target.EVERY_WEEK);
-                Target target8 = new Target(tracker7.getId(), 1, Target.EVERY_DAY);
+                Target target7 = new Target(tracker6.getId(), 2*60, Target.EVERY_WEEK);
+                Target target8 = new Target(tracker7.getId(), 30, Target.EVERY_DAY);
 
                 Calendar startDate = Calendar.getInstance();
                 startDate.add(Calendar.YEAR, -3);

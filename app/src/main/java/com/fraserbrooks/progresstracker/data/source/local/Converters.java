@@ -3,6 +3,7 @@ package com.fraserbrooks.progresstracker.data.source.local;
 import android.arch.persistence.room.TypeConverter;
 import android.util.Log;
 
+import com.fraserbrooks.progresstracker.data.Tracker;
 import com.fraserbrooks.progresstracker.data.UserSetting;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
@@ -52,15 +53,15 @@ public class Converters {
                 return 2;
             case CALENDAR_TARGET_3:
                 return 3;
-                default:
-                    Log.e(TAG, "fromSetting: unknown setting read from database");
-                    throw  new IllegalArgumentException();
+            default:
+                Log.e(TAG, "fromSetting: unknown setting read from database");
+                throw  new IllegalArgumentException();
         }
 
     }
 
     @TypeConverter
-    public static UserSetting.Setting fromInt(int i){
+    public static UserSetting.Setting settingFromInt(int i){
 
         switch(i){
 
@@ -70,10 +71,153 @@ public class Converters {
                 return UserSetting.Setting.CALENDAR_TARGET_2;
             case 3:
                 return UserSetting.Setting.CALENDAR_TARGET_3;
-                default:
-                    Log.e(TAG, "fromInt: unknown setting");
-                    throw  new IllegalArgumentException();
+            default:
+                Log.e(TAG, "setting fromInt: unknown setting");
+                throw  new IllegalArgumentException();
         }
+
+    }
+
+    public static class TrackerConverters{
+
+        @TypeConverter
+        public static int intFromTrackerType(Tracker.TRACKER_TYPE t) {
+
+            switch (t) {
+                case LEVEL_UP:
+                    return 1;
+                case GRAPH:
+                    return 2;
+                case YES_NO:
+                    return 3;
+                default:
+                    Log.e(TAG, "intFromTrackerType: unknown type");
+                    throw new IllegalArgumentException();
+            }
+
+        }
+
+        @TypeConverter
+        public static Tracker.TRACKER_TYPE trackerTypeFromInt(int i){
+
+            switch(i){
+
+                case 1:
+                    return Tracker.TRACKER_TYPE.LEVEL_UP;
+                case 2:
+                    return Tracker.TRACKER_TYPE.GRAPH;
+                case 3:
+                    return Tracker.TRACKER_TYPE.YES_NO;
+                default:
+                    Log.e(TAG, "trackerTypeFromInt: unknown setting");
+                    throw  new IllegalArgumentException();
+            }
+
+        }
+
+        @TypeConverter
+        public static int intFromGraphType(Tracker.GRAPH_TYPE t) {
+
+            switch (t) {
+                case DAY:
+                    return 1;
+                case WEEK:
+                    return 2;
+                case MONTH:
+                    return 3;
+                case YEAR:
+                    return 4;
+                default:
+                    Log.e(TAG, "intFromGraphType: unknown type");
+                    throw new IllegalArgumentException();
+            }
+
+        }
+
+        @TypeConverter
+        public static Tracker.TRACKER_ICON trackerIconFromInt(int i){
+
+            switch(i){
+
+                case 1:
+                    return Tracker.TRACKER_ICON.LEVEL_UP;
+                case 2:
+                    return Tracker.TRACKER_ICON.BOOK;
+                case 3:
+                    return Tracker.TRACKER_ICON.HEART;
+                case 4:
+                    return Tracker.TRACKER_ICON.STUDY;
+                case 5:
+                    return Tracker.TRACKER_ICON.PHONE;
+                case 6:
+                    return Tracker.TRACKER_ICON.APPLE;
+                case 7:
+                    return Tracker.TRACKER_ICON.PEOPLE;
+                case 8:
+                    return Tracker.TRACKER_ICON.TEXT;
+                case 9:
+                    return Tracker.TRACKER_ICON.COMPUTER;
+                case 10:
+                    return Tracker.TRACKER_ICON.PENCIL;
+                default:
+                    Log.e(TAG, "trackerIconFromInt: unknown setting");
+                    throw  new IllegalArgumentException();
+            }
+
+        }
+
+        @TypeConverter
+        public static int intFromTrackerIcon(Tracker.TRACKER_ICON i) {
+
+            switch (i) {
+                case LEVEL_UP:
+                    return 1;
+                case BOOK:
+                    return 2;
+                case HEART:
+                    return 3;
+                case STUDY:
+                    return 4;
+                case PHONE:
+                    return 5;
+                case APPLE:
+                    return 6;
+                case PEOPLE:
+                    return 7;
+                case TEXT:
+                    return 8;
+                case COMPUTER:
+                    return 9;
+                case PENCIL:
+                    return 10;
+                default:
+                    Log.e(TAG, "intFromTrackerIcon: unknown icon");
+                    throw new IllegalArgumentException();
+            }
+
+        }
+
+        @TypeConverter
+        public static Tracker.GRAPH_TYPE graphTypeFromInt(int i){
+
+            switch(i){
+
+                case 1:
+                    return Tracker.GRAPH_TYPE.DAY;
+                case 2:
+                    return Tracker.GRAPH_TYPE.WEEK;
+                case 3:
+                    return Tracker.GRAPH_TYPE.MONTH;
+                case 4:
+                    return Tracker.GRAPH_TYPE.YEAR;
+                default:
+                    Log.e(TAG, "graphTypeFromInt: unknown setting");
+                    throw  new IllegalArgumentException();
+            }
+
+        }
+
+
 
     }
 
@@ -105,7 +249,7 @@ public class Converters {
         }
 
         @TypeConverter
-        public static Date datefromTimeString(String timeString){
+        public static Date dateFromTimeString(String timeString){
             SimpleDateFormat format1 = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
             Calendar cal = Calendar.getInstance();
             if(timeString == null){ cal = null; }else{

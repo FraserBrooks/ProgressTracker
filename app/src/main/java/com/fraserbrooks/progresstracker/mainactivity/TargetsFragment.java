@@ -2,12 +2,14 @@ package com.fraserbrooks.progresstracker.mainactivity;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -252,7 +254,10 @@ public class TargetsFragment extends Fragment implements TargetsContract.View{
                     getInteger(R.integer.target_bar_blue_higher);
 
             if(progress == 1){
-                tvColourRect.setBackgroundResource(R.color.dark1_level3);
+
+                TypedValue tArray = new TypedValue();
+                getContext().getTheme().resolveAttribute(R.attr.level3_color, tArray,true);
+                tvColourRect.setBackgroundColor(tArray.data);
             }else{
 
                 int[] progressBarColours = getRGB(progress, colourBounds);

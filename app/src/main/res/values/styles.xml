@@ -1,22 +1,89 @@
 <resources>
 
-    <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
-        <!-- Customize your theme here. -->
-        <item name="colorPrimary">@color/appBG</item>
-        <item name="colorPrimaryDark">@color/light1_level8</item>
-        <item name="colorAccent">@color/colorAccent</item>
-        <item name="android:textColor">@color/default_text_color</item>
+    <style name="content_horizontal_margin">
+        <item name="android:layout_marginStart">@dimen/content_start_horizontal_margin</item>
+        <item name="android:layout_marginEnd">@dimen/content_start_horizontal_margin</item>
+    </style>
+
+    <style name="page_horizontal_margin">
+        <item name="android:layout_marginStart">@dimen/page_start_horizontal_margin</item>
+        <item name="android:layout_marginEnd">@dimen/page_start_horizontal_margin</item>
+    </style>
+
+    <style name="button_layout_horizontal_margin" parent="content_horizontal_margin">
+        <item name="android:baselineAligned">false</item>
+        <item name="android:orientation">horizontal</item>
+    </style>
+
+    <style name="button_linear_layout">
+        <item name="android:baselineAligned">false</item>
+        <item name="android:orientation">horizontal</item>
+    </style>
+
+    <style name="details_screens_text_view">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_gravity">center_vertical</item>
+        <item name="android:gravity">bottom</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:maxLength">32</item>
     </style>
 
 
-    <style name="AppSecondaryTheme" parent="Theme.AppCompat.Light">
-        <!-- Customize your theme here. -->
-        <item name="colorPrimary">@color/title_bar</item>
-        <item name="colorPrimaryDark">@color/light1_level8</item>
-        <item name="colorAccent">@color/colorAccent</item>
-        <item name="android:textColor">@color/default_text_color</item>
+
+    <style name="small_text_appearance" parent="TextAppearance.AppCompat">
+        <item name="android:textColor">?theme_text_color</item>
+        <item name="android:textSize">@dimen/small_text_size</item>
     </style>
 
+    <style name="regular_text_appearance" parent="TextAppearance.AppCompat">
+        <item name="android:textColor">?theme_text_color</item>
+        <item name="android:textSize">@dimen/regular_text_size</item>
+    </style>
+
+    <style name="large_text_appearance" parent="TextAppearance.AppCompat">
+        <item name="android:textColor">?theme_text_color</item>
+        <item name="android:textSize">@dimen/large_text_size</item>
+    </style>
+
+    <style name="title_text_appearance" parent="TextAppearance.AppCompat">
+        <item name="android:textColor">?theme_text_color</item>
+        <item name="android:textSize">@dimen/title_text_size</item>
+    </style>
+
+    <style name="default_button">
+        <item name="android:background">@drawable/shared_ui_button_background_selector</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">?theme_text_color</item>
+        <item name="android:padding">8dp</item>
+        <item name="android:layout_width">@dimen/button_size</item>
+        <item name="android:layout_height">@dimen/button_size</item>
+    </style>
+
+    <style name="default_spinner" >
+        <item name="android:layout_marginStart">@dimen/content_start_horizontal_margin</item>
+        <item name="android:layout_marginEnd">@dimen/content_start_horizontal_margin</item>
+    </style>
+
+    <style name="default_spinner_with_vertical_margins" parent="default_spinner">
+        <item name="android:layout_marginTop">@dimen/activity_half_margin</item>
+        <item name="android:layout_marginBottom">@dimen/activity_vertical_margin</item>
+    </style>
+
+    <style name="calendar_fragment_set_text_view" parent="large_text_appearance">
+        <item name="android:text">@string/set</item>
+    </style>
+
+    <style name="calendar_fragment_target_text_view" parent="large_text_appearance">
+        <item name="android:text">@string/target</item>
+    </style>
+
+    <style name="calendar_fragment_small_drawable">
+        <item name="android:layout_width">@dimen/calendar_fragment_small_drawable_size</item>
+        <item name="android:layout_height">@dimen/calendar_fragment_small_drawable_size</item>
+        <item name="android:layout_marginStart">@dimen/calendar_fragment_drawable_margin</item>
+        <item name="android:layout_marginEnd">@dimen/calendar_fragment_drawable_margin</item>
+        <item name="android:layout_marginBottom">@dimen/calendar_fragment_drawable_margin</item>
+    </style>
 
 </resources>

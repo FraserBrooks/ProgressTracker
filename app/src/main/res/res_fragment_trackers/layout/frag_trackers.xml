@@ -1,37 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<com.fraserbrooks.progresstracker.TouchInterceptor
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical"
-    android:id="@+id/main_container"
+    tools:context="com.fraserbrooks.progresstracker.mainactivity.MainActivity"
+
+    android:id="@+id/root_tracker_list"
+    tools:listitem="@layout/frag_trackers_tracker_custom_view"
+    tools:listheader="@layout/frag_trackers_bar_graph_item"
+
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/appBG"
-    tools:context="com.fraserbrooks.progresstracker.mainactivity.MainActivity">
 
+    android:layout_marginTop="8dp"
+    android:paddingBottom="20dp"
+    android:clipToPadding="false"
+    android:divider="@null"
+    android:dividerHeight="8dp">
 
+</com.fraserbrooks.progresstracker.TouchInterceptor>
 
-
-    <com.fraserbrooks.progresstracker.TouchInterceptor
-        android:id="@+id/tracker_list"
-        tools:listitem="@layout/frag_trackers_level_tracker_item_small"
-        tools:listheader="@layout/frag_trackers_bar_graph_item"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:layout_marginTop="8dp"
-        android:paddingBottom="20dp"
-        android:clipToPadding="false"
-        android:divider="@null"
-        android:dividerHeight="8dp">
-
-    </com.fraserbrooks.progresstracker.TouchInterceptor>
-
-
-
-
-
-
-
-
-</LinearLayout>

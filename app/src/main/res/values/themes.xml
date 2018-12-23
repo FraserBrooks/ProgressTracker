@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/appBG</item>
+        <item name="colorPrimaryDark">@color/appBG</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:textColor">@color/default_text_color</item>
+    </style>
+
+
+    <style name="AppTheme_Default" parent="AppTheme">
+
+        <item name="page_background_color" >@color/default_theme_page_background</item>
+        <item name="menu_item_color" >@color/default_theme_menu_item_color</item>
+        <item name="theme_text_color" >@color/default_theme_text_color</item>
+        <item name="theme_icon_text_color">@color/default_theme_menu_item_color</item>
+        <item name="color_accent" >@color/default_theme_color_accent</item>
+        <item name="color_border" >@color/default_theme_color_border</item>
+        <item name="color_error" >@color/default_theme_color_error</item>
+
+        <item name="level1_color" >@color/default_theme_level1_color_mid</item>
+        <item name="level2_color" >@color/default_theme_level2_color_mid</item>
+        <item name="level3_color" >@color/default_theme_level3_color_mid</item>
+        <item name="level4_color" >@color/default_theme_level4_color_mid</item>
+        <item name="level5_color" >@color/default_theme_level5_color_mid</item>
+        <item name="level6_color" >@color/default_theme_level6_color_mid</item>
+        <item name="level7_color" >@color/default_theme_level7_color_mid</item>
+        <item name="level8_color" >@color/default_theme_level8_color_mid</item>
+
+        <item name="button_color_dark" >@color/default_theme_button_color_dark</item>
+        <item name="button_color_mid" >@color/default_theme_button_color_mid</item>
+        <item name="button_color_light" >@color/default_theme_button_color_light</item>
+
+        <!-- Theme Drawables -->
+        <item name="theme_tick_drawable">@drawable/shared_ui_tick_symbol_black</item>
+        <item name="theme_drag_and_drop_drawable">@drawable/shared_ui_reorder_button_black</item>
+        <item name="theme_level_drawable">@drawable/ico_gem</item>
+        <item name="theme_max_level_drawable">@drawable/ico_gem</item>
+
+        <!-- Theme values -->
+        <item name="base_saturation">@dimen/default_theme_base_saturation</item>
+        <item name="base_light_value">@dimen/default_theme_base_light_value</item>
+        <item name="gradient_spread_value">@dimen/default_theme_gradient_spread_value</item>
+        <item name="gradient_spread_type">@dimen/default_theme_gradient_spread_type</item>
+
+        <!-- Theme styles -->
+        <item name="text_large">@style/large_text_appearance</item>
+        <item name="text_regular">@style/regular_text_appearance</item>
+        <item name="text_title">@style/title_text_appearance</item>
+        <item name="button">@style/default_button</item>
+
+
+
+    </style>
+
+
+
+
+
+</resources>

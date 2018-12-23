@@ -1,12 +1,12 @@
-<ScrollView
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/calendar_screen_container"
+
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:id="@+id/calendar_screen_container"
     tools:context="com.fraserbrooks.progresstracker.mainactivity.MainActivity"
-    android:background="@drawable/activity_main_tab_item_background">
+    tools:background="?page_background_color">
 
 
     <LinearLayout
@@ -19,130 +19,151 @@
             android:id="@+id/calendar_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:header_color="@color/appBG"
-            app:header_label_color="@color/default_text_color"
-            app:today_label_color="@color/colorAccent"
-            app:target_one_icon_src="@drawable/frag_trackers_level3_colour_rect"
-            app:target_two_icon_src="@drawable/frag_trackers_level4_colour_rect"
-            app:target_three_icon_src="@drawable/frag_trackers_level6_colour_rect"
+            android:layout_marginBottom="25dp"
+            app:header_color="?page_background_color"
+            app:header_label_color="?theme_text_color"
 
-            />
-
-
-        <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="25dp"
-            android:background="@color/appBG"/>
-
+            app:today_label_color="?color_accent" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="20dp">
-            <TextView
-                android:layout_width="wrap_content"
+            android:orientation="vertical"
+
+            android:background="?menu_item_color"
+            android:paddingEnd="@dimen/content_start_horizontal_margin"
+            android:paddingStart="@dimen/content_start_horizontal_margin"
+            android:paddingTop="@dimen/activity_vertical_margin">
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    style="@style/calendar_fragment_set_text_view"
+                    android:layout_width="wrap_content"
+
+                    android:layout_height="wrap_content" />
+
+                <ImageView
+                    style="@style/calendar_fragment_small_drawable"
+                    android:src="?level3_color" />
+
+                <TextView
+                    style="@style/calendar_fragment_target_text_view"
+                    android:layout_width="wrap_content"
+
+                    android:layout_height="wrap_content" />
+
+            </LinearLayout>
+
+            <FrameLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/set"
-                android:textSize="16sp"/>
-            <ImageView
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:layout_marginLeft="10dp"
-                android:layout_marginStart="10dp"
-                android:layout_marginEnd="10dp"
-                android:layout_marginRight="10dp"
-                android:background="@drawable/frag_trackers_level3_colour_rect"/>
-            <TextView
-                android:layout_width="wrap_content"
+                android:background="@drawable/shared_ui_spinner_background"
+
+                style="@style/default_spinner_with_vertical_margins">
+
+                <Spinner
+                    android:id="@+id/calendar_spinner_1"
+
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+
+                    android:layout_margin="4dp"
+
+                    tools:entries="@array/target_periods"
+                    tools:listitem="@layout/shared_ui_spinner_item" />
+            </FrameLayout>
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    style="@style/calendar_fragment_set_text_view"
+                    android:layout_width="wrap_content"
+
+                    android:layout_height="wrap_content" />
+
+                <ImageView
+
+                    style="@style/calendar_fragment_small_drawable"
+
+                    android:background="?level4_color" />
+
+                <TextView
+                    style="@style/calendar_fragment_target_text_view"
+                    android:layout_width="wrap_content"
+
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+
+            <FrameLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/target"
-                android:textSize="16sp"/>
+                android:background="@drawable/shared_ui_spinner_background"
+
+                style="@style/default_spinner_with_vertical_margins">
+
+                <Spinner
+                    android:id="@+id/calendar_spinner_2"
+
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+
+                    android:layout_margin="4dp"
+
+                    tools:entries="@array/target_periods"
+                    tools:listitem="@layout/shared_ui_spinner_item" />
+            </FrameLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    style="@style/calendar_fragment_set_text_view"
+                    android:layout_width="wrap_content"
+
+                    android:layout_height="wrap_content" />
+
+                <ImageView
+
+                    style="@style/calendar_fragment_small_drawable"
+                    android:src="?level6_color" />
+
+                <TextView
+                    style="@style/calendar_fragment_target_text_view"
+                    android:layout_width="wrap_content"
+
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/shared_ui_spinner_background"
+
+                style="@style/default_spinner_with_vertical_margins">
+
+                <Spinner
+                    android:id="@+id/calendar_spinner_3"
+
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+
+                    android:layout_margin="4dp"
+
+                    tools:entries="@array/target_periods"
+                    tools:listitem="@layout/shared_ui_spinner_item" />
+            </FrameLayout>
+
         </LinearLayout>
-
-        <Spinner
-            android:id="@+id/calendar_spinner_1"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="20dp"
-            android:layout_marginRight="20dp"
-            android:padding="10dp"
-            android:background="@drawable/shared_ui_button_background_selector">
-        </Spinner>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="20dp">
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/set"
-                android:textSize="16sp"/>
-            <ImageView
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:layout_marginLeft="10dp"
-                android:layout_marginStart="10dp"
-                android:layout_marginEnd="10dp"
-                android:layout_marginRight="10dp"
-                android:background="@drawable/frag_trackers_level4_colour_rect"/>
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/target"
-                android:textSize="16sp"/>
-        </LinearLayout>
-
-        <Spinner
-            android:id="@+id/calendar_spinner_2"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="20dp"
-            android:layout_marginRight="20dp"
-            android:padding="10dp"
-            android:background="@drawable/shared_ui_button_background_selector">
-        </Spinner>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="20dp">
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/set"
-                android:textSize="16sp"/>
-            <ImageView
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:layout_marginLeft="10dp"
-                android:layout_marginStart="10dp"
-                android:layout_marginEnd="10dp"
-                android:layout_marginRight="10dp"
-                android:background="@drawable/frag_trackers_level6_colour_rect"/>
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/target"
-                android:textSize="16sp"/>
-        </LinearLayout>
-
-        <Spinner
-            android:id="@+id/calendar_spinner_3"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="20dp"
-            android:layout_marginRight="20dp"
-            android:layout_marginBottom="20dp"
-            android:padding="10dp"
-            android:background="@drawable/shared_ui_button_background_selector">
-        </Spinner>
-
-        <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:background="@color/appBG"/>
 
     </LinearLayout>
+
 
 </ScrollView>

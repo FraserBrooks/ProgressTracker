@@ -2,6 +2,35 @@
     <!-- Default screen margins, per the Android Design guidelines. -->
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
+    <dimen name="activity_half_margin">8dp</dimen>
+
+    <dimen name="bar_graph_text_width">85dp</dimen>
+    <dimen name="footer_button_text_size">40sp</dimen>
+    <dimen name="actual_footer_height">65dp</dimen>
+
+    <dimen name="button_size">75dp</dimen>
+    <dimen name="button_bar_height">80dp</dimen>
+
+    <dimen name="tracker_ico_size">45dp</dimen>
+    <dimen name="tracker_next_level_ico_size">20dp</dimen>
+
+    <dimen name="linear_layout_as_button_height">75dp</dimen>
+
+    <dimen name="content_start_horizontal_margin">25dp</dimen>
+
+    <dimen name="page_start_horizontal_margin">4dp</dimen>
+    <dimen name="page_start_vertical_margin">4dp</dimen>
+
+    <dimen name="calendar_fragment_small_drawable_size">20dp</dimen>
+    <dimen name="calendar_fragment_drawable_margin">10dp</dimen>
+
+    <dimen name="spinner_item_padding">8dp</dimen>
+    <dimen name="default_item_padding">4dp</dimen>
+
+    <dimen name="small_text_size">12sp</dimen>
+    <dimen name="regular_text_size">14sp</dimen>
+    <dimen name="large_text_size">16sp</dimen>
+    <dimen name="title_text_size">18sp</dimen>
 
     <dimen name="normal_height">65dp</dimen>
     <dimen name="expanded_height">180dp</dimen>
@@ -9,7 +38,7 @@
     <dimen name="progress_bar_height">20dp</dimen>
     <dimen name="tracker_list_graph_height">20dp</dimen>
 
-    <dimen name="drag_and_drop_button_size">40dp</dimen>
+    <dimen name="footer_height">40dp</dimen>
 
     <dimen name="tracker_list_item_side_padding">12dp</dimen>
     <dimen name="tracker_list_item_top_padding">8dp</dimen>
@@ -35,6 +64,8 @@
     <integer name="target_percentage_blue_higher" >32</integer>
 
 
-    <item name="gradient_strength" format="float" type="dimen">2</item>
+
+
+
 
 </resources>

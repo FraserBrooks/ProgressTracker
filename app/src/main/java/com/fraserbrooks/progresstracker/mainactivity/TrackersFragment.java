@@ -16,8 +16,9 @@ import com.fraserbrooks.progresstracker.Injection;
 import com.fraserbrooks.progresstracker.R;
 import com.fraserbrooks.progresstracker.TouchInterceptor;
 import com.fraserbrooks.progresstracker.addtrackeractivity.AddTrackerActivity;
+import com.fraserbrooks.progresstracker.customviews.TrackerView;
 import com.fraserbrooks.progresstracker.data.Tracker;
-import com.fraserbrooks.progresstracker.graphs.BarGraph;
+import com.fraserbrooks.progresstracker.customviews.graphs.BarGraph;
 import com.fraserbrooks.progresstracker.trackerdetailsactivity.TrackerDetailsActivity;
 import com.fraserbrooks.progresstracker.util.AppExecutors;
 import com.fraserbrooks.progresstracker.util.TrackerViewInflater;
@@ -82,7 +83,7 @@ public class TrackersFragment extends Fragment implements TrackersContract.View 
                 container, false);
 
         // Attach the adapter to a ListView
-        mTrackerListView = root.findViewById(R.id.tracker_list);
+        mTrackerListView = root.findViewById(R.id.root_tracker_list);
 
 
         View listFooterView = inflater.inflate(R.layout.shared_ui_list_footer_add_and_reorder_button,
@@ -116,18 +117,14 @@ public class TrackersFragment extends Fragment implements TrackersContract.View 
             }else if (position == parent.getCount() - 1 ){
                 Log.d(TAG, "onItemClick: footer clicked");
             }else {
-                Tracker tracker = (Tracker) parent.getItemAtPosition(position);
-                if(!tracker.isExpanded()){
-                    // Disable drag and drop if needed and show expanded view
-                    if(mTrackerListView.dragEnabled()){
-                        reorderButtonClicked();
-                    }else{
-                        mPresenter.setTrackerExpandCollapse(tracker);
-                    }
+                // Tracker item clicked
+                // Disable drag and drop if needed and show expanded view
+                if(mTrackerListView.dragEnabled()){
+                    reorderButtonClicked();
                 }
             }
-        });
 
+        });
 
         mTrackerListView.setDropListener(this.mDropListener);
         mTrackerListView.setDragEnabled(false);
@@ -142,20 +139,11 @@ public class TrackersFragment extends Fragment implements TrackersContract.View 
     private void reorderButtonClicked() {
 
         if(mTrackerListView.dragEnabled()){
+
             mTrackerListView.setDragEnabled(false);
             mListAdapter.setShowDragButton(false);
             showDragAndDrop(false);
         }else{
-
-            // un-expand views
-            for(int i = 0; i < mListAdapter.getCount(); i++){
-                Tracker t =  mListAdapter.getItem(i);
-                if(t != null && t.isExpanded()){
-                    //enableDrag = false;
-                    mPresenter.setTrackerExpandCollapse(t);
-                    updateOrAddTracker(t);
-                }
-            }
 
             mTrackerListView.setDragEnabled(true);
             mListAdapter.setShowDragButton(true);
@@ -182,9 +170,18 @@ public class TrackersFragment extends Fragment implements TrackersContract.View 
                 } else {
                     dragButtonView.setVisibility(View.GONE);
                 }
-            }else{
-                Log.d(TAG, "showDragAndDrop: could not find drag button at i = " + i);
             }
+
+            TrackerView trackerRootView = listItemView.findViewById(R.id.tracker_root_view);
+            if(trackerRootView != null){
+                if(show){
+                    trackerRootView.collapseView();
+                    trackerRootView.setClickable(false);
+                }else{
+                    trackerRootView.setClickable(true);
+                }
+            }
+
 
         }
 
@@ -280,7 +277,7 @@ public class TrackersFragment extends Fragment implements TrackersContract.View 
     private static class TrackersAdapter extends ArrayAdapter<Tracker> {
 
         private TrackersContract.Presenter mPresenter;
-        private TrackerViewInflater mTrackerInflater;
+        //private TrackerViewInflater mTrackerInflater;
         private int mResource;
         private boolean mShowDragButton = false;
 
@@ -289,7 +286,7 @@ public class TrackersFragment extends Fragment implements TrackersContract.View 
             super(context, resourceId);
             mResource = resourceId;
             mPresenter = presenter;
-            mTrackerInflater = new TrackerViewInflater(getContext(), mPresenter);
+            //mTrackerInflater = new TrackerViewInflater(getContext(), mPresenter);
 
         }
 
@@ -308,28 +305,19 @@ public class TrackersFragment extends Fragment implements TrackersContract.View 
             final Tracker tracker = getItem(i);
             assert tracker != null;
 
-            // Show or hide drag button based on dragEnabled
+
             View dragButton = convertView.findViewById(R.id.reorder_drag_button_layout);
+            TrackerView trackerRootView = convertView.findViewById(R.id.tracker_root_view);
+
+            // Show or hide drag button based on dragEnabled
             if(mShowDragButton){
                 dragButton.setVisibility(View.VISIBLE);
-
-                //Hide expanded view
-                tracker.setExpanded(false);
+                trackerRootView.collapseView();
             }else{
                 dragButton.setVisibility(View.GONE);
             }
 
-
-            //Top ConstraintLayout of expanded view used as button to de-expand the view
-            ViewGroup expandedLayout = convertView.findViewById(R.id.expanded_tracker_layout_top);
-            expandedLayout.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    mPresenter.setTrackerExpandCollapse(tracker);
-                }
-            });
-
-            mTrackerInflater.inflateTracker(convertView, tracker, tracker.isExpanded());
+            trackerRootView.setTracker(tracker, mPresenter);
 
             return convertView;
         }
