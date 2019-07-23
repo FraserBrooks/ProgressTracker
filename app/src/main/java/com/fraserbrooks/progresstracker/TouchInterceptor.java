@@ -17,7 +17,6 @@
 package com.fraserbrooks.progresstracker;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.PixelFormat;
@@ -33,12 +32,9 @@ import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.GestureDetector.SimpleOnGestureListener;
-import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListView;
-
-import com.fraserbrooks.progresstracker.data.Tracker;
 
 public class TouchInterceptor extends ListView {
 
@@ -89,9 +85,9 @@ public class TouchInterceptor extends ListView {
         super(context, attrs);
         mTouchSlop = ViewConfiguration.get(context).getScaledTouchSlop();
         Resources res = getResources();
-        mItemHeightNormal = res.getDimensionPixelSize(R.dimen.normal_height);
-        mItemHeightExpanded = res.getDimensionPixelSize(R.dimen.expanded_height);
-        mDragAndDropButtonWidth = res.getDimensionPixelSize(R.dimen.drag_and_drop_width);
+        mItemHeightNormal = res.getDimensionPixelSize(R.dimen.normal_item_height);
+        mItemHeightExpanded = res.getDimensionPixelSize(R.dimen.expanded_item_height);
+        mDragAndDropButtonWidth = res.getDimensionPixelSize(R.dimen.icon_height);
     }
 
     public void setDragEnabled(boolean enabled){
@@ -273,7 +269,7 @@ public class TouchInterceptor extends ListView {
                     return;
                 }
             }
-            if(v.getId() == R.id.tracker_item_root){
+            if(v.getId() == R.id.recycler_touch_interceptor_list_item){
                 ViewGroup.LayoutParams params = v.getLayoutParams();
                 params.height = ViewGroup.LayoutParams.WRAP_CONTENT;
                 v.setLayoutParams(params);

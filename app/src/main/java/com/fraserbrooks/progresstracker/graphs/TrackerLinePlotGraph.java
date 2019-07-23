@@ -10,7 +10,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.fraserbrooks.progresstracker.R;
-import com.fraserbrooks.progresstracker.data.Tracker;
+import com.fraserbrooks.progresstracker.trackers.domain.model.Tracker;
 
 import java.util.ArrayList;
 import java.util.Calendar;

@@ -6,6 +6,6 @@
     <solid
         android:color="?menu_item_color" />
 
-    <corners android:radius="8dp" />
+    <corners android:radius="@dimen/list_item_corner_radius" />
 
 </shape>

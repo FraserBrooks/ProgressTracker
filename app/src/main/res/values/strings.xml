@@ -73,6 +73,11 @@
     </integer-array>
 
 
+    <string name="today">Today</string>
+    <string name="this_week">This Week</string>
+    <string name="this_month">This Month</string>
+    <string name="this_year">This Year</string>
+
     <string name="day_colon">Day:</string>
     <string name="week_colon">Week:</string>
     <string name="month_colon">Month:</string>
@@ -169,12 +174,13 @@
     <string name="custom_colon">Custom:</string>
     <string name="enter_new_name">Enter New Name</string>
     <string name="x_minutes">%1$d minutes</string>
-    <string name="x_hours">%1$f hours</string>
+    <string name="x_hours">%1$d hours</string>
     <string name="plus_x_minutes">+ %1$d minutes</string>
-    <string name="plus_x_hours">+ %1$f hours</string>
+    <string name="plus_x_hours">+ %1$d hours</string>
     <string name="minus_x_minutes">- %1$d minutes</string>
-    <string name="minus_x_hours">- %1$f hours</string>
+    <string name="minus_x_hours">- %1$d hours</string>
     <string name="x_ys">%1$d %2$s</string>
+    <string name="plus_x_ys">+ %1$d %2$s</string>
     <string name="archive_tracker">Archive Tracker</string>
     <string name="archive_tracker_desc">Hide this tracker from the trackers screen and add to archived trackers?</string>
     <string name="unarchive_tracker">Unarchive Tracker</string>
@@ -188,5 +194,10 @@
 
     <string name="s_thousand_short">%1$sk</string>
     <string name="s_million_short">%1$sm</string>
+    <string name="max_level_icon">max_level_icon</string>
+    <string name="tracker_icon">tracker_icon</string>
+    <string name="tracker_next_level_icon">tracker next level icon</string>
+    <string name="yes_or_no_icon">Yes or No icon</string>
+    <string name="this_needs_doing">this needs doing</string>
 
 </resources>

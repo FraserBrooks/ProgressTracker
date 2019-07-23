@@ -11,40 +11,26 @@
 
     <item name="default_theme_base_saturation" format="float" type="dimen">0.6481</item>
     <item name="default_theme_base_light_value" format="float" type="dimen">0.9025</item>
-    <item name="default_theme_gradient_spread_value" format="float" type="dimen">0.1</item>
+    <item name="default_theme_gradient_spread_value" format="float" type="dimen">0.05</item>
     <item name="default_theme_gradient_spread_type" format="string" type="dimen">v</item> // (h/s/v)
 
-    <color name="default_theme_page_background">#d9d9d9</color>
+    <color name="default_theme_page_background">#cccccc</color>
     <color name="default_theme_menu_item_color">#ffffff</color>
     <color name="default_theme_text_color">#202020</color>
+    <color name="default_theme_shadow_color">#000000</color>
+
     <color name="default_theme_color_accent">#FF4081</color>
     <color name="default_theme_color_border">#505050</color>
     <color name="default_theme_color_error">#e23f3f</color>
 
-    <color name="default_theme_level1_color_dark">#dcdc1e</color>
-    <color name="default_theme_level1_color_mid">#e6e650</color>
-    <color name="default_theme_level1_color_light">#eded85</color>
-    <color name="default_theme_level2_color_dark">#da8720</color>
-    <color name="default_theme_level2_color_mid">#e6a350</color>
-    <color name="default_theme_level2_color_light">#edbf85</color>
-    <color name="default_theme_level3_color_dark">#8dda20</color>
-    <color name="default_theme_level3_color_mid">#a8e650</color>
-    <color name="default_theme_level3_color_light">#c2ed85</color>
-    <color name="default_theme_level4_color_dark">#da20da</color>
-    <color name="default_theme_level4_color_mid">#e650e6</color>
-    <color name="default_theme_level4_color_light">#ed85ed</color>
-    <color name="default_theme_level5_color_dark">#20dac8</color>
-    <color name="default_theme_level5_color_mid">#50e6d7</color>
-    <color name="default_theme_level5_color_light">#85ede3</color>
-    <color name="default_theme_level6_color_dark">#2053da</color>
-    <color name="default_theme_level6_color_mid">#5079e6</color>
-    <color name="default_theme_level6_color_light">#85a1ed</color>
-    <color name="default_theme_level7_color_dark">#da5520</color>
-    <color name="default_theme_level7_color_mid">#e67a50</color>
-    <color name="default_theme_level7_color_light">#eda285</color>
-    <color name="default_theme_level8_color_dark">#2d2d2d</color>
-    <color name="default_theme_level8_color_mid">#4b4b4b</color>
-    <color name="default_theme_level8_color_light">#696969</color>
+    <color name="default_theme_level1_color">#e6e650</color>
+    <color name="default_theme_level2_color">#e6a350</color>
+    <color name="default_theme_level3_color">#a8e650</color>
+    <color name="default_theme_level4_color">#e650e6</color>
+    <color name="default_theme_level5_color">#50e6d7</color>
+    <color name="default_theme_level6_color">#5079e6</color>
+    <color name="default_theme_level7_color">#e67a50</color>
+    <color name="default_theme_level8_color">#4b4b4b</color>
 
     <color name="default_theme_button_color_dark">#D7D7D7</color>
     <color name="default_theme_button_color_mid">#EEEEEE</color>

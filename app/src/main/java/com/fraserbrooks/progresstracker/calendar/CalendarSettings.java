@@ -2,7 +2,7 @@ package com.fraserbrooks.progresstracker.calendar;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
-import android.support.v4.content.ContextCompat;
+import androidx.core.content.ContextCompat;
 
 
 import com.fraserbrooks.progresstracker.R;
@@ -20,6 +20,8 @@ public class CalendarSettings {
 
 
     private Drawable mPreviousButtonSrc, mForwardButtonSrc,
+
+            // todo: probably don't need these
             mTarget1Resource, mTarget2Resource, mTarget3Resource;
 
     private Calendar mCurrentDate = CalendarUtils.getCalendar();
@@ -224,6 +226,7 @@ public class CalendarSettings {
         return mTarget3Resource;
     }
 
+
     public boolean target1MetOn(Date day) {
         return mTargetOneDays != null && mTargetOneDays.contains(day);
     }
@@ -235,7 +238,6 @@ public class CalendarSettings {
     public boolean target3MetOn(Date day) {
         return mTargetThreeDays != null && mTargetThreeDays.contains(day);
     }
-
 
     public void setTargetOneDays(Set<Date> days) {
         mTargetOneDays = days;

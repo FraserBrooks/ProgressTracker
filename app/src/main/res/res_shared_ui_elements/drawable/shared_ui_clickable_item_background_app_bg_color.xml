@@ -7,6 +7,6 @@
     <solid
         android:color="?page_background_color" />
 
-    <corners android:radius="8dp" />
+    <corners android:radius="@dimen/list_item_corner_radius" />
 
 </shape>

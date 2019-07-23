@@ -1,6 +1,6 @@
 package com.fraserbrooks.progresstracker.dialogs;
 
-import com.fraserbrooks.progresstracker.data.Tracker;
+import com.fraserbrooks.progresstracker.trackers.domain.model.Tracker;
 
 public interface DialogCallerContract {
     /* The activity that creates an instance of a dialog fragment must

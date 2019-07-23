@@ -10,7 +10,7 @@
     <LinearLayout
         android:id="@+id/target_item"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/normal_height"
+        android:layout_height="@dimen/normal_item_height"
         android:orientation="horizontal"
         android:paddingTop="8dp"
         android:paddingBottom="8dp"
@@ -28,7 +28,7 @@
             android:layout_weight="8">
 
             <!-- for text: name and minutes-->
-            <android.support.constraint.ConstraintLayout
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
@@ -94,7 +94,7 @@
                     android:paddingStart="8dp"
                     android:paddingEnd="0dp"/>
 
-            </android.support.constraint.ConstraintLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
 
         </LinearLayout>

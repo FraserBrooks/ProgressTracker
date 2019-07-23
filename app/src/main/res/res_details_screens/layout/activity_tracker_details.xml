@@ -7,7 +7,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="?menu_item_color"
-    tools:context="com.fraserbrooks.progresstracker.trackerdetailsactivity.TrackerDetailsActivity">
+    tools:context="com.fraserbrooks.progresstracker.trackers.TrackerDetailsActivity">
 
 
     <LinearLayout
@@ -15,20 +15,17 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <com.fraserbrooks.progresstracker.customviews.graphs.TimeGraphView
+        <com.fraserbrooks.progresstracker.trackers.view.trackergraphs.TrackerTimeGraphView
             android:id="@+id/tracker_details_graph_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingStart="@dimen/default_item_padding"
-            android:paddingEnd="@dimen/default_item_padding"
-            android:paddingTop="@dimen/activity_vertical_margin"
 
 
             app:graph_window_height="150dp"
             app:bars_per_interval="one"
 
             app:graph_window_background_color="?page_background_color"
-            app:graph_axis_background_color="?page_background_color"
+            app:graph_background_color="?page_background_color"
 
             app:axis_text_color="?theme_text_color"
             app:time_label_text_color="?theme_text_color"
@@ -45,20 +42,20 @@
 
         <include
             android:id="@+id/small_tracker_layout"
-            layout="@layout/frag_trackers_tracker_item"
+            layout="@layout/recycler_touch_interceptor_list_item"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
-            android:layout_marginTop="8dp">
-        </include>
+            android:layout_marginTop="8dp"/>
 
         <LinearLayout
             android:id="@+id/top_buttons_layout"
 
-            style="@style/button_layout_horizontal_margin"
+            android:layout_height="wrap_content"
 
             android:layout_width="match_parent"
-            android:layout_height="@dimen/button_bar_height">
+
+            >
 
             <Button
                 android:id="@+id/top_button_1"
@@ -101,17 +98,18 @@
         <LinearLayout
             android:id="@+id/new_name_layout"
             android:orientation="horizontal"
+            android:layout_height="wrap_content"
 
-            style="@style/button_layout_horizontal_margin"
 
             android:layout_width="match_parent"
-            android:layout_height="@dimen/linear_layout_as_button_height">
+
+            >
 
             <TextView
                 android:id="@+id/edit_name_tv"
 
+                android:layout_height="wrap_content"
                 android:textAppearance="@style/title_text_appearance"
-                style="@style/details_screens_text_view"
 
                 android:layout_width="0dp"
                 android:layout_weight="1"
@@ -122,8 +120,8 @@
             <TextView
                 android:id="@+id/current_name_tv"
 
+                android:layout_height="wrap_content"
                 android:textAppearance="@style/title_text_appearance"
-                style="@style/details_screens_text_view"
 
                 android:layout_marginEnd="8dp"
                 android:layout_marginStart="8dp"
@@ -138,16 +136,17 @@
         <LinearLayout
             android:id="@+id/new_difficulty_layout"
 
-            style="@style/button_layout_horizontal_margin"
+            android:layout_height="wrap_content"
 
             android:layout_width="match_parent"
-            android:layout_height="@dimen/linear_layout_as_button_height">
+
+            >
 
             <TextView
                 android:id="@+id/edit_difficulty_tv"
 
+                android:layout_height="wrap_content"
                 android:textAppearance="@style/title_text_appearance"
-                style="@style/details_screens_text_view"
 
                 android:layout_width="wrap_content"
                 tools:text="Paintings to:" />
@@ -166,8 +165,8 @@
             <TextView
                 android:id="@+id/max_count_tv"
 
+                android:layout_height="wrap_content"
                 android:textAppearance="@style/title_text_appearance"
-                style="@style/details_screens_text_view"
 
                 android:layout_width="0dp"
                 android:layout_weight="1"
@@ -175,8 +174,7 @@
                 android:paddingStart="4dp"
                 android:layout_marginStart="8dp"
                 android:layout_marginEnd="8dp"
-                tools:text="@string/_1000_hours">
-            </TextView>
+                tools:text="@string/_1000_hours"/>
 
 
         </LinearLayout>
@@ -184,16 +182,16 @@
         <LinearLayout
             android:id="@+id/new_counter_label_layout"
 
-            style="@style/button_layout_horizontal_margin"
-
+            android:layout_height="wrap_content"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/linear_layout_as_button_height">
+
+            >
 
             <TextView
                 android:id="@+id/edit_label_tv"
 
+                android:layout_height="wrap_content"
                 android:textAppearance="@style/title_text_appearance"
-                style="@style/details_screens_text_view"
 
                 android:layout_width="wrap_content"
                 android:text="@string/edit_counter_label_colon"/>
@@ -201,8 +199,8 @@
             <TextView
                 android:id="@+id/label_tv"
 
+                android:layout_height="wrap_content"
                 android:textAppearance="@style/title_text_appearance"
-                style="@style/details_screens_text_view"
 
                 android:layout_width="0dp"
                 android:layout_weight="3"
@@ -215,33 +213,36 @@
         <LinearLayout
             android:id="@+id/tracker_details_archive_button_layout"
 
-            style="@style/button_layout_horizontal_margin"
 
+            android:layout_height="wrap_content"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/linear_layout_as_button_height">
+
+            >
 
             <TextView
                 android:id="@+id/archive_tracker_button_text_view"
 
+                android:layout_height="wrap_content"
                 android:textAppearance="@style/title_text_appearance"
-                style="@style/details_screens_text_view"
 
                 android:layout_width="wrap_content"
                 tools:text="Archive Tracker"/>
+
         </LinearLayout>
 
         <LinearLayout
             android:id="@+id/tracker_details_delete_button_layout"
 
-            style="@style/button_layout_horizontal_margin"
+            android:layout_height="wrap_content"
 
             android:layout_width="match_parent"
-            android:layout_height="@dimen/linear_layout_as_button_height">
+
+            >
 
             <TextView
                 android:textAppearance="@style/title_text_appearance"
-                style="@style/details_screens_text_view"
 
+                android:layout_height="wrap_content"
                 android:layout_width="wrap_content"
                 android:text="@string/delete_tracker"/>
 

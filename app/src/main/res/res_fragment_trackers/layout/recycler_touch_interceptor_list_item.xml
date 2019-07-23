@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView
+    android:id="@+id/recycler_touch_interceptor_list_item"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+
+    android:layout_marginStart="@dimen/spacing_small"
+    android:layout_marginEnd="@dimen/spacing_small"
+    android:layout_marginTop="@dimen/spacing_small"
+
+    app:cardElevation="@dimen/list_item_elevation"
+
+    app:cardCornerRadius="@dimen/list_item_corner_radius">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/shared_ui_clickable_item_background_selector"
+
+            android:baselineAligned="false"
+            android:orientation="horizontal">
+
+
+            <include
+                layout="@layout/shared_ui_drag_and_drop_button"
+                android:id="@+id/recycler_touch_interceptor_item_drag_and_drop_button"
+                android:layout_width="@dimen/normal_item_height"
+                android:layout_height="match_parent">
+
+            </include>
+
+            <FrameLayout
+                android:id="@+id/recycler_touch_interceptor_item_frame"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+
+                android:paddingTop="@dimen/spacing_tiny"
+                android:paddingStart="@dimen/spacing_tiny"
+                android:paddingEnd="@dimen/spacing_tiny"
+
+                >
+
+            </FrameLayout>
+
+
+        </LinearLayout>
+
+
+</androidx.cardview.widget.CardView>
+
+
+    <!--
+
+
+    OLD:
+
+    <?xml version="1.0" encoding="utf-8"?>
+        <androidx.cardview.widget.CardView
+            android:id="@+id/recycler_touch_interceptor_list_item"
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+
+            app:cardUseCompatPadding="true"
+            app:cardElevation="3dp"
+
+            app:cardCornerRadius="8dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/shared_ui_clickable_item_background_selector"
+
+                    android:baselineAligned="false"
+                    android:orientation="horizontal">
+
+
+                    <FrameLayout
+                        android:id="@+id/reorder_drag_button_layout"
+
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+
+                        android:layout_gravity="center"
+
+                        android:paddingStart="@dimen/tracker_list_item_start_padding"
+                        android:paddingTop="@dimen/activity_half_margin"
+                        android:paddingBottom="@dimen/activity_half_margin"
+                        android:paddingEnd="@dimen/activity_half_margin"
+
+                        >
+
+                        <include layout="@layout/shared_ui_drag_and_drop_button" />
+
+                    </FrameLayout>
+
+                    <FrameLayout
+                        android:id="@+id/recycler_touch_interceptor_item_frame"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+
+                        android:paddingStart="@dimen/activity_horizontal_margin"
+                        android:paddingEnd="@dimen/activity_horizontal_margin">
+
+                    </FrameLayout>
+
+
+                </LinearLayout>
+
+
+        </androidx.cardview.widget.CardView>
+
+
+    -->

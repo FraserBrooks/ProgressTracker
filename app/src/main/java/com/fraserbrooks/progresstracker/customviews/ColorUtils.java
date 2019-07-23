@@ -4,13 +4,13 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
-import android.support.annotation.ColorInt;
-import android.util.Log;
+import androidx.annotation.ColorInt;
 import android.util.TypedValue;
 
 import com.fraserbrooks.progresstracker.R;
-import com.fraserbrooks.progresstracker.data.Tracker;
+import com.fraserbrooks.progresstracker.trackers.domain.model.Tracker;
 import com.sdsmdg.harjot.vectormaster.VectorMasterDrawable;
+import com.sdsmdg.harjot.vectormaster.models.PathModel;
 
 public class ColorUtils {
 
@@ -79,16 +79,16 @@ public class ColorUtils {
         return shape;
     }
 
-    public static VectorMasterDrawable getTrackerIcon(Context context, Tracker.TRACKER_ICON i) {
+    public static VectorMasterDrawable getTrackerIcon(Context context, int i) {
 
         switch (i) {
-            case LEVEL_UP:
+            case Tracker.ICON_LEVEL:
                 return new VectorMasterDrawable(context, R.drawable.ico_gem);
-            case BOOK:
+            case Tracker.ICON_BOOK:
                 return new VectorMasterDrawable(context, R.drawable.ico_books);
-            case STUDY:
+            case Tracker.ICON_STUDY:
                 return new VectorMasterDrawable(context, R.drawable.ico_study);
-            case HEART:
+            case Tracker.ICON_HEART:
                 return new VectorMasterDrawable(context, R.drawable.ico_heart);
             default:
                 return new VectorMasterDrawable(context, R.drawable.ico_heart);
@@ -97,12 +97,24 @@ public class ColorUtils {
 
     }
 
+    public static void setVectorColor(VectorMasterDrawable trackerIcon, int trackerColor) {
+
+        int outlineNo = 1;
+        PathModel outline = trackerIcon.getPathModelByName("outline" + outlineNo);
+
+        while(outline != null){
+            outlineNo += 1;
+            outline.setFillColor(trackerColor);
+            outline = trackerIcon.getPathModelByName("outline" + outlineNo);
+        }
+    }
+
     public static int getTrackerColor(Context c, Tracker tracker){
 
-        if(tracker.getIcon().equals(Tracker.TRACKER_ICON.LEVEL_UP)){
+        if(tracker.getType() == Tracker.TYPE_LEVEL_UP){
             return getLevelDefinedColor(c, tracker.getLevel());
         }else{
-            return getUserDefinedColor(c, tracker.getColor());
+            return getUserDefinedColor(c, tracker.getColorBase());
         }
 
     }
@@ -162,6 +174,50 @@ public class ColorUtils {
         }
         @ColorInt int color = typedValue.data;
         return color;
+    }
+
+
+    public static void setBlankCircle(Context context, VectorMasterDrawable drawable){
+
+        setColoredCircle(context, drawable, null, null, null);
+
+    }
+
+
+    public static void setColoredCircle(Context context, VectorMasterDrawable drawable,
+                                        int fillColor){
+        setColoredCircle(context, drawable, null, null, fillColor);
+    }
+
+    public static void setColoredCircle(Context context,
+                                                        VectorMasterDrawable circleDrawable,
+                                                        Integer outerRingColor,
+                                                        Integer innerRingColor, Integer fillColor){
+
+        TypedValue typedValue = new TypedValue();
+        Resources.Theme theme = context.getTheme();
+
+        if(outerRingColor == null){
+            theme.resolveAttribute(R.attr.page_background_color, typedValue, true);
+            outerRingColor = typedValue.data;
+        }
+
+        if(innerRingColor == null){
+            theme.resolveAttribute(R.attr.menu_item_color, typedValue, true);
+            innerRingColor = typedValue.data;
+        }
+
+        if(fillColor == null){
+            fillColor = outerRingColor;
+        }
+
+        PathModel circleInner = circleDrawable.getPathModelByName("inner_circle");
+        PathModel circleOuter = circleDrawable.getPathModelByName("outer_circle");
+
+        circleOuter.setStrokeColor(outerRingColor);
+        circleOuter.setFillColor(innerRingColor);
+        circleInner.setFillColor(fillColor);
+
     }
 
 

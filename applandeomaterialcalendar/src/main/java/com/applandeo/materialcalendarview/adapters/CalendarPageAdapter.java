@@ -1,8 +1,8 @@
 package com.applandeo.materialcalendarview.adapters;
 
 import android.content.Context;
-import android.support.v4.view.PagerAdapter;
-import android.util.Log;
+import androidx.viewpager.widget.PagerAdapter;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,7 +18,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * This class is responsible for loading a calendar page content.

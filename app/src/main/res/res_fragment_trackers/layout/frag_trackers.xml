@@ -1,21 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.fraserbrooks.progresstracker.TouchInterceptor
+<com.fraserbrooks.progresstracker.RecyclerTouchInterceptor
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context="com.fraserbrooks.progresstracker.mainactivity.MainActivity"
+    tools:context="com.fraserbrooks.progresstracker.MainActivity"
 
     android:id="@+id/root_tracker_list"
-    tools:listitem="@layout/frag_trackers_tracker_custom_view"
-    tools:listheader="@layout/frag_trackers_bar_graph_item"
+    tools:listitem="@layout/recycler_touch_interceptor_list_item"
+
 
     android:layout_width="match_parent"
     android:layout_height="match_parent"
 
-    android:layout_marginTop="8dp"
-    android:paddingBottom="20dp"
-    android:clipToPadding="false"
-    android:divider="@null"
-    android:dividerHeight="8dp">
+    android:clipToPadding="false">
 
-</com.fraserbrooks.progresstracker.TouchInterceptor>
+</com.fraserbrooks.progresstracker.RecyclerTouchInterceptor>
 

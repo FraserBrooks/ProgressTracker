@@ -1,262 +1,329 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<merge
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="horizontal">
+    android:layout_height="wrap_content">
 
     <TableLayout
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1">
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
-        <TableRow
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+        <TableRow>
 
-            <!-- graph_axis -->
             <LinearLayout
-                android:id="@+id/graph_axis"
-                android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:gravity="end"
-                android:orientation="vertical"
-
-                android:paddingEnd="4dp"
-                android:paddingStart="0dp"
-                tools:background="@color/appBG">
-
+                android:orientation="vertical">
 
                 <TextView
                     android:id="@+id/time_graph_axis_tv_1"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="end"
                     android:maxLines="1"
-                    android:textSize="14sp"
+                    android:textAppearance="@style/small_text_appearance"
+
                     tools:text="1" />
 
-
                 <View
-                    android:layout_width="0dp"
+                    android:layout_width="1dp"
                     android:layout_height="0dp"
-                    android:layout_weight="1" />
-
+                    android:layout_weight="1"/>
 
                 <TextView
                     android:id="@+id/time_graph_axis_tv_2"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="end"
                     android:maxLines="1"
-                    android:textSize="14sp"
+                    android:textAppearance="@style/small_text_appearance"
+
                     tools:text="7" />
 
                 <View
-                    android:layout_width="0dp"
+                    android:layout_width="1dp"
                     android:layout_height="0dp"
-                    android:layout_weight="1" />
-
+                    android:layout_weight="1"/>
 
                 <TextView
                     android:id="@+id/time_graph_axis_tv_3"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="end"
                     android:maxLines="1"
-                    android:textSize="14sp"
+                    android:textAppearance="@style/small_text_appearance"
+
                     tools:text="5" />
 
                 <View
-                    android:layout_width="0dp"
+                    android:layout_width="1dp"
                     android:layout_height="0dp"
-                    android:layout_weight="1" />
+                    android:layout_weight="1"/>
 
                 <TextView
                     android:id="@+id/time_graph_axis_tv_4"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="end"
                     android:maxLines="1"
                     android:textSize="14sp"
-                    tools:text="2" />
 
-                <View
-                    android:layout_width="0dp"
-                    android:layout_height="0dp"
-                    android:layout_weight="1" />
+
+                    tools:text="2" />
 
 
             </LinearLayout>
 
             <!-- graph_window -->
+
             <LinearLayout
                 android:id="@+id/graph_window"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
+                android:layout_height="120dp"
                 android:gravity="bottom"
-                android:orientation="horizontal"
+
+                android:layout_weight="1"
+
+
                 tools:background="@color/appBG">
 
+
                 <View
+                    android:id="@+id/graph_box_1"
                     android:layout_width="0dp"
-                    android:layout_height="0dp"
-                    android:layout_weight="1" />
+                    android:layout_height="15dp"
+                    android:background="@color/colorAccent"
+
+                    android:layout_weight="1"/>
 
                 <View
-                    android:layout_width="50dp"
-                    android:layout_height="150dp"
-                    android:background="@color/colorAccent" />
+                    android:id="@+id/graph_box_2"
+                    android:layout_width="0dp"
+                    android:layout_height="45dp"
+                    android:background="@color/colorAccent"
+
+                    android:layout_weight="1"/>
 
                 <View
-                    android:layout_width="50dp"
+                    android:id="@+id/graph_box_3"
+                    android:layout_width="0dp"
                     android:layout_height="55dp"
-                    android:background="@color/colorAccent" />
+                    android:background="@color/colorAccent"
+
+                    android:layout_weight="1" />
 
                 <View
+                    android:id="@+id/graph_box_4"
                     android:layout_width="0dp"
-                    android:layout_height="0dp"
+                    android:layout_height="25dp"
+                    android:background="@color/colorAccent"
+
                     android:layout_weight="1" />
+
+                <View
+                    android:id="@+id/graph_box_5"
+                    android:layout_width="0dp"
+                    android:layout_height="15dp"
+                    android:background="@color/colorAccent"
+
+                    android:layout_weight="1"/>
+
+                <View
+                    android:id="@+id/graph_box_6"
+                    android:layout_width="0dp"
+                    android:layout_height="85dp"
+                    android:background="@color/colorAccent"
+
+                    android:layout_weight="1" />
+
+                <View
+                    android:id="@+id/graph_box_7"
+                    android:layout_width="0dp"
+                    android:layout_height="75dp"
+                    android:background="@color/colorAccent"
+
+                    android:layout_weight="1"/>
 
             </LinearLayout>
 
+
+
+
+            <!-- max_value_text_view -->
+            <TextView
+                android:id="@+id/time_graph_max_value_tv"
+                android:textAppearance="@style/small_text_appearance"
+                android:layout_width="wrap_content"
+                tools:text="100" />
+
         </TableRow>
 
-        <TableRow
-            android:id="@+id/time_graph_footer_row"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+        <TableRow>
 
             <!-- interval_tv -->
             <TextView
                 android:id="@+id/time_graph_interval_tv"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_gravity="end"
 
-                android:textSize="14sp"
-                tools:text="Days:" />
+                android:textAppearance="@style/small_text_appearance"
 
-            <!-- time_labels -->
+                tools:text="Days:"
+
+                />
+
+            <!-- time_labels / x axis labels-->
             <LinearLayout
-                android:id="@+id/time_labels_layout"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
+
                 android:layout_weight="1"
                 android:orientation="horizontal">
 
-
                 <View
+                    android:id="@+id/time_graph_spacer_1"
                     android:layout_width="0dp"
-                    android:layout_height="0dp"
-                    android:layout_weight="1" />
+                    android:layout_height="1dp"
+                    android:layout_weight="1"
+
+                    />
 
                 <TextView
-                    android:id="@+id/time_graph_tv_1"
+                    android:id="@+id/time_graph_x_axis_1"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="M"
-                    android:textSize="14sp" />
+                    android:textAppearance="@style/small_text_appearance" />
 
                 <View
+                    android:id="@+id/time_graph_spacer_2"
                     android:layout_width="0dp"
-                    android:layout_height="0dp"
-                    android:layout_weight="2" />
+                    android:layout_height="1dp"
+                    android:layout_weight="1"
+                    />
+
+                <View
+                    android:id="@+id/time_graph_spacer_3"
+                    android:layout_width="0dp"
+                    android:layout_height="1dp"
+                    android:layout_weight="1" />
 
                 <TextView
+                    android:id="@+id/time_graph_x_axis_2"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="T"
-                    android:textSize="14sp" />
+                    android:textAppearance="@style/small_text_appearance" />
 
                 <View
+                    android:id="@+id/time_graph_spacer_4"
                     android:layout_width="0dp"
-                    android:layout_height="0dp"
-                    android:layout_weight="2" />
+                    android:layout_height="1dp"
+                    android:layout_weight="1" />
+
+                <View
+                    android:id="@+id/time_graph_spacer_5"
+                    android:layout_width="0dp"
+                    android:layout_height="1dp"
+                    android:layout_weight="1" />
 
                 <TextView
+                    android:id="@+id/time_graph_x_axis_3"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="W"
-                    android:textSize="14sp" />
+                    android:textAppearance="@style/small_text_appearance" />
 
                 <View
+                    android:id="@+id/time_graph_spacer_6"
                     android:layout_width="0dp"
-                    android:layout_height="0dp"
-                    android:layout_weight="2" />
+                    android:layout_height="1dp"
+                    android:layout_weight="1" />
+
+                <View
+                    android:id="@+id/time_graph_spacer_7"
+                    android:layout_width="0dp"
+                    android:layout_height="1dp"
+                    android:layout_weight="1" />
 
                 <TextView
+                    android:id="@+id/time_graph_x_axis_4"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="T"
-                    android:textSize="14sp" />
+                    android:textAppearance="@style/small_text_appearance" />
 
                 <View
+                    android:id="@+id/time_graph_spacer_8"
                     android:layout_width="0dp"
-                    android:layout_height="0dp"
-                    android:layout_weight="2" />
+                    android:layout_height="1dp"
+                    android:layout_weight="1"/>
+
+                <View
+                    android:id="@+id/time_graph_spacer_9"
+                    android:layout_width="0dp"
+                    android:layout_height="1dp"
+                    android:layout_weight="1" />
 
                 <TextView
+                    android:id="@+id/time_graph_x_axis_5"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="F"
-                    android:textSize="14sp" />
+                    android:textAppearance="@style/small_text_appearance" />
+
 
                 <View
+                    android:id="@+id/time_graph_spacer_10"
                     android:layout_width="0dp"
-                    android:layout_height="0dp"
-                    android:layout_weight="2" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="S"
-                    android:textSize="14sp" />
+                    android:layout_height="1dp"
+                    android:layout_weight="1"/>
 
                 <View
+                    android:id="@+id/time_graph_spacer_11"
                     android:layout_width="0dp"
-                    android:layout_height="0dp"
-                    android:layout_weight="2" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="S"
-                    android:textSize="14sp" />
-
-                <View
-                    android:layout_width="0dp"
-                    android:layout_height="0dp"
+                    android:layout_height="1dp"
                     android:layout_weight="1" />
 
+                <TextView
+                    android:id="@+id/time_graph_x_axis_6"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="S"
+                    android:textAppearance="@style/small_text_appearance"/>
+
+                <View
+                    android:id="@+id/time_graph_spacer_12"
+                    android:layout_width="0dp"
+                    android:layout_height="1dp"
+                    android:layout_weight="1"/>
+
+                <View
+                    android:id="@+id/time_graph_spacer_13"
+                    android:layout_width="0dp"
+                    android:layout_height="1dp"
+                    android:layout_weight="1"/>
+
+                <TextView
+                    android:id="@+id/time_graph_x_axis_7"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="S"
+                    android:textAppearance="@style/small_text_appearance"/>
+
+                <View
+                    android:id="@+id/time_graph_spacer_14"
+                    android:layout_width="0dp"
+                    android:layout_height="1dp"
+                    android:layout_weight="1"/>
+
             </LinearLayout>
+
+            <View
+                android:layout_height="2dp"/>
 
         </TableRow>
 
 
     </TableLayout>
 
-    <!-- max_value_layout -->
-    <LinearLayout
-        android:id="@+id/max_value_layout"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/time_graph_max_value_tv"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="14sp"
-            tools:text="100" />
 
-        <View
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_weight="1" />
 
-    </LinearLayout>
 
-</LinearLayout>
+
+
+</merge>

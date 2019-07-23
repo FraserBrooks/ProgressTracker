@@ -5,7 +5,7 @@ package com.fraserbrooks.progresstracker.data.source.remote;
  */
 
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.fraserbrooks.progresstracker.data.Tracker;
 import com.fraserbrooks.progresstracker.data.source.DataSource;

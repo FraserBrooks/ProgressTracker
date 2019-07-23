@@ -7,47 +7,57 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="?page_background_color"
-    tools:context="com.fraserbrooks.progresstracker.mainactivity.MainActivity">
+
+    tools:context="com.fraserbrooks.progresstracker.MainActivity">
 
 
-    <LinearLayout
-        android:id="@+id/tab_layout_layout"
+    <androidx.cardview.widget.CardView
+        android:id="@+id/activity_main_tab_card_view"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:background="@drawable/activity_main_tab_item_selector"
-        android:layout_alignParentTop="true">
-        <FrameLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="2">
-        </FrameLayout>
-        <android.support.design.widget.TabLayout
-            android:id="@+id/tab_layout"
-            android:layout_width="0dp"
-            android:layout_height="50dp"
-            app:tabBackground="@drawable/activity_main_tab_item_selector"
-            app:tabIndicatorColor="?menu_item_color"
-            android:layout_weight="20"/>
-        <FrameLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="2">
-        </FrameLayout>
-    </LinearLayout>
+        android:layout_height="@dimen/nav_bar_height"
+        android:layout_alignParentTop="true"
 
+        app:cardElevation="6dp"
+        >
 
-    <android.support.v4.view.ViewPager
+        <LinearLayout
+            android:id="@+id/tab_layout_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:background="@drawable/activity_main_tab_item_selector">
+
+            <!-- empty Space -->
+            <View
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="2">
+            </View>
+
+            <com.google.android.material.tabs.TabLayout
+                android:id="@+id/tab_layout"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                app:tabBackground="@drawable/activity_main_tab_item_selector"
+                app:tabIndicatorColor="?menu_item_color"
+                android:layout_weight="24"/>
+
+            <!-- empty Space -->
+            <View
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="2">
+            </View>
+
+        </LinearLayout>
+
+    </androidx.cardview.widget.CardView>
+
+    <androidx.viewpager.widget.ViewPager
         android:id="@+id/pager"
         android:layout_width="match_parent"
-        android:layout_height="fill_parent"
-        android:layout_below="@id/tab_layout_layout"/>
-
-
-
-
-
-
-
+        android:layout_height="match_parent"
+        android:layout_below="@id/activity_main_tab_card_view"
+        />
 
 </RelativeLayout>

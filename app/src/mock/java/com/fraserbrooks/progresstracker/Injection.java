@@ -16,7 +16,7 @@ package com.fraserbrooks.progresstracker;
  */
 
 import android.content.Context;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.fraserbrooks.progresstracker.data.source.Repository;
 import com.fraserbrooks.progresstracker.data.source.local.LocalDataSource;

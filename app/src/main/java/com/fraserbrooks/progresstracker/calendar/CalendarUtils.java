@@ -2,7 +2,7 @@ package com.fraserbrooks.progresstracker.calendar;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
-import android.support.constraint.ConstraintLayout;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
@@ -61,6 +61,7 @@ public class CalendarUtils {
 
         return firstDay.before(secondDay);
     }
+
 
     /**
      * This method compares calendars using month and year

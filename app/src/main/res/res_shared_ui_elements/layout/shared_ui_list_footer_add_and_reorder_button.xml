@@ -2,26 +2,24 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="@dimen/actual_footer_height"
+    android:layout_height="@dimen/normal_item_height"
     android:orientation="horizontal"
-    android:padding="@dimen/default_item_padding">
+    android:baselineAligned="false"
 
-    <FrameLayout
-        android:id="@+id/list_footer_drag_and_drop_button_layout"
-        android:layout_width="@dimen/actual_footer_height"
+    android:paddingTop="@dimen/spacing_small"
+    android:paddingStart="@dimen/spacing_small"
+    android:paddingEnd="@dimen/spacing_small"
+
+    >
+
+    <include
+        layout="@layout/shared_ui_drag_and_drop_button"
+        android:id="@+id/footer_enable_drag_and_drop_button"
+        android:layout_width="@dimen/normal_item_height"
         android:layout_height="match_parent"
-        android:padding="16dp"
-        android:layout_marginEnd="@dimen/default_item_padding"
-        android:background="@drawable/shared_ui_clickable_item_background_selector">
+        android:layout_marginEnd="@dimen/spacing_small">
 
-        <include
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            layout="@layout/shared_ui_drag_and_drop_button">
-
-        </include>
-
-    </FrameLayout>
+    </include>
 
 
     <include

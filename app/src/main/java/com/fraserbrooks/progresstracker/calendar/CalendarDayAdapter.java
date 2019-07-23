@@ -2,7 +2,7 @@ package com.fraserbrooks.progresstracker.calendar;
 
 import android.content.Context;
 import android.graphics.Typeface;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -80,6 +80,7 @@ public class CalendarDayAdapter extends ArrayAdapter<Date> {
 
         }
         dayLabel.setBackgroundColor(mCalendarSettings.getDayBackgroundColor());
+        dayLabel.setText(String.valueOf(day.get(Calendar.DAY_OF_MONTH)));
 
         if(mCalendarSettings.target1MetOn(day.getTime())){
             targetIcon1.setVisibility(View.VISIBLE);
@@ -99,7 +100,7 @@ public class CalendarDayAdapter extends ArrayAdapter<Date> {
             targetIcon3.setVisibility(View.INVISIBLE);
         }
 
-        dayLabel.setText(String.valueOf(day.get(Calendar.DAY_OF_MONTH)));
+
 
         return view;
     }

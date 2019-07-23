@@ -6,10 +6,10 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="?menu_item_color"
-    tools:context="com.fraserbrooks.progresstracker.addtrackeractivity.AddTrackerActivity">
+    tools:context=".trackers.AddTrackerActivity">
 
 
-    <android.support.constraint.ConstraintLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/activity_main_tab_item_selector">
@@ -57,7 +57,7 @@
                 android:src="?theme_max_level_drawable" />
         </LinearLayout>
 
-        <com.fraserbrooks.progresstracker.addtrackeractivity.RadioButtonTableLayout
+        <com.fraserbrooks.progresstracker.RadioButtonTableLayout
             android:id="@+id/radio_button_table"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -160,7 +160,7 @@
                     android:textAlignment="center"
                     android:textSize="16sp" />
             </TableRow>
-        </com.fraserbrooks.progresstracker.addtrackeractivity.RadioButtonTableLayout>
+        </com.fraserbrooks.progresstracker.RadioButtonTableLayout>
 
         <LinearLayout
             android:id="@+id/custom_max_count_layout"
@@ -204,6 +204,6 @@
             app:layout_constraintTop_toBottomOf="@+id/custom_max_count_layout" />
 
 
-    </android.support.constraint.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>
 

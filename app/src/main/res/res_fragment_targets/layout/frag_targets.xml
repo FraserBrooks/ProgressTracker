@@ -8,7 +8,7 @@
     android:layout_marginTop="8dp"
     android:divider="@null"
     android:dividerHeight="0dp"
-    tools:context="com.fraserbrooks.progresstracker.mainactivity.MainActivity"
+    tools:context="com.fraserbrooks.progresstracker.MainActivity"
     tools:listfooter="@layout/shared_ui_add_item_button"
     tools:listitem="@layout/frag_targets_target_item">
 

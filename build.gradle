@@ -17,7 +17,6 @@ buildscript {
 }
 
 plugins {
-    id "me.tatarka.retrolambda" version "3.7.0"
 }
 
 allprojects {
@@ -36,8 +35,8 @@ ext {
     // Sdk and tools
     // Support library and architecture components support minSdk 14 and above.
     minSdkVersion = 17
-    targetSdkVersion = 27
-    compileSdkVersion = 27
+    targetSdkVersion = 28
+    compileSdkVersion = 28
     buildToolsVersion = '28.0.3'
 
     // App dependencies
@@ -54,4 +53,5 @@ ext {
     roomVersion = "1.1.1"
     gsonVersion = "2.8.0"
     vectorMasterVersion = "1.1.3"
+    pagingVersion = "2.1.0-rc01"
 }

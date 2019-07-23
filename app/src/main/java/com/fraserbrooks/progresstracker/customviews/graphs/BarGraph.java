@@ -1,7 +1,7 @@
 package com.fraserbrooks.progresstracker.customviews.graphs;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,7 +10,7 @@ import android.widget.TextView;
 
 import com.fraserbrooks.progresstracker.R;
 import com.fraserbrooks.progresstracker.customviews.ColorUtils;
-import com.fraserbrooks.progresstracker.data.Tracker;
+import com.fraserbrooks.progresstracker.trackers.domain.model.Tracker;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -36,6 +36,9 @@ public class BarGraph extends LinearLayout {
         Log.d(TAG, "BarGraph: created");
         this.setOrientation(LinearLayout.VERTICAL);
         mCachedViews = new LinkedHashMap<>();
+
+
+
     }
 
     public void refresh(List<Tracker> ls){
@@ -94,8 +97,9 @@ public class BarGraph extends LinearLayout {
 
         // Data Population
         TextView tvName = graph_entry.findViewById(R.id.bar_graph_text);
-        View colourRect = graph_entry.findViewById(R.id.bar_graph_colour_rect);
-        View blankRect = graph_entry.findViewById(R.id.bar_graph_blank_rect);
+        TextView colourRect = graph_entry.findViewById(R.id.bar_graph_colour_rect);
+        TextView blankRect = graph_entry.findViewById(R.id.bar_graph_blank_rect);
+
 
         // set colour
         colourRect.setBackground(ColorUtils.getGradientDrawable(getContext(),
@@ -104,16 +108,17 @@ public class BarGraph extends LinearLayout {
         tvName.setText(tracker.getTitle());
 
         //set weights of rects
-        LayoutParams param_colour = new LayoutParams(
+        LinearLayout.LayoutParams param_colour = new LinearLayout.LayoutParams(
                 0,
                 LayoutParams.WRAP_CONTENT,
                 progress
         );
-        LayoutParams param_blank = new LayoutParams(
+        LinearLayout.LayoutParams param_blank = new LinearLayout.LayoutParams(
                 0,
                 LayoutParams.WRAP_CONTENT,
                 (1f - progress)
         );
+
         colourRect.setLayoutParams(param_colour);
         blankRect.setLayoutParams(param_blank);
         return graph_entry;

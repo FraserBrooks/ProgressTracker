@@ -6,6 +6,7 @@
     <attr name="menu_item_color" format="color"/>
     <attr name="theme_text_color" format="color"/>
     <attr name="theme_icon_text_color" format="color"/>
+    <attr name="theme_shadow_color" format="color"/>
     <attr name="color_accent" format="color"/>
     <attr name="color_border" format="color"/>
     <attr name="color_error" format="color"/>
@@ -61,7 +62,7 @@
     </declare-styleable>
 
 
-    <declare-styleable name="TimeGraphView">
+    <declare-styleable name="TrackerTimeGraphView">
 
         <attr name="graph_window_height" format="dimension"/>
         <attr name="graph_bar_margin" format="dimension"/>
@@ -69,8 +70,7 @@
         <attr name="time_label_text_color" format="color" />
         <attr name="axis_text_color" format="color"/>
         <attr name="graph_window_background_color" format="color"/>
-        <attr name="graph_footer_background_color" format="color"/>
-        <attr name="graph_axis_background_color" format="color"/>
+        <attr name="graph_background_color" format="color"/>
 
         <attr name="show_interval_label" format="boolean"/>
         <attr name="show_time_labels" format="boolean"/>

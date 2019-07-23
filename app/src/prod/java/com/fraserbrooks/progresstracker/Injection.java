@@ -16,13 +16,25 @@ package com.fraserbrooks.progresstracker;
  */
 
 import android.content.Context;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
-import com.fraserbrooks.progresstracker.data.source.Repository;
-import com.fraserbrooks.progresstracker.data.source.local.LocalDataSource;
-import com.fraserbrooks.progresstracker.data.source.local.ProgressTrackerDatabase;
-import com.fraserbrooks.progresstracker.data.source.DataSource;
-import com.fraserbrooks.progresstracker.data.source.remote.RemoteDataSource;
+import com.fraserbrooks.progresstracker.datasource.TargetRepository;
+import com.fraserbrooks.progresstracker.datasource.TrackerRepository;
+import com.fraserbrooks.progresstracker.datasource.UserSettingsRepository;
+import com.fraserbrooks.progresstracker.datasource.source.TrackerDataSource;
+import com.fraserbrooks.progresstracker.datasource.source.local.AppDatabase;
+import com.fraserbrooks.progresstracker.datasource.source.local.TargetsLocalDataSource;
+import com.fraserbrooks.progresstracker.datasource.source.local.TrackersLocalDataSource;
+import com.fraserbrooks.progresstracker.datasource.source.local.UserSettingsLocalDataSource;
+import com.fraserbrooks.progresstracker.trackers.domain.filter.TrackerFilterFactory;
+import com.fraserbrooks.progresstracker.trackers.domain.usecase.ClearRange;
+import com.fraserbrooks.progresstracker.trackers.domain.usecase.DeleteTracker;
+import com.fraserbrooks.progresstracker.trackers.domain.usecase.GetTracker;
+import com.fraserbrooks.progresstracker.trackers.domain.usecase.GetTrackers;
+import com.fraserbrooks.progresstracker.trackers.domain.usecase.IncrementTracker;
+import com.fraserbrooks.progresstracker.trackers.domain.usecase.SaveTracker;
+import com.fraserbrooks.progresstracker.trackers.domain.usecase.StartStopTrackerTimer;
+import com.fraserbrooks.progresstracker.trackers.domain.usecase.UpdateTracker;
 import com.fraserbrooks.progresstracker.util.AppExecutors;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -30,16 +42,81 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Enables injection of production implementations for
- * {@link DataSource} at compile time.
+ * {@link TrackerDataSource} at compile time.
  */
 public class Injection {
 
-    public static Repository provideRepository(@NonNull Context context) {
+    //  ---------------------------------------------------------------------------------
+    //  Repositories ------------------------------------------------------------------
+
+    public static TrackerRepository provideTrackerRepository(@NonNull Context context) {
         checkNotNull(context);
-        ProgressTrackerDatabase database = ProgressTrackerDatabase.getInstance(context);
         AppExecutors executors = AppExecutors.getInstance();
-        return Repository.getInstance(RemoteDataSource.getInstance(),
-                LocalDataSource.getInstance(executors, database.trackersDao()),
+        AppDatabase database = AppDatabase.getInstance(context, executors);
+        return TrackerRepository.getInstance(TrackersLocalDataSource.getInstance(executors, database.trackersDao()),
+                TrackersLocalDataSource.getInstance(executors, database.trackersDao()),
                 executors);
     }
+
+    public static TargetRepository provideTargetRepository(@NonNull Context context){
+        checkNotNull(context);
+        AppExecutors executors = AppExecutors.getInstance();
+        AppDatabase database = AppDatabase.getInstance(context, executors);
+        return TargetRepository.getInstance(
+                TargetsLocalDataSource.getInstance(executors, database.targetsDao(), database.trackersDao()),
+                TargetsLocalDataSource.getInstance(executors, database.targetsDao(), database.trackersDao()),
+                executors);
+    }
+
+    public static UserSettingsRepository provideUserSettingsRepository(@NonNull Context context) {
+        checkNotNull(context);
+        AppExecutors executors = AppExecutors.getInstance();
+        AppDatabase database = AppDatabase.getInstance(context, executors);
+        return UserSettingsRepository.getInstance(UserSettingsLocalDataSource.getInstance(executors, database.userSettingsDao()),
+                UserSettingsLocalDataSource.getInstance(executors, database.userSettingsDao()),
+                executors);
+    }
+
+    //  --------------------------------------------------------------------------------
+    //  Use Cases ---------------------------------------------------------------------
+
+
+    public static UseCaseHandler provideUseCaseHandler() {
+        return UseCaseHandler.getInstance();
+    }
+
+    public static GetTrackers provideGetTrackers(@NonNull Context context) {
+        return new GetTrackers(provideTrackerRepository(context), new TrackerFilterFactory());
+    }
+
+    public static GetTracker provideGetTracker(@NonNull Context context){
+        return new GetTracker(provideTrackerRepository(context));
+    }
+
+    public static ClearRange provideClearRange(@NonNull Context context) {
+        return new ClearRange(provideTrackerRepository(context));
+    }
+
+    public static DeleteTracker provideDeleteTracker(@NonNull Context context) {
+        return new DeleteTracker(provideTrackerRepository(context));
+    }
+
+    public static IncrementTracker provideIncrementTracker(@NonNull Context context) {
+        return new IncrementTracker(provideTrackerRepository(context));
+    }
+
+    public static SaveTracker provideSaveTracker(@NonNull Context context) {
+        return new SaveTracker(provideTrackerRepository(context));
+    }
+
+    public static StartStopTrackerTimer provideStartStopTrackerTimer(@NonNull Context context) {
+        return new StartStopTrackerTimer(provideTrackerRepository(context));
+    }
+
+    public static UpdateTracker provideUpdateTracker(@NonNull Context context) {
+        return new UpdateTracker(provideTrackerRepository(context));
+    }
+
+
+
 }

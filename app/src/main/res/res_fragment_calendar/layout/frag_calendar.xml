@@ -5,7 +5,7 @@
 
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.fraserbrooks.progresstracker.mainactivity.MainActivity"
+    tools:context="com.fraserbrooks.progresstracker.MainActivity"
     tools:background="?page_background_color">
 
 
@@ -31,9 +31,7 @@
             android:orientation="vertical"
 
             android:background="?menu_item_color"
-            android:paddingEnd="@dimen/content_start_horizontal_margin"
-            android:paddingStart="@dimen/content_start_horizontal_margin"
-            android:paddingTop="@dimen/activity_vertical_margin">
+            >
 
 
             <LinearLayout
