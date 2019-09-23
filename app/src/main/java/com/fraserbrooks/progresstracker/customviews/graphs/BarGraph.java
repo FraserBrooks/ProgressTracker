@@ -102,8 +102,8 @@ public class BarGraph extends LinearLayout {
 
 
         // set colour
-        colourRect.setBackground(ColorUtils.getGradientDrawable(getContext(),
-                ColorUtils.getTrackerColor(getContext(), tracker)));
+        //colourRect.setBackground(ColorUtils.getGradientDrawable(getContext(),
+        //        ColorUtils.getTrackerColor(getContext(), tracker)));
 
         tvName.setText(tracker.getTitle());
 

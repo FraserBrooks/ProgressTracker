@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import com.fraserbrooks.progresstracker.R;
 import com.fraserbrooks.progresstracker.customviews.ColorUtils;
+import com.fraserbrooks.progresstracker.customviews.UIUtils;
 import com.fraserbrooks.progresstracker.trackers.domain.model.Tracker;
 import com.fraserbrooks.progresstracker.util.TrackerFunctionsInterface;
 import com.sdsmdg.harjot.vectormaster.VectorMasterDrawable;
@@ -176,30 +177,26 @@ class TrackerViewButtonManager {
 
     private void initYesNoButtons(Tracker tracker){
 
-        int trackerColor = ColorUtils.getTrackerColor(mTrackerView.getContext(), tracker);
+        int trackerColor = UIUtils.getTrackerColor(mTrackerView.getContext(), tracker);
 
-        VectorMasterDrawable circleDrawable = new VectorMasterDrawable(mTrackerView.getContext(),
-                R.drawable.ico_nested_circles);
-
+        boolean filled = false;
         switch (tracker.getGraphType()) {
 
             case Tracker.GRAPH_TYPE_WEEK:
                 mBooleanButton.setText(mTrackerView.getContext().getResources().getString(R.string.this_week));
                 if (tracker.getPastEightWeeksCounts()[7] >= 1) {
-                    ColorUtils.setColoredCircle(mTrackerView.getContext(), circleDrawable, trackerColor);
+                    filled = true;
                     mBooleanButton.setOnClickListener(v -> mCallback.getInterface().clearWeek(tracker.getId()));
                 } else {
-                    ColorUtils.setBlankCircle(mTrackerView.getContext(), circleDrawable);
                     mBooleanButton.setOnClickListener(v -> mCallback.getInterface().incrementTrackerScore(tracker, 1));
                 }
                 break;
             case Tracker.GRAPH_TYPE_MONTH:
                 mBooleanButton.setText(mTrackerView.getContext().getResources().getString(R.string.this_month));
                 if (tracker.getPastEightMonthsCounts()[7] >= 1) {
-                    ColorUtils.setColoredCircle(mTrackerView.getContext(), circleDrawable, trackerColor);
+                    filled = true;
                     mBooleanButton.setOnClickListener(v -> mCallback.getInterface().clearMonth(tracker.getId()));
                 } else {
-                    ColorUtils.setBlankCircle(mTrackerView.getContext(), circleDrawable);
                     mBooleanButton.setOnClickListener(v -> mCallback.getInterface().incrementTrackerScore(tracker, 1));
                 }
                 break;
@@ -208,14 +205,19 @@ class TrackerViewButtonManager {
             default:
                 mBooleanButton.setText(mTrackerView.getContext().getResources().getString(R.string.today));
                 if (tracker.getPastEightDaysCounts()[7] >= 1) {
-                    ColorUtils.setColoredCircle(mTrackerView.getContext(), circleDrawable, trackerColor);
+                    filled = true;
                     mBooleanButton.setOnClickListener(v -> mCallback.getInterface().incrementTrackerScore(tracker, -1));
                 } else {
-                    ColorUtils.setBlankCircle(mTrackerView.getContext(), circleDrawable);
                     mBooleanButton.setOnClickListener(v -> mCallback.getInterface().incrementTrackerScore(tracker, 1));
                 }
         }
 
+        VectorMasterDrawable circleDrawable;
+        if (filled){
+            circleDrawable = UIUtils.getTrackerFilledRadioButtonDrawable(mTrackerView.getContext(), tracker);
+        }else{
+            circleDrawable = UIUtils.getTrackerEmptyRadioButtonDrawable(mTrackerView.getContext());
+        }
         mBooleanButton.setCompoundDrawablesRelativeWithIntrinsicBounds(circleDrawable, null, null, null);
 
     }

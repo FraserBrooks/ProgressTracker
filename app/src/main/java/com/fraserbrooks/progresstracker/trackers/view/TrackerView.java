@@ -10,6 +10,7 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -18,12 +19,13 @@ import com.fraserbrooks.progresstracker.Expandable;
 import com.fraserbrooks.progresstracker.R;
 import com.fraserbrooks.progresstracker.RecyclableView;
 import com.fraserbrooks.progresstracker.customviews.ColorUtils;
+import com.fraserbrooks.progresstracker.customviews.UIUtils;
 import com.fraserbrooks.progresstracker.trackers.domain.model.Tracker;
 import com.fraserbrooks.progresstracker.util.TrackerFunctionsInterface;
 import com.sdsmdg.harjot.vectormaster.VectorMasterDrawable;
 
 
-public class TrackerView extends ConstraintLayout implements RecyclableView<Tracker>, Expandable {
+public class TrackerView extends FrameLayout implements RecyclableView<Tracker>, Expandable {
 
     private static final String TAG = "TrackerView";
 
@@ -58,9 +60,9 @@ public class TrackerView extends ConstraintLayout implements RecyclableView<Trac
         LayoutInflater inflater = (LayoutInflater)
                 getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         assert(inflater != null);
-        inflater.inflate(R.layout.frag_trackers_tracker_custom_view, this, true);
+        inflater.inflate(R.layout.frag_trackers_tracker_custom_view_relative, this, true);
 
-        ConstraintLayout.LayoutParams lp = new Constraints.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+        FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT);
         this.setLayoutParams(lp);
 
@@ -69,9 +71,8 @@ public class TrackerView extends ConstraintLayout implements RecyclableView<Trac
         mRightHandTextView =  findViewById(R.id.tracker_view_right_hand_text);
         mTextView2 =  findViewById(R.id.tracker_view_text_view_2);
         mTextView3 =  findViewById(R.id.tracker_view_text_view_3);
-        mLevelTextView =  findViewById(R.id.tracker_view_level_text);
         mTextView4 = findViewById(R.id.tracker_view_text_view_4);
-
+        mLevelTextView =  findViewById(R.id.tracker_view_level_text);
 
         // Icon Views
         mTrackerIcon =  findViewById(R.id.tracker_view_ico);
@@ -142,27 +143,15 @@ public class TrackerView extends ConstraintLayout implements RecyclableView<Trac
         //mTextView4.setText(getCountLabel(tracker));
         mLevelTextView.setText(tracker.getLevelToDisplay());
 
-        int trackerColor = ColorUtils.getTrackerColor(getContext(), tracker);
-
-        int nextLevelColor = ColorUtils.getLevelDefinedColor(getContext(),
-                    tracker.getLevel() + 1);
-
-        VectorMasterDrawable icon = ColorUtils.getTrackerIcon(getContext(), tracker.getIcon());
-        ColorUtils.setVectorColor(icon, trackerColor);
-
+        VectorMasterDrawable icon = UIUtils.getTrackerIcon(getContext(), tracker);
         mTrackerIcon.setImageDrawable(icon);
 
         if(tracker.getType() == Tracker.TYPE_LEVEL_UP){
 
-            VectorMasterDrawable nextLevelIcon = ColorUtils.getTrackerIcon(getContext(), tracker.getIcon());
-            ColorUtils.setVectorColor(nextLevelIcon, nextLevelColor);
+            VectorMasterDrawable nextLevelIcon = UIUtils.getTrackerNextLevelIcon(getContext(), tracker);
 
-            VectorMasterDrawable maxLevelIcon = ColorUtils.getTrackerIcon(getContext(), tracker.getIcon());
-            ColorUtils.setVectorColor(maxLevelIcon, ColorUtils.getLevelDefinedColor(getContext(),
-                        Integer.MAX_VALUE));
-
+            VectorMasterDrawable maxLevelIcon = UIUtils.getMaxLevelDrawable(getContext());
             mNextLevelIcon.setImageDrawable(nextLevelIcon);
-
 
             int button_icon_size = getContext().getResources().getDimensionPixelSize(R.dimen.small_icon_height);
 

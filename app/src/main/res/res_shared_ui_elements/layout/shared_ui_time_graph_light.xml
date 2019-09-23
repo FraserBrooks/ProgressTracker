@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+
+
+
+    xmlns:android="http://schemas.android.com/apk/res/android"
+
+    >
+
+    <LinearLayout
+
+        android:id="@+id/time_graph_graph_window"
+
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/graph_height_small"
+
+        android:background="?page_background_color"
+        android:orientation="horizontal"
+        android:gravity="bottom"
+
+        >
+
+
+        <View
+            android:id="@+id/graph_box_1"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+
+            android:layout_weight="1"/>
+
+        <View
+            android:id="@+id/graph_box_2"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+
+            android:layout_weight="1"/>
+
+        <View
+            android:id="@+id/graph_box_3"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+
+            android:layout_weight="1" />
+
+        <View
+            android:id="@+id/graph_box_4"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+
+            android:layout_weight="1" />
+
+        <View
+            android:id="@+id/graph_box_5"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+
+            android:layout_weight="1"/>
+
+        <View
+            android:id="@+id/graph_box_6"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+
+            android:layout_weight="1" />
+
+        <View
+            android:id="@+id/graph_box_7"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+
+            android:layout_weight="1"/>
+
+
+    </LinearLayout>
+
+
+    <LinearLayout
+
+        android:layout_below="@id/time_graph_graph_window"
+
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+
+        android:background="?menu_item_color"
+
+        android:orientation="horizontal">
+
+
+        <TextView
+            android:id="@+id/time_graph_text_view_1"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+
+            android:textColor="?theme_text_color"
+
+            android:gravity="center|bottom"
+            />
+
+
+        <TextView
+            android:id="@+id/time_graph_text_view_2"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+
+            android:textColor="?theme_text_color"
+
+            android:gravity="center|bottom"
+            />
+
+        <TextView
+            android:id="@+id/time_graph_text_view_3"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+
+            android:textColor="?theme_text_color"
+
+            android:gravity="center|bottom"
+            />
+
+        <TextView
+            android:id="@+id/time_graph_text_view_4"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+
+            android:textColor="?theme_text_color"
+
+            android:gravity="center|bottom"
+            />
+
+        <TextView
+            android:id="@+id/time_graph_text_view_5"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+
+            android:textColor="?theme_text_color"
+
+            android:gravity="center|bottom"
+            />
+
+        <TextView
+            android:id="@+id/time_graph_text_view_6"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+
+            android:textColor="?theme_text_color"
+
+            android:gravity="center|bottom"
+            />
+
+        <TextView
+            android:id="@+id/time_graph_text_view_7"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+
+            android:textColor="?theme_text_color"
+
+            android:gravity="center|bottom"
+            />
+
+
+
+    </LinearLayout>
+
+
+</RelativeLayout>
+
+

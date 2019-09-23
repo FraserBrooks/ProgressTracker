@@ -4,7 +4,6 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,7 +12,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import com.fraserbrooks.progresstracker.R;
-import com.fraserbrooks.progresstracker.customviews.ColorUtils;
+import com.fraserbrooks.progresstracker.customviews.UIUtils;
 import com.fraserbrooks.progresstracker.trackers.domain.model.Tracker;
 import com.sdsmdg.harjot.vectormaster.VectorMasterDrawable;
 
@@ -37,6 +36,8 @@ public class TrackerBooleanGraphView extends FrameLayout {
     private LinearLayout mCircleLayout;
     private VectorMasterDrawable mFilledCircle;
     private VectorMasterDrawable mBlankCircle;
+
+    private ImageView mCircle1, mCircle2, mCircle3, mCircle4, mCircle5, mCircle6, mCircle7;
 
     public TrackerBooleanGraphView(@NonNull Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
@@ -62,11 +63,27 @@ public class TrackerBooleanGraphView extends FrameLayout {
         mFilledCircle = new VectorMasterDrawable(getContext(), R.drawable.ico_nested_circles);
         mBlankCircle = new VectorMasterDrawable(getContext(), R.drawable.ico_nested_circles);
 
+        mCircle1 = findViewById(R.id.boolean_graph_circle_1);
+        mCircle2 = findViewById(R.id.boolean_graph_circle_2);
+        mCircle3 = findViewById(R.id.boolean_graph_circle_3);
+        mCircle4 = findViewById(R.id.boolean_graph_circle_4);
+        mCircle5 = findViewById(R.id.boolean_graph_circle_5);
+        mCircle6 = findViewById(R.id.boolean_graph_circle_6);
+        mCircle7 = findViewById(R.id.boolean_graph_circle_7);
+
+
     }
 
     public void initGraph(Tracker tracker){
 
-        initCircleDrawables(tracker);
+        mFilledCircle = UIUtils.getTrackerFilledRadioButtonDrawable(getContext(), tracker);
+        mBlankCircle = UIUtils.getTrackerEmptyRadioButtonDrawable(getContext());
+
+        int graphSize = getResources().getDimensionPixelSize(R.dimen.graph_height_small);
+
+        mFilledCircle.setBounds(graphSize, graphSize, graphSize, graphSize);
+        mBlankCircle.setBounds(graphSize, graphSize, graphSize, graphSize);
+
 
         int circles;
         int[] counts;
@@ -91,38 +108,66 @@ public class TrackerBooleanGraphView extends FrameLayout {
 
         }
 
-        mCircleLayout.removeAllViews();
-        for(int i = 0; i < circles; i++){
-            addWeightedSpace();
-            if(counts[(8-circles) + i] >= 1){
-                addFilledCircleDrawable();
-            }else{
-                addBlankCircle();
-            }
+        int startI = 1;
+        if(circles == 7){
+            mCircle6.setVisibility(VISIBLE);
+            mCircle7.setVisibility(VISIBLE);
+        }else if(circles == 6){
+            mCircle6.setVisibility(VISIBLE);
+            mCircle7.setVisibility(GONE);
+            startI = 2;
+        }else {
+            mCircle6.setVisibility(GONE);
+            mCircle7.setVisibility(GONE);
+            startI = 3;
         }
-        addWeightedSpace();
 
+        if(counts[startI] >= 1){
+            mCircle1.setImageDrawable(mFilledCircle);
+        }else{
+            mCircle1.setImageDrawable(mBlankCircle);
+        }
+
+        if(counts[startI + 1] >= 1){
+            mCircle2.setImageDrawable(mFilledCircle);
+        }else{
+            mCircle2.setImageDrawable(mBlankCircle);
+        }
+
+        if(counts[startI + 2] >= 1){
+            mCircle3.setImageDrawable(mFilledCircle);
+        }else{
+            mCircle3.setImageDrawable(mBlankCircle);
+        }
+
+        if(counts[startI + 3] >= 1){
+            mCircle4.setImageDrawable(mFilledCircle);
+        }else{
+            mCircle4.setImageDrawable(mBlankCircle);
+        }
+
+        if(counts[startI + 4] >= 1){
+            mCircle5.setImageDrawable(mFilledCircle);
+        }else{
+            mCircle5.setImageDrawable(mBlankCircle);
+        }
+        if(circles == 5) return;
+
+        if(counts[startI + 5] >= 1){
+            mCircle6.setImageDrawable(mFilledCircle);
+        }else{
+            mCircle6.setImageDrawable(mBlankCircle);
+        }
+        if(circles == 6) return;
+
+        if(counts[startI + 6] >= 1){
+            mCircle7.setImageDrawable(mFilledCircle);
+        }else{
+            mCircle7.setImageDrawable(mBlankCircle);
+        }
 
     }
 
-
-
-
-    private void addFilledCircleDrawable(){
-        ImageView iv = getCircleView();
-        iv.setImageDrawable(mFilledCircle);
-        //iv.setBackgroundColor(getResources().getColor(R.color.colorAccent));
-        Log.d(TAG, "addFilledCircleDrawable: FILLED");
-        mCircleLayout.addView(iv);
-    }
-
-    private void addBlankCircle(){
-        ImageView iv = getCircleView();
-        iv.setImageDrawable(mBlankCircle);
-        //iv.setBackgroundColor(getResources().getColor(R.color.colorError));
-        Log.d(TAG, "addFilledCircleDrawable: BLANK");
-        mCircleLayout.addView(iv);
-    }
 
     @NonNull
     private ImageView getCircleView() {
@@ -142,17 +187,6 @@ public class TrackerBooleanGraphView extends FrameLayout {
         mCircleLayout.addView(v);
     }
 
-    private void initCircleDrawables(Tracker tracker){
-
-        // todo: format from tracker data  :  ????
-
-        int trackerColor = ColorUtils.getTrackerColor(getContext(), tracker);
-
-        ColorUtils.setBlankCircle(getContext(), mBlankCircle);
-        ColorUtils.setColoredCircle(getContext(), mFilledCircle, trackerColor);
-
-
-    }
 
 
 

@@ -14,12 +14,8 @@ import com.sdsmdg.harjot.vectormaster.models.PathModel;
 
 public class ColorUtils {
 
-    public static GradientDrawable getGradientDrawable(Context context,int trackerColor){
-        return getGradientDrawable(context, trackerColor, 0f);
-    }
 
-    public static GradientDrawable getGradientDrawable(Context context, int trackerColor,
-                                                       float cornerRadius){
+    public static GradientDrawable getGradientDrawable(Context context, int trackerColor){
 
         TypedValue typedValue = new TypedValue();
         Resources.Theme theme = context.getTheme();
@@ -60,26 +56,24 @@ public class ColorUtils {
                 gradientEnd = Color.HSVToColor(hsv);
         }
 
-        return getGradientDrawable(gradientStart, gradientEnd, cornerRadius);
+        return getGradientDrawable(gradientStart, gradientEnd);
 
     }
 
 
     private static GradientDrawable getGradientDrawable(int startColor,
-                                                       int endColor,
-                                                       float cornerRadius){
+                                                       int endColor){
 
         GradientDrawable shape = new GradientDrawable();
 
         shape.setShape(GradientDrawable.RECTANGLE);
-        shape.setCornerRadius(cornerRadius);
         shape.setColors(new int[]{startColor, endColor});
         shape.setOrientation(GradientDrawable.Orientation.LEFT_RIGHT);
 
         return shape;
     }
 
-    public static VectorMasterDrawable getTrackerIcon(Context context, int i) {
+    protected static VectorMasterDrawable getTrackerIcon(Context context, int i) {
 
         switch (i) {
             case Tracker.ICON_LEVEL:
@@ -97,7 +91,7 @@ public class ColorUtils {
 
     }
 
-    public static void setVectorColor(VectorMasterDrawable trackerIcon, int trackerColor) {
+    protected static void setVectorColor(VectorMasterDrawable trackerIcon, int trackerColor) {
 
         int outlineNo = 1;
         PathModel outline = trackerIcon.getPathModelByName("outline" + outlineNo);
@@ -109,7 +103,7 @@ public class ColorUtils {
         }
     }
 
-    public static int getTrackerColor(Context c, Tracker tracker){
+    protected static int getTrackerColor(Context c, Tracker tracker){
 
         if(tracker.getType() == Tracker.TYPE_LEVEL_UP){
             return getLevelDefinedColor(c, tracker.getLevel());
@@ -119,7 +113,7 @@ public class ColorUtils {
 
     }
 
-    public static int getUserDefinedColor(Context c, int base) {
+    protected static int getUserDefinedColor(Context c, int base) {
         if(base < 0) base = 0;
         if(base > 360) base = 360;
 
@@ -177,19 +171,19 @@ public class ColorUtils {
     }
 
 
-    public static void setBlankCircle(Context context, VectorMasterDrawable drawable){
+    protected static void setBlankCircle(Context context, VectorMasterDrawable drawable){
 
         setColoredCircle(context, drawable, null, null, null);
 
     }
 
 
-    public static void setColoredCircle(Context context, VectorMasterDrawable drawable,
+    protected static void setColoredCircle(Context context, VectorMasterDrawable drawable,
                                         int fillColor){
         setColoredCircle(context, drawable, null, null, fillColor);
     }
 
-    public static void setColoredCircle(Context context,
+    protected static void setColoredCircle(Context context,
                                                         VectorMasterDrawable circleDrawable,
                                                         Integer outerRingColor,
                                                         Integer innerRingColor, Integer fillColor){

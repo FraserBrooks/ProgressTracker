@@ -7,6 +7,7 @@ import android.widget.LinearLayout;
 
 import com.fraserbrooks.progresstracker.R;
 import com.fraserbrooks.progresstracker.customviews.ColorUtils;
+import com.fraserbrooks.progresstracker.customviews.UIUtils;
 import com.fraserbrooks.progresstracker.trackers.domain.model.Tracker;
 import com.fraserbrooks.progresstracker.trackers.view.trackergraphs.TrackerBooleanGraphView;
 import com.fraserbrooks.progresstracker.trackers.view.trackergraphs.TrackerTimeGraphView;
@@ -47,10 +48,7 @@ class TrackerViewFigureManager {
 
     void initFigureWith(Tracker tracker){
 
-        int trackerColor = ColorUtils.getTrackerColor(mTrackerView.getContext(), tracker);
-
-        GradientDrawable gradientDrawable =
-                ColorUtils.getGradientDrawable(mTrackerView.getContext(),trackerColor);
+        GradientDrawable gradientDrawable = UIUtils.getTrackerGradientDrawable(mTrackerView.getContext(), tracker);
 
         if(tracker.getType() == Tracker.TYPE_LEVEL_UP){
             initProgressBar(tracker, gradientDrawable);

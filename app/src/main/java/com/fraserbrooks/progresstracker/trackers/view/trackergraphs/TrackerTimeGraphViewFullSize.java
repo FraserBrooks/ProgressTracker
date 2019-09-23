@@ -1,10 +1,13 @@
-package com.fraserbrooks.progresstracker.customviews.graphs;
+package com.fraserbrooks.progresstracker.trackers.view.trackergraphs;
+
 
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
+import androidx.constraintlayout.widget.ConstraintLayout;
+
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.Gravity;
@@ -13,17 +16,20 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
+import android.widget.TableLayout;
+import android.widget.TableRow;
 import android.widget.TextView;
 
 import com.fraserbrooks.progresstracker.R;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Locale;
 
 @SuppressWarnings("unused")
-public class TimeGraphView extends FrameLayout {
+public class TrackerTimeGraphViewFullSize extends FrameLayout {
 
-    private static final String TAG = "TimeGraphView";
+    private static final String TAG = "TrackerTimeGraph";
 
     // graph types
     public static final int DAY = Calendar.DAY_OF_YEAR;
@@ -39,8 +45,8 @@ public class TimeGraphView extends FrameLayout {
     private int mGraphWindowHeight;
     private int mGraphBarMargin;
 
-    private int mGraphWindowColor, mGraphAxisColor, mGraphFooterColor,
-                mTimeLabelTextColor, mAxisTextColor;
+    private int mGraphWindowColor, mGraphBackgroundColour,
+            mTimeLabelTextColor, mAxisTextColor;
 
     private boolean mShowIntervalLabel, mShowTimeLabels, mShowGraphAxis, mShowHighestValue;
 
@@ -48,29 +54,34 @@ public class TimeGraphView extends FrameLayout {
 
     private int mGraphType, mGraphFormat;
 
-    private LinearLayout mGraphWindow, mTimeLabelLayout, mGraphAxis;
+    private LinearLayout mGraphWindow;
+
+    private View xAxisSpacer10, xAxisSpacer11, xAxisSpacer12, xAxisSpacer13,
+            graphBox1, graphBox2, graphBox3, graphBox4, graphBox5, graphBox6, graphBox7;
+
+    private TextView xAxis1, xAxis2, xAxis3, xAxis4, xAxis5, xAxis6, xAxis7;
 
     private String[] mOrdinalDates;
 
     private Calendar mCurrentDate;
 
-    public TimeGraphView(@NonNull Context context, AttributeSet attrs) {
+
+    public TrackerTimeGraphViewFullSize(@NonNull Context context, AttributeSet attrs) {
         super(context, attrs);
         this.init(attrs);
     }
 
-    public TimeGraphView(@NonNull Context context,AttributeSet attrs, int defStyleAttr){
-        super(context, attrs, defStyleAttr);
-        this.init(attrs);
-    }
 
 
     public void initGraph(int[] counts){
 
         int max = Integer.MIN_VALUE;
 
-        for (int i : counts)  max = (max > i) ? max : i;
-
+        for( int i : counts){
+            if(i > max){
+                max = i;
+            }
+        }
         initAttributes();
         initGraphWindow(counts, max, mGraphWindowHeight);
         initGraphAxis(max);
@@ -85,8 +96,29 @@ public class TimeGraphView extends FrameLayout {
         inflater.inflate(R.layout.shared_ui_time_graph, this);
 
         mGraphWindow = getRootView().findViewById(R.id.graph_window);
-        mTimeLabelLayout = getRootView().findViewById(R.id.time_labels_layout);
-        mGraphAxis = getRootView().findViewById(R.id.graph_axis);
+
+
+        xAxis1 = getRootView().findViewById(R.id.time_graph_x_axis_1);
+        xAxis2 = getRootView().findViewById(R.id.time_graph_x_axis_2);
+        xAxis3 = getRootView().findViewById(R.id.time_graph_x_axis_3);
+        xAxis4 = getRootView().findViewById(R.id.time_graph_x_axis_4);
+        xAxis5 = getRootView().findViewById(R.id.time_graph_x_axis_5);
+        xAxis6 = getRootView().findViewById(R.id.time_graph_x_axis_6);
+        xAxis7 = getRootView().findViewById(R.id.time_graph_x_axis_7);
+
+        xAxisSpacer10 = getRootView().findViewById(R.id.time_graph_spacer_10);
+        xAxisSpacer11 = getRootView().findViewById(R.id.time_graph_spacer_11);
+        xAxisSpacer12 = getRootView().findViewById(R.id.time_graph_spacer_12);
+        xAxisSpacer13 = getRootView().findViewById(R.id.time_graph_spacer_13);
+
+        graphBox1 = getRootView().findViewById(R.id.graph_box_1);
+        graphBox2 = getRootView().findViewById(R.id.graph_box_2);
+        graphBox3 = getRootView().findViewById(R.id.graph_box_3);
+        graphBox4 = getRootView().findViewById(R.id.graph_box_4);
+        graphBox5 = getRootView().findViewById(R.id.graph_box_5);
+        graphBox6 = getRootView().findViewById(R.id.graph_box_6);
+        graphBox7 = getRootView().findViewById(R.id.graph_box_7);
+
 
         mOrdinalDates = getResources().getStringArray(R.array.ordinal_dates);
 
@@ -101,7 +133,7 @@ public class TimeGraphView extends FrameLayout {
      * @param attrs A set of xml attributes
      */
     private void setAttributes(AttributeSet attrs) {
-        TypedArray typedArray = getContext().obtainStyledAttributes(attrs, R.styleable.TimeGraphView);
+        TypedArray typedArray = getContext().obtainStyledAttributes(attrs, R.styleable.TrackerTimeGraphView);
 
         try {
             initGraphSettings(typedArray);
@@ -114,24 +146,23 @@ public class TimeGraphView extends FrameLayout {
 
     private void initGraphSettings(TypedArray typedArray) {
 
-        mGraphWindowHeight = typedArray.getDimensionPixelSize(R.styleable.TimeGraphView_graph_window_height, 50);
-        mGraphBarMargin = typedArray.getDimensionPixelSize(R.styleable.TimeGraphView_graph_bar_margin, 0);
+        mGraphWindowHeight = typedArray.getDimensionPixelSize(R.styleable.TrackerTimeGraphView_graph_window_height, 50);
+        mGraphBarMargin = typedArray.getDimensionPixelSize(R.styleable.TrackerTimeGraphView_graph_bar_margin, 0);
 
-        mGraphWindowColor = typedArray.getColor(R.styleable.TimeGraphView_graph_window_background_color, 0);
-        mGraphAxisColor = typedArray.getColor(R.styleable.TimeGraphView_graph_axis_background_color, 0);
-        mGraphFooterColor = typedArray.getColor(R.styleable.TimeGraphView_graph_footer_background_color, 0);
-        mTimeLabelTextColor = typedArray.getColor(R.styleable.TimeGraphView_time_label_text_color, 0);
-        mAxisTextColor = typedArray.getColor(R.styleable.TimeGraphView_axis_text_color, 0);
+        mGraphWindowColor = typedArray.getColor(R.styleable.TrackerTimeGraphView_graph_window_background_color, 0);
+        mGraphBackgroundColour = typedArray.getColor(R.styleable.TrackerTimeGraphView_graph_background_color, 0);
+        mTimeLabelTextColor = typedArray.getColor(R.styleable.TrackerTimeGraphView_time_label_text_color, 0);
+        mAxisTextColor = typedArray.getColor(R.styleable.TrackerTimeGraphView_axis_text_color, 0);
 
-        mShowIntervalLabel = typedArray.getBoolean(R.styleable.TimeGraphView_show_interval_label, true);
-        mShowTimeLabels = typedArray.getBoolean(R.styleable.TimeGraphView_show_time_labels, true);
-        mShowGraphAxis = typedArray.getBoolean(R.styleable.TimeGraphView_show_graph_axis, true);
-        mShowHighestValue = typedArray.getBoolean(R.styleable.TimeGraphView_show_highest_value_label, true);
+        mShowIntervalLabel = typedArray.getBoolean(R.styleable.TrackerTimeGraphView_show_interval_label, true);
+        mShowTimeLabels = typedArray.getBoolean(R.styleable.TrackerTimeGraphView_show_time_labels, true);
+        mShowGraphAxis = typedArray.getBoolean(R.styleable.TrackerTimeGraphView_show_graph_axis, true);
+        mShowHighestValue = typedArray.getBoolean(R.styleable.TrackerTimeGraphView_show_highest_value_label, true);
 
-        mPointerDrawable = typedArray.getDrawable(R.styleable.TimeGraphView_pointer_resource);
-        mGraphBarResource = typedArray.getDrawable(R.styleable.TimeGraphView_graph_bar_resource);
+        mPointerDrawable = typedArray.getDrawable(R.styleable.TrackerTimeGraphView_pointer_resource);
+        mGraphBarResource = typedArray.getDrawable(R.styleable.TrackerTimeGraphView_graph_bar_resource);
 
-        int i = typedArray.getInt(R.styleable.TimeGraphView_graph_type, 0);
+        int i = typedArray.getInt(R.styleable.TrackerTimeGraphView_graph_type, 0);
         switch (i) {
             case 0:
                 mGraphType = DAY;
@@ -145,7 +176,7 @@ public class TimeGraphView extends FrameLayout {
             default:
                 mGraphType = DAY;
         }
-        mGraphFormat = typedArray.getInt(R.styleable.TimeGraphView_bars_per_interval, FIVE_BAR);
+        mGraphFormat = typedArray.getInt(R.styleable.TrackerTimeGraphView_bars_per_interval, FIVE_BAR);
 
     }
 
@@ -157,11 +188,10 @@ public class TimeGraphView extends FrameLayout {
             mGraphWindow.setBackgroundColor(Color.TRANSPARENT);
         }
 
-        View graphFooter = getRootView().findViewById(R.id.time_graph_footer_row);
-        if(mGraphFooterColor != 0){
-            graphFooter.setBackgroundColor(mGraphFooterColor);
+        if (mGraphBackgroundColour != 0){
+            this.setBackgroundColor(mGraphBackgroundColour);
         }else{
-            graphFooter.setBackgroundColor(Color.TRANSPARENT);
+            this.setBackgroundColor(Color.TRANSPARENT);
         }
 
         initTimeLabelsLayout();
@@ -172,7 +202,11 @@ public class TimeGraphView extends FrameLayout {
 
     private void initGraphWindow(int[] counts, float highestValue, float graphHeight){
 
-        mGraphWindow.removeAllViews();
+        TableRow.LayoutParams windowParams = (TableRow.LayoutParams) mGraphWindow.getLayoutParams();
+
+        windowParams.height = (int) graphHeight;
+
+        mGraphWindow.setLayoutParams(windowParams);
 
         int barsPerInterval = 1;
         switch (mGraphFormat) {
@@ -216,16 +250,13 @@ public class TimeGraphView extends FrameLayout {
         int lastIndex = counts.length - 1;
         int firstIndex = lastIndex - intervals;
 
-        int q = 0;
-
-        for(int i = firstIndex; i < intervals; i++){
+        for(int i = firstIndex; i < lastIndex; i++){
 
 
 
             float previousIntervalCount = counts[i];
             float thisIntervalCount = counts[i+1];
-            float nextIntervalCount =
-                    (i+2 >= intervals) ? thisIntervalCount : counts[i+2];
+            float nextIntervalCount = (i+1 == lastIndex) ? counts[i+1] : counts[i+2];
 
 
             float previousIntervalHeight = (previousIntervalCount/ highestValue )   * graphHeight;
@@ -245,7 +276,7 @@ public class TimeGraphView extends FrameLayout {
                 if(nextIntervalHeight == 0) forwardIncrement *= 2f;
             }
 
-            int baseIndex = i * barsPerInterval;
+            int baseIndex = ((i - firstIndex) * barsPerInterval);
             int middleBarNum = barsPerInterval/2 +1;
             int midIndex = baseIndex + middleBarNum -1;
 
@@ -257,44 +288,93 @@ public class TimeGraphView extends FrameLayout {
 
             }
 
-
         }
 
         Log.d(TAG, "initGraphWindow: heights len = " + heights.length);
 
-        for (int height : heights) {
-            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(0, height, 1);
-            lp.gravity = Gravity.BOTTOM;
-            lp.setMargins(mGraphBarMargin, mGraphBarMargin, mGraphBarMargin, 0);
+        if (mGraphType == DAY){
+
+            for(int height : heights){
+
+                Log.d(TAG, "initGraphWindow: werty werty ::::::::" + height);
+            }
+
+        }
+
+
+        graphBox1.setBackground(mGraphBarResource.getConstantState().newDrawable().mutate());
+        graphBox2.setBackground(mGraphBarResource.getConstantState().newDrawable().mutate());
+        graphBox3.setBackground(mGraphBarResource.getConstantState().newDrawable().mutate());
+        graphBox4.setBackground(mGraphBarResource.getConstantState().newDrawable().mutate());
+        graphBox5.setBackground(mGraphBarResource.getConstantState().newDrawable().mutate());
+        graphBox6.setBackground(mGraphBarResource.getConstantState().newDrawable().mutate());
+        graphBox7.setBackground(mGraphBarResource.getConstantState().newDrawable().mutate());
+
+
+        graphBox1.getLayoutParams().height = heights[0];
+        graphBox2.getLayoutParams().height = heights[1];
+        graphBox3.getLayoutParams().height = heights[2];
+        graphBox4.getLayoutParams().height = heights[3];
+        graphBox5.getLayoutParams().height = heights[4];
+
+        if(heights.length > 5){
+
+            graphBox6.getLayoutParams().height = heights[5];
+            graphBox6.setVisibility(View.VISIBLE);
+        }else{
+            graphBox6.setVisibility(View.GONE);
+        }
+
+        if(heights.length > 6){
+            graphBox7.getLayoutParams().height = heights[6];
+            graphBox7.setVisibility(View.VISIBLE);
+        }else{
+            graphBox7.setVisibility(View.GONE);
+        }
+
+        /*
+
+        for (int i = 0; i < heights.length ; i++) {
+
             View v = new View(getContext());
             v.setBackground(mGraphBarResource);
-            if (height == 0) {
-                lp.height = 15;
-                v.setBackground(null);
-            }
+
+            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(0, 0, 0);
+
+            lp.weight = 1;
+            lp.height = heights[i];
+            lp.width = 0;
+
             v.setLayoutParams(lp);
+
             mGraphWindow.addView(v);
+            mGraphWindow.invalidate();
+
         }
+        */
 
     }
 
     private void initGraphAxis(float highestValue) {
 
-        if (!mShowGraphAxis) {
-            mGraphAxis.setVisibility(View.GONE);
+
+        TextView yAxis1 = this.findViewById(R.id.time_graph_axis_tv_1);
+        TextView yAxis2 = this.findViewById(R.id.time_graph_axis_tv_2);
+        TextView yAxis3 = this.findViewById(R.id.time_graph_axis_tv_3);
+        TextView yAxis4 = this.findViewById(R.id.time_graph_axis_tv_4);
+
+        if(!mShowGraphAxis){
+            yAxis1.setVisibility(GONE);
+            yAxis2.setVisibility(GONE);
+            yAxis3.setVisibility(GONE);
+            yAxis4.setVisibility(GONE);
             return;
-        } else {
-            mGraphAxis.setVisibility(View.VISIBLE);
-            if(mGraphAxisColor != 0){
-                mGraphAxis.setBackgroundColor(mGraphAxisColor);
-            }
+        }else{
+            yAxis1.setVisibility(VISIBLE);
+            yAxis2.setVisibility(VISIBLE);
+            yAxis3.setVisibility(VISIBLE);
+            yAxis4.setVisibility(VISIBLE);
         }
-
-        TextView topAxisTv = getRootView().findViewById(R.id.time_graph_axis_tv_1);
-        TextView axis2Tv = getRootView().findViewById(R.id.time_graph_axis_tv_2);
-        TextView axis3Tv = getRootView().findViewById(R.id.time_graph_axis_tv_3);
-        TextView bottomAxisTv = getRootView().findViewById(R.id.time_graph_axis_tv_4);
-
 
         float value2 = (highestValue / 4f) * 3f;
         float value3 = (highestValue / 2f);
@@ -303,41 +383,41 @@ public class TimeGraphView extends FrameLayout {
 
         if (highestValue > 999_999) {
             Log.d(TAG, "initGraphAxis: high > 1mil");
-            setMillionAxis(topAxisTv, highestValue);
-            setMillionAxis(axis2Tv, value2);
-            setMillionAxis(axis3Tv, value3);
-            setMillionAxis(bottomAxisTv, value4);
+            setMillionAxis(yAxis1, highestValue);
+            setMillionAxis(yAxis2, value2);
+            setMillionAxis(yAxis3, value3);
+            setMillionAxis(yAxis4, value4);
 
         } else if (highestValue > 1000) {
             Log.d(TAG, "initGraphAxis: high > 1000");
-            setThousandAxis(topAxisTv, highestValue);
-            setThousandAxis(axis2Tv, value2);
-            setThousandAxis(axis3Tv, value3);
-            setThousandAxis(bottomAxisTv, value4);
+            setThousandAxis(yAxis1, highestValue);
+            setThousandAxis(yAxis2, value2);
+            setThousandAxis(yAxis3, value3);
+            setThousandAxis(yAxis4, value4);
 
         } else {
             Log.d(TAG, "initGraphAxis: high < 1k");
-            setAxis(topAxisTv, highestValue);
-            setAxis(axis2Tv, value2);
-            setAxis(axis3Tv, value3);
-            setAxis(bottomAxisTv, value4);
+            setAxis(yAxis1, highestValue);
+            setAxis(yAxis2, value2);
+            setAxis(yAxis3, value3);
+            setAxis(yAxis4, value4);
         }
 
-        topAxisTv.setBackground(mPointerDrawable);
-        axis2Tv.setBackground(mPointerDrawable);
-        axis3Tv.setBackground(mPointerDrawable);
-        bottomAxisTv.setBackground(mPointerDrawable);
+        yAxis1.setBackground(mPointerDrawable);
+        yAxis2.setBackground(mPointerDrawable);
+        yAxis3.setBackground(mPointerDrawable);
+        yAxis4.setBackground(mPointerDrawable);
 
         if (mAxisTextColor != 0) {
-            topAxisTv.setTextColor(mAxisTextColor);
-            axis2Tv.setTextColor(mAxisTextColor);
-            axis3Tv.setTextColor(mAxisTextColor);
-            bottomAxisTv.setTextColor(mAxisTextColor);
+            yAxis1.setTextColor(mAxisTextColor);
+            yAxis2.setTextColor(mAxisTextColor);
+            yAxis3.setTextColor(mAxisTextColor);
+            yAxis4.setTextColor(mAxisTextColor);
         } else if (mTimeLabelTextColor != 0) {
-            topAxisTv.setTextColor(mTimeLabelTextColor);
-            axis2Tv.setTextColor(mTimeLabelTextColor);
-            axis3Tv.setTextColor(mTimeLabelTextColor);
-            bottomAxisTv.setTextColor(mTimeLabelTextColor);
+            yAxis1.setTextColor(mTimeLabelTextColor);
+            yAxis2.setTextColor(mTimeLabelTextColor);
+            yAxis3.setTextColor(mTimeLabelTextColor);
+            yAxis4.setTextColor(mTimeLabelTextColor);
         }
 
     }
@@ -382,7 +462,7 @@ public class TimeGraphView extends FrameLayout {
 
     private void initHighestValueTextView(int highestValue) {
 
-        TextView highestValueLabel = getRootView().findViewById(R.id.time_graph_max_value_tv);
+        TextView highestValueLabel = this.findViewById(R.id.time_graph_max_value_tv);
 
 
         if (!mShowHighestValue) {
@@ -404,7 +484,7 @@ public class TimeGraphView extends FrameLayout {
 
     private void initIntervalLabel() {
 
-        TextView intervalLabel = getRootView().findViewById(R.id.time_graph_interval_tv);
+        TextView intervalLabel = this.findViewById(R.id.time_graph_interval_tv);
 
         if (!mShowIntervalLabel) {
             intervalLabel.setVisibility(View.GONE);
@@ -435,31 +515,80 @@ public class TimeGraphView extends FrameLayout {
 
     private void initTimeLabelsLayout() {
 
-        mTimeLabelLayout.removeAllViews();
+
 
         if (!mShowTimeLabels) {
-            mTimeLabelLayout.setVisibility(View.GONE);
+            xAxis1.setVisibility(GONE);
+            xAxis2.setVisibility(GONE);
+            xAxis3.setVisibility(GONE);
+            xAxis4.setVisibility(GONE);
+            xAxis5.setVisibility(GONE);
+            xAxis6.setVisibility(GONE);
+            xAxis7.setVisibility(GONE);
             return;
         } else {
-            mTimeLabelLayout.setVisibility(VISIBLE);
+            xAxis1.setVisibility(VISIBLE);
+            xAxis2.setVisibility(VISIBLE);
+            xAxis3.setVisibility(VISIBLE);
+            xAxis4.setVisibility(VISIBLE);
+            xAxis5.setVisibility(VISIBLE);
+            xAxis6.setVisibility(VISIBLE);
+            xAxis7.setVisibility(VISIBLE);
         }
 
         LinearLayout.LayoutParams spaceParams = new LinearLayout.LayoutParams(0, 0, 1);
 
-        for (int i = 6; i >= 0; i--) {
+        switch (mGraphType) {
+            case DAY:
 
-            View leftSpace = new View(getContext());
-            leftSpace.setLayoutParams(spaceParams);
+                initTextView(xAxis1, getTimeLabelText(6), mTimeLabelTextColor);
+                initTextView(xAxis2, getTimeLabelText(5), mTimeLabelTextColor);
+                initTextView(xAxis3, getTimeLabelText(4), mTimeLabelTextColor);
+                initTextView(xAxis4, getTimeLabelText(3), mTimeLabelTextColor);
+                initTextView(xAxis5, getTimeLabelText(2), mTimeLabelTextColor);
+                initTextView(xAxis6, getTimeLabelText(1), mTimeLabelTextColor);
+                initTextView(xAxis7, getTimeLabelText(0), mTimeLabelTextColor);
 
-            TextView tv = new TextView(getContext());
-            initTextView(tv, getTimeLabelText(i), mTimeLabelTextColor);
+                xAxisSpacer10.setVisibility(VISIBLE);
+                xAxisSpacer11.setVisibility(VISIBLE);
+                xAxisSpacer12.setVisibility(VISIBLE);
+                xAxisSpacer13.setVisibility(VISIBLE);
 
-            View rightSpace = new View(getContext());
-            rightSpace.setLayoutParams(spaceParams);
+                break;
+            case WEEK:
 
-            mTimeLabelLayout.addView(leftSpace);
-            mTimeLabelLayout.addView(tv);
-            mTimeLabelLayout.addView(rightSpace);
+                initTextView(xAxis1, getTimeLabelText(4), mTimeLabelTextColor);
+                initTextView(xAxis2, getTimeLabelText(3), mTimeLabelTextColor);
+                initTextView(xAxis3, getTimeLabelText(2), mTimeLabelTextColor);
+                initTextView(xAxis4, getTimeLabelText(1), mTimeLabelTextColor);
+                initTextView(xAxis5, getTimeLabelText(0), mTimeLabelTextColor);
+
+                xAxis6.setVisibility(GONE);
+                xAxis7.setVisibility(GONE);
+                xAxisSpacer10.setVisibility(GONE);
+                xAxisSpacer11.setVisibility(GONE);
+                xAxisSpacer12.setVisibility(GONE);
+                xAxisSpacer13.setVisibility(GONE);
+
+                break;
+            case MONTH:
+
+                initTextView(xAxis1, getTimeLabelText(5), mTimeLabelTextColor);
+                initTextView(xAxis2, getTimeLabelText(4), mTimeLabelTextColor);
+                initTextView(xAxis3, getTimeLabelText(3), mTimeLabelTextColor);
+                initTextView(xAxis4, getTimeLabelText(2), mTimeLabelTextColor);
+                initTextView(xAxis5, getTimeLabelText(1), mTimeLabelTextColor);
+                initTextView(xAxis6, getTimeLabelText(0), mTimeLabelTextColor);
+
+                xAxis7.setVisibility(GONE);
+                xAxisSpacer10.setVisibility(VISIBLE);
+                xAxisSpacer11.setVisibility(VISIBLE);
+                xAxisSpacer12.setVisibility(GONE);
+                xAxisSpacer13.setVisibility(GONE);
+
+                break;
+            default:
+                throw new IllegalArgumentException();
         }
 
     }
@@ -479,7 +608,7 @@ public class TimeGraphView extends FrameLayout {
             }
             //  16th/23rd/...
             returnValue = mOrdinalDates[mCurrentDate.get(Calendar.DAY_OF_MONTH) - 1];
-            mCurrentDate.add(Calendar.DAY_OF_YEAR, i);
+            mCurrentDate.add(Calendar.DAY_OF_YEAR, 1);
 
         } else if (mGraphType == DAY) {
 
@@ -495,19 +624,14 @@ public class TimeGraphView extends FrameLayout {
             throw new IllegalArgumentException();
         }
 
-        mCurrentDate.add(Calendar.DAY_OF_YEAR, jumpBack);
+        mCurrentDate.add(mGraphType, jumpBack);
         return returnValue;
     }
 
     private void initTextView(TextView tv, String text, int textColor) {
 
-        ViewGroup.LayoutParams textViewParams = new ViewGroup.LayoutParams(
-                ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-
         tv.setText(text);
-        tv.setLayoutParams(textViewParams);
         if (textColor != 0) tv.setTextColor(textColor);
-
 
     }
 
@@ -533,8 +657,8 @@ public class TimeGraphView extends FrameLayout {
         this.mGraphWindowColor = mGraphWindowColor;
     }
 
-    public void setGraphFrameColor(int mGraphFrameColor) {
-        this.mGraphFooterColor = mGraphFrameColor;
+    public void setGraphBackgroundColor(int graphBackgroundColor) {
+        this.mGraphBackgroundColour = graphBackgroundColor;
     }
 
     public void setTimeLabelTextColor(int mTimeLabelTextColor) {
@@ -590,11 +714,4 @@ public class TimeGraphView extends FrameLayout {
         this.mCurrentDate = mCalendar;
     }
 
-    public int getGraphAxisColor() {
-        return mGraphAxisColor;
-    }
-
-    public void setGraphAxisColor(int graphAxisColor) {
-        this.mGraphAxisColor = graphAxisColor;
-    }
 }
